@@ -36,6 +36,7 @@ import {
   PRODUCT_CHART_DATA,
   FORECAST_WITHOUT_TRACKING_ROWS,
 } from '../data/dashboardAnalyticsData';
+import { OverviewDashboardJourney } from '../components/dashboard/DashboardJourneys';
 import { ExportDashboardScreen } from './ExportDashboardScreen';
 import { PurchaseDashboardScreen } from './PurchaseDashboardScreen';
 import { MarketingDashboardScreen } from './MarketingDashboardScreen';
@@ -122,7 +123,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
             onClick={() => setActiveDashboardTab('overview')}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               activeDashboardTab === 'overview'
-                ? 'bg-blue-600 text-white shadow-xs'
+                ? 'bg-[#0f2b3c] text-white shadow-xs'
                 : isDark
                 ? 'bg-slate-800/80 text-slate-300 hover:text-white border border-slate-700/60'
                 : 'bg-slate-100 text-slate-700 hover:text-slate-950 hover:bg-slate-200/80 border border-slate-200/80'
@@ -137,7 +138,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
             onClick={() => setActiveDashboardTab('export')}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               activeDashboardTab === 'export'
-                ? 'bg-blue-600 text-white shadow-xs'
+                ? 'bg-[#0f2b3c] text-white shadow-xs'
                 : isDark
                 ? 'bg-slate-800/80 text-slate-300 hover:text-white border border-slate-700/60'
                 : 'bg-slate-100 text-slate-700 hover:text-slate-950 hover:bg-slate-200/80 border border-slate-200/80'
@@ -163,7 +164,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
             onClick={() => setActiveDashboardTab('purchase')}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               activeDashboardTab === 'purchase'
-                ? 'bg-blue-600 text-white shadow-xs'
+                ? 'bg-[#0f2b3c] text-white shadow-xs'
                 : isDark
                 ? 'bg-slate-800/80 text-slate-300 hover:text-white border border-slate-700/60'
                 : 'bg-slate-100 text-slate-700 hover:text-slate-950 hover:bg-slate-200/80 border border-slate-200/80'
@@ -189,7 +190,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
             onClick={() => setActiveDashboardTab('marketing')}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               activeDashboardTab === 'marketing'
-                ? 'bg-blue-600 text-white shadow-xs'
+                ? 'bg-[#0f2b3c] text-white shadow-xs'
                 : isDark
                 ? 'bg-slate-800/80 text-slate-300 hover:text-white border border-slate-700/60'
                 : 'bg-slate-100 text-slate-700 hover:text-slate-950 hover:bg-slate-200/80 border border-slate-200/80'
@@ -215,7 +216,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
             onClick={() => setActiveDashboardTab('finance')}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               activeDashboardTab === 'finance'
-                ? 'bg-blue-600 text-white shadow-xs'
+                ? 'bg-[#0f2b3c] text-white shadow-xs'
                 : isDark
                 ? 'bg-slate-800/80 text-slate-300 hover:text-white border border-slate-700/60'
                 : 'bg-slate-100 text-slate-700 hover:text-slate-950 hover:bg-slate-200/80 border border-slate-200/80'
@@ -356,428 +357,8 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
         {/* Render Tab 1: OVERVIEW DASHBOARD */}
         {activeDashboardTab === 'overview' && (
           <div>
-            {/* ================================================================= */}
-            {/* 1. MOBILE EXPERIENCE (md:hidden) - High-End Executive Mobile App  */}
-            {/* ================================================================= */}
-            <div className="md:hidden space-y-3.5">
-              {/* SMART COMPONENT 1: Executive Command Hub */}
-              {/* Unifies Header, Duration, Cash Flow & 4 Operational Metrics into ONE sleek, compact card */}
-              <div
-                className={`rounded-3xl p-4 border relative overflow-hidden transition-colors ${
-                  isDark
-                    ? 'bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-white shadow-xl border-slate-800/80'
-                    : 'bg-white text-slate-900 shadow-xs border-slate-200/90'
-                }`}
-              >
-                {/* Ambient glow accent (only in dark mode) */}
-                {isDark && (
-                  <>
-                    <div className="absolute -top-12 -right-12 w-44 h-44 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
-                    <div className="absolute -bottom-12 -left-12 w-44 h-44 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
-                  </>
-                )}
-
-                {/* Mobile Header Row with Duration Selector */}
-                <div className={`relative z-10 flex items-center justify-between gap-2 pb-3 mb-3 border-b ${
-                  isDark ? 'border-white/10' : 'border-slate-100'
-                }`}>
-                  <div>
-                    <span className={`text-[10px] font-black tracking-widest uppercase block ${
-                      isDark ? 'text-indigo-400' : 'text-indigo-600'
-                    }`}>
-                      OVERVIEW
-                    </span>
-                    <h1 className={`text-lg font-black tracking-tight ${
-                      isDark ? 'text-white' : 'text-slate-900'
-                    }`}>
-                      Dashboard
-                    </h1>
-                  </div>
-
-                  {/* Duration Selector */}
-                  <div className={`relative rounded-xl px-2.5 py-1.5 shadow-xs flex items-center border transition-colors ${
-                    isDark
-                      ? 'bg-white/10 hover:bg-white/15 border-white/15 backdrop-blur-md text-slate-100'
-                      : 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-800'
-                  }`}>
-                    <select
-                      value={duration}
-                      onChange={(e) => setDuration(e.target.value)}
-                      className={`appearance-none bg-transparent text-xs font-bold pr-5 focus:outline-none cursor-pointer ${
-                        isDark ? 'text-slate-100' : 'text-slate-800'
-                      }`}
-                    >
-                      <option value="Current Year" className={isDark ? 'bg-slate-900 text-white' : 'bg-white text-slate-900'}>Current Year</option>
-                      <option value="Previous Year" className={isDark ? 'bg-slate-900 text-white' : 'bg-white text-slate-900'}>Previous Year</option>
-                      <option value="All Time" className={isDark ? 'bg-slate-900 text-white' : 'bg-white text-slate-900'}>All Time</option>
-                      <option value="Current Quarter" className={isDark ? 'bg-slate-900 text-white' : 'bg-white text-slate-900'}>Current Quarter</option>
-                      <option value="Current Month" className={isDark ? 'bg-slate-900 text-white' : 'bg-white text-slate-900'}>Current Month</option>
-                    </select>
-                    <ChevronDown className={`w-3.5 h-3.5 absolute right-1.5 pointer-events-none ${
-                      isDark ? 'text-slate-300' : 'text-slate-400'
-                    }`} />
-                  </div>
-                </div>
-
-                {/* Hero Cash Flow Section */}
-                <div className={`relative z-10 rounded-2xl p-3 mb-3.5 border transition-colors ${
-                  isDark
-                    ? 'bg-white/5 border-white/10 backdrop-blur-sm'
-                    : 'bg-gradient-to-r from-emerald-500/10 via-teal-500/5 to-white border-emerald-200/80'
-                }`}>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <div className="flex items-center gap-2">
-                      <div className={`w-7 h-7 rounded-xl flex items-center justify-center ${
-                        isDark
-                          ? 'bg-emerald-400/20 border border-emerald-400/30 text-emerald-300'
-                          : 'bg-emerald-100 border border-emerald-200 text-emerald-700'
-                      }`}>
-                        <DollarSign className="w-4 h-4" />
-                      </div>
-                      <div>
-                        <span className={`text-[10px] font-extrabold uppercase tracking-wider block ${
-                          isDark ? 'text-emerald-300' : 'text-emerald-700'
-                        }`}>
-                          Cash Flow
-                        </span>
-                        <span className={`text-[9.5px] ${isDark ? 'text-slate-400' : 'text-slate-500 font-medium'}`}>{duration}</span>
-                      </div>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => setIsCashFlowMasked(!isCashFlowMasked)}
-                      className={`p-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
-                        isDark
-                          ? 'bg-white/10 hover:bg-white/20 border-white/15 text-slate-200'
-                          : 'bg-white hover:bg-slate-100 border-slate-200 text-slate-700 shadow-2xs'
-                      }`}
-                      title={isCashFlowMasked ? 'Reveal Cash Flow' : 'Mask Cash Flow'}
-                    >
-                      {isCashFlowMasked ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-                    </button>
-                  </div>
-
-                  <div className={`text-2xl font-black tracking-tight ${
-                    isDark ? 'text-white' : 'text-slate-900'
-                  }`}>
-                    {isCashFlowMasked ? CASH_FLOW_DATA.maskedValue : CASH_FLOW_DATA.actualValue}
-                  </div>
-                </div>
-
-                {/* Integrated Operational Volume 2x2 Grid */}
-                <div className="relative z-10 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-                      <h2 className={`text-xs font-bold ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>Operational Volume</h2>
-                    </div>
-                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-black border ${
-                      isDark
-                        ? 'bg-blue-500/20 text-blue-300 border-blue-400/30'
-                        : 'bg-blue-50 text-blue-700 border-blue-200'
-                    }`}>
-                      Live Active
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2">
-                    {DASHBOARD_METRIC_CARDS.map((card) => (
-                      <div
-                        key={card.id}
-                        className={`p-2.5 rounded-xl border flex items-center justify-between gap-2 transition-colors ${
-                          isDark
-                            ? 'bg-white/5 border-white/10'
-                            : 'bg-slate-50/90 hover:bg-slate-100/80 border-slate-200/80'
-                        }`}
-                      >
-                        <div className="flex items-center gap-2 min-w-0">
-                          <div
-                            className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
-                            style={{ backgroundColor: card.color }}
-                          >
-                            {renderMetricIcon(card.iconName)}
-                          </div>
-                          <div className="min-w-0">
-                            <span className={`text-[11px] font-bold block truncate leading-tight ${
-                              isDark ? 'text-slate-200' : 'text-slate-700'
-                            }`}>
-                              {card.label}
-                            </span>
-                            <span className={`text-[9px] block leading-tight ${
-                              isDark ? 'text-slate-400' : 'text-slate-400'
-                            }`}>
-                              Standard metric
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="text-right shrink-0">
-                          <span className={`text-sm font-black ${
-                            isDark ? 'text-white' : 'text-slate-900'
-                          }`}>
-                            {card.value}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* SMART COMPONENT 2: Container Analytics Suite with Interactive Segmented Pill Tabs */}
-              <div className={`${isDark ? 'bg-[#111726] border-slate-800/80 shadow-xs' : 'bg-white border-slate-200/80 shadow-xs'} rounded-3xl border p-3.5 space-y-3`}>
-                <div className={`flex items-center justify-between pb-2 border-b ${isDark ? 'border-slate-800' : 'border-slate-100'}`}>
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-indigo-600" />
-                    <h2 className={`text-xs font-black uppercase tracking-wider ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>
-                      Container Analytics
-                    </h2>
-                  </div>
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${isDark ? 'text-indigo-300 bg-indigo-950/60 border-indigo-800/60' : 'text-indigo-600 bg-indigo-50 border-indigo-100'}`}>
-                    {selectedMobileChart === 'all' ? 'All 6 Charts' : '1 of 6 Active'}
-                  </span>
-                </div>
-
-                {/* Sleek Horizontal Segmented Filter Bar */}
-                <div className="flex items-center gap-1.5 overflow-x-auto pb-1 -mx-1 px-1">
-                  {[
-                    { id: 'forecast', label: 'Forecast' },
-                    { id: 'customer', label: 'Customer' },
-                    { id: 'supplier', label: 'Supplier' },
-                    { id: 'delivery', label: 'Delivery' },
-                    { id: 'marketing', label: 'Marketing' },
-                    { id: 'product', label: 'Product' },
-                    { id: 'all', label: 'All 6' },
-                  ].map((tab) => (
-                    <button
-                      key={tab.id}
-                      type="button"
-                      onClick={() => setSelectedMobileChart(tab.id as typeof selectedMobileChart)}
-                      className={`px-3 py-1.5 rounded-xl text-[11px] font-bold whitespace-nowrap transition-all cursor-pointer ${
-                        selectedMobileChart === tab.id
-                          ? 'bg-indigo-600 text-white shadow-xs'
-                          : isDark
-                          ? 'bg-slate-800/80 text-slate-300 hover:text-white border border-slate-700/60'
-                          : 'bg-slate-100/80 text-slate-600 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200/50'
-                      }`}
-                    >
-                      {tab.label}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Active Chart Presentation */}
-                <div className="space-y-3.5 pt-1">
-                  {(selectedMobileChart === 'forecast' || selectedMobileChart === 'all') && (
-                    <ContainerDualAxisChart
-                      id="mobile-chart-forecast"
-                      title="Container Wise Forecast"
-                      data={FORECAST_CHART_DATA}
-                      maxLeft={80}
-                      maxRight={500000}
-                      onViewAll={() => {}}
-                    />
-                  )}
-                  {(selectedMobileChart === 'customer' || selectedMobileChart === 'all') && (
-                    <ContainerDualAxisChart
-                      id="mobile-chart-customer"
-                      title="Customer Wise Container"
-                      data={CUSTOMER_CHART_DATA}
-                      maxLeft={60}
-                      maxRight={500000}
-                      onViewAll={() => {}}
-                    />
-                  )}
-                  {(selectedMobileChart === 'supplier' || selectedMobileChart === 'all') && (
-                    <ContainerDualAxisChart
-                      id="mobile-chart-supplier"
-                      title="Supplier Wise Container"
-                      data={SUPPLIER_CHART_DATA}
-                      maxLeft={200}
-                      maxRight={1000000}
-                      onViewAll={() => {}}
-                    />
-                  )}
-                  {(selectedMobileChart === 'delivery' || selectedMobileChart === 'all') && (
-                    <ContainerDualAxisChart
-                      id="mobile-chart-delivery-place"
-                      title="Place of Delivery Wise Container"
-                      data={DELIVERY_PLACE_CHART_DATA}
-                      maxLeft={60}
-                      maxRight={600000}
-                      onViewAll={() => {}}
-                    />
-                  )}
-                  {(selectedMobileChart === 'marketing' || selectedMobileChart === 'all') && (
-                    <ContainerDualAxisChart
-                      id="mobile-chart-marketing-personal"
-                      title="Marketing Personal Wise Container"
-                      data={MARKETING_PERSONAL_CHART_DATA}
-                      maxLeft={250}
-                      maxRight={2000000}
-                      onViewAll={() => {}}
-                    />
-                  )}
-                  {(selectedMobileChart === 'product' || selectedMobileChart === 'all') && (
-                    <ContainerDualAxisChart
-                      id="mobile-chart-product"
-                      title="Product Wise Container"
-                      data={PRODUCT_CHART_DATA}
-                      maxLeft={70}
-                      maxRight={350000}
-                      onViewAll={() => {}}
-                    />
-                  )}
-                </div>
-              </div>
-
-              {/* SMART COMPONENT 3: Operations & Pipeline Hub (Follow-Up & Forecast Without Tracking Unified) */}
-              <div className={`${isDark ? 'bg-[#111726] border-slate-800/80 shadow-xs' : 'bg-white border-slate-200/80 shadow-xs'} rounded-3xl border p-4 space-y-4`}>
-                {/* Follow Up Sub-Module */}
-                <div className="space-y-2.5">
-                  <div className={`flex items-center justify-between pb-2 border-b ${isDark ? 'border-slate-800' : 'border-slate-100'}`}>
-                    <div className="flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-emerald-600" />
-                      <h2 className={`text-xs font-black uppercase tracking-wider ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>
-                        Follow Up
-                      </h2>
-                    </div>
-                    <div className={`flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-bold shadow-2xs border ${
-                      isDark ? 'bg-slate-800/80 border-slate-700 text-slate-200' : 'bg-slate-50 border-slate-200/80 text-slate-700'
-                    }`}>
-                      <span>{followUpPeriod}</span>
-                      <ChevronDown className="w-3 h-3 text-slate-400" />
-                    </div>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <div className={`border rounded-2xl overflow-hidden ${isDark ? 'border-slate-800 bg-slate-900/40' : 'border-slate-200/70 bg-slate-50/50'}`}>
-                      <button
-                        type="button"
-                        onClick={() => setIsProformaFinanceExpanded(!isProformaFinanceExpanded)}
-                        className={`w-full px-3 py-2.5 flex items-center justify-between text-left transition-colors ${
-                          isDark ? 'hover:bg-slate-800/60' : 'hover:bg-slate-100/60'
-                        }`}
-                      >
-                        <span className={`text-xs font-bold flex items-center gap-1.5 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
-                          <span>Proforma Finance</span>
-                          <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
-                            isDark ? 'bg-slate-800 text-slate-300' : 'bg-slate-200 text-slate-700'
-                          }`}>0</span>
-                        </span>
-                        {isProformaFinanceExpanded ? (
-                          <ChevronUp className="w-3.5 h-3.5 text-slate-400" />
-                        ) : (
-                          <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
-                        )}
-                      </button>
-                      {isProformaFinanceExpanded && (
-                        <div className={`p-3 text-center text-xs border-t ${
-                          isDark ? 'text-slate-400 bg-[#0d1322] border-slate-800' : 'text-slate-400 bg-white border-slate-200/60'
-                        }`}>
-                          No follow-ups scheduled for this reference yet.
-                        </div>
-                      )}
-                    </div>
-
-                    <div className={`border rounded-2xl overflow-hidden ${isDark ? 'border-slate-800 bg-slate-900/40' : 'border-slate-200/70 bg-slate-50/50'}`}>
-                      <button
-                        type="button"
-                        onClick={() => setIsExpenseVoucherExpanded(!isExpenseVoucherExpanded)}
-                        className={`w-full px-3 py-2.5 flex items-center justify-between text-left transition-colors ${
-                          isDark ? 'hover:bg-slate-800/60' : 'hover:bg-slate-100/60'
-                        }`}
-                      >
-                        <span className={`text-xs font-bold flex items-center gap-1.5 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
-                          <span>Expense Voucher</span>
-                          <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
-                            isDark ? 'bg-slate-800 text-slate-300' : 'bg-slate-200 text-slate-700'
-                          }`}>0</span>
-                        </span>
-                        {isExpenseVoucherExpanded ? (
-                          <ChevronUp className="w-3.5 h-3.5 text-slate-400" />
-                        ) : (
-                          <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
-                        )}
-                      </button>
-                      {isExpenseVoucherExpanded && (
-                        <div className={`p-3 text-center text-xs border-t ${
-                          isDark ? 'text-slate-400 bg-[#0d1322] border-slate-800' : 'text-slate-400 bg-white border-slate-200/60'
-                        }`}>
-                          No follow-ups scheduled for this reference yet.
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Forecast Without Tracking Sub-Module (Grouped Modern Rows) */}
-                <div className={`pt-2 border-t space-y-2.5 ${isDark ? 'border-slate-800' : 'border-slate-100'}`}>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-blue-600" />
-                      <h2 className={`text-xs font-black uppercase tracking-wider leading-tight ${
-                        isDark ? 'text-slate-100' : 'text-slate-900'
-                      }`}>
-                        Forecast Without Tracking
-                      </h2>
-                    </div>
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
-                      isDark ? 'text-slate-300 bg-slate-800/80 border-slate-700' : 'text-slate-600 bg-slate-100 border-slate-200'
-                    }`}>
-                      {FORECAST_WITHOUT_TRACKING_ROWS.length} Months
-                    </span>
-                  </div>
-
-                  <div className="space-y-2">
-                    {FORECAST_WITHOUT_TRACKING_ROWS.map((row, index) => (
-                      <div
-                        key={index}
-                        className={`p-3 rounded-2xl border space-y-2 transition-all ${
-                          isDark
-                            ? 'bg-[#141b2d] border-slate-800/90 hover:bg-[#182137]'
-                            : 'bg-slate-50/70 border-slate-200/70 hover:bg-white hover:shadow-2xs'
-                        }`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <span className={`text-xs font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>{row.shipmentMonths}</span>
-                          <span className={`font-mono text-xs font-black px-2 py-0.5 rounded-lg border ${
-                            isDark
-                              ? 'text-emerald-400 bg-emerald-950/60 border-emerald-800/60'
-                              : 'text-emerald-700 bg-emerald-50 border-emerald-200'
-                          }`}>
-                            {row.projectedProfit}
-                          </span>
-                        </div>
-                        <div className={`grid grid-cols-3 gap-2 text-[10.5px] pt-1.5 border-t ${
-                          isDark ? 'border-slate-800' : 'border-slate-200/60'
-                        }`}>
-                          <div className={`rounded-lg p-1.5 border ${
-                            isDark ? 'bg-[#0e1422] border-slate-800/70' : 'bg-white/80 border-slate-200/50'
-                          }`}>
-                            <span className="text-slate-400 block text-[9.5px]">Total</span>
-                            <span className="font-black text-blue-500">{row.totalNoContainers}</span>
-                          </div>
-                          <div className={`rounded-lg p-1.5 border ${
-                            isDark ? 'bg-[#0e1422] border-slate-800/70' : 'bg-white/80 border-slate-200/50'
-                          }`}>
-                            <span className="text-slate-400 block text-[9.5px]">Delivered</span>
-                            <span className={`font-bold ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>{row.deliveredContainers}</span>
-                          </div>
-                          <div className={`rounded-lg p-1.5 border ${
-                            isDark ? 'bg-[#0e1422] border-slate-800/70' : 'bg-white/80 border-slate-200/50'
-                          }`}>
-                            <span className="text-slate-400 block text-[9.5px]">Confirmed</span>
-                            <span className={`font-bold ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>{row.confirmedUndelivered}</span>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
+            {/* Journey-style mobile overview */}
+            <OverviewDashboardJourney />
 
             {/* ================================================================= */}
             {/* 2. WEB / DESKTOP EXPERIENCE (hidden md:block)                     */}

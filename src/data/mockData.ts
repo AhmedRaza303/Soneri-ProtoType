@@ -521,8 +521,8 @@ export const ERP_MODULES: ERPModule[] = [
     iconName: 'Layers',
     items: [
       { id: 'cat_category', title: 'Category', subtitle: 'Hierarchy and classification taxonomy' },
-      { id: 'cat_collection', title: 'Collection', subtitle: 'Seasonal and seasonal capsule ranges' },
-      { id: 'cat_brand', title: 'Brand', subtitle: 'Brand house portfolio management' },
+      { id: 'cat_collection', title: 'Collection', subtitle: 'Product line collections by brand' },
+      { id: 'cat_brand', title: 'Brand', subtitle: 'Brand house, trademark & packaging flags' },
       { id: 'cat_products', title: 'Products', subtitle: 'Grid & View product master catalog' },
     ],
   },

@@ -226,8 +226,8 @@ export const MOCK_PROFORMA_SUPPLIERS: ProformaSupplierItem[] = [
 export interface ContainerTrackingItem {
   id: string;
   containerNumber: string;
-  sizeType: '40ft High Cube' | '20ft Standard' | '40ft Standard';
-  shippingLine: 'Maersk' | 'CMA CGM' | 'Hapag-Lloyd' | 'MSC';
+  sizeType: string;
+  shippingLine: string;
   blNumber: string;
   vesselName: string;
   voyageNumber: string;
@@ -1931,11 +1931,18 @@ export const MOCK_EXHIBITIONS: ExhibitionItem[] = [
 export interface LeadItem {
   id: string;
   leadCode: string;
+  exhibition: string;
+  marketingPersonal: string;
+  customerCompany: string;
+  country: string;
+  placeOfDelivery: string;
+  status: 'Draft' | 'Initiated';
+  created: string;
+  /** Detail-view aliases / extras */
   contactName: string;
   contactPerson: string;
   companyName: string;
   company: string;
-  country: string;
   email: string;
   phone: string;
   sourceExhibition: string;
@@ -1943,7 +1950,6 @@ export interface LeadItem {
   productInterest: string;
   estimatedAnnualVolume: string;
   estimatedVolume: string;
-  status: 'New' | 'Sample Dispatched' | 'Negotiation' | 'Converted to Client' | 'Disqualified';
   stage: string;
   assignedMarketer: string;
   assignedTo: string;
@@ -1956,11 +1962,17 @@ export const MOCK_LEADS: LeadItem[] = [
   {
     id: 'lead_01',
     leadCode: 'LEAD-8841',
+    exhibition: 'Heimtextil Frankfurt 2025',
+    marketingPersonal: 'BS',
+    customerCompany: 'Hanseatic Spinning Mills GmbH',
+    country: 'Germany',
+    placeOfDelivery: 'Hamburg Port, Germany',
+    status: 'Initiated',
+    created: 'BS • 15/01/2025, 10:15 AM',
     contactName: 'Thomas Müller (Sourcing Director)',
     contactPerson: 'Thomas Müller',
     companyName: 'Hanseatic Spinning Mills GmbH',
     company: 'Hanseatic Spinning Mills GmbH',
-    country: 'Germany',
     email: 't.mueller@hanseatic-yarn.de',
     phone: '+49 40 8829100',
     sourceExhibition: 'Heimtextil Frankfurt 2025',
@@ -1968,7 +1980,6 @@ export const MOCK_LEADS: LeadItem[] = [
     productInterest: '100% Combed Cotton Ring Spun Weaving Yarn Ne 30/1',
     estimatedAnnualVolume: '500 Metric Tons / Year ($1.6M)',
     estimatedVolume: '500 MT / Year ($1.6M)',
-    status: 'Converted to Client',
     stage: 'Converted to Client',
     assignedMarketer: 'BS',
     assignedTo: 'BS',
@@ -1979,11 +1990,17 @@ export const MOCK_LEADS: LeadItem[] = [
   {
     id: 'lead_02',
     leadCode: 'LEAD-8839',
+    exhibition: 'Direct Buyer Referral',
+    marketingPersonal: 'Madam Gulnaz',
+    customerCompany: 'Al-Madina Garments FZE',
+    country: 'United Arab Emirates',
+    placeOfDelivery: 'Jebel Ali Free Zone, UAE',
+    status: 'Initiated',
+    created: 'Madam Gulnaz • 22/01/2025, 02:40 PM',
     contactName: 'Rashid Al-Khatib',
     contactPerson: 'Rashid Al-Khatib',
     companyName: 'Al-Madina Garments FZE',
     company: 'Al-Madina Garments FZE',
-    country: 'United Arab Emirates',
     email: 'sourcing@almadinafabrics.ae',
     phone: '+971 4 3982100',
     sourceExhibition: 'Direct Buyer Referral',
@@ -1991,7 +2008,6 @@ export const MOCK_LEADS: LeadItem[] = [
     productInterest: 'Indigo Dyed Denim Fabric 11.5 Oz Stretch',
     estimatedAnnualVolume: '200,000 Meters / Year ($600K)',
     estimatedVolume: '200,000 Meters ($600K)',
-    status: 'Converted to Client',
     stage: 'Converted to Client',
     assignedMarketer: 'Madam Gulnaz',
     assignedTo: 'Madam Gulnaz',
@@ -2002,11 +2018,17 @@ export const MOCK_LEADS: LeadItem[] = [
   {
     id: 'lead_03',
     leadCode: 'LEAD-8832',
+    exhibition: 'Texworld Evolution Paris',
+    marketingPersonal: 'Farhan Wazir Ali',
+    customerCompany: 'Lyon Textile Sourcing SAS',
+    country: 'France',
+    placeOfDelivery: 'Le Havre Port, France',
+    status: 'Draft',
+    created: 'Farhan Wazir Ali • 11/02/2025, 11:05 AM',
     contactName: 'Sophie Dubois (Head of Procurement)',
     contactPerson: 'Sophie Dubois',
     companyName: 'Lyon Textile Sourcing SAS',
     company: 'Lyon Textile Sourcing SAS',
-    country: 'France',
     email: 's.dubois@lyon-textile.fr',
     phone: '+33 4 7892104',
     sourceExhibition: 'Texworld Evolution Paris',
@@ -2014,7 +2036,6 @@ export const MOCK_LEADS: LeadItem[] = [
     productInterest: 'Organic Bedlinen Fabrics & Yarn-dyed Checks',
     estimatedAnnualVolume: '80,000 Meters ($280K)',
     estimatedVolume: '80,000 Meters ($280K)',
-    status: 'Sample Dispatched',
     stage: 'Sample Dispatched',
     assignedMarketer: 'Farhan Wazir Ali',
     assignedTo: 'Farhan Wazir Ali',
@@ -2114,21 +2135,203 @@ export interface CategoryItem {
   code: string;
   name: string;
   parentCategory: string;
+  hsCode: string;
   division: string;
   totalProductsCount: number;
   productCount: number;
   status: 'Active' | 'Inactive';
   description: string;
   subCategories: string[];
+  created: string;
 }
 
 export const MOCK_CATEGORIES: CategoryItem[] = [
-  { id: 'cat_01', code: 'CAT-YARN', name: 'Cotton & Blended Yarn', parentCategory: 'Raw Fibers & Spinning', division: 'Spinning Division', totalProductsCount: 24, productCount: 24, status: 'Active', description: 'Combed, carded, compact and slub spinning yarns for weaving & knitting.', subCategories: ['Ring Spun Combed', 'Carded Weaving', 'Compact Siro Spun', 'Slub & Heather Melange'] },
-  { id: 'cat_02', code: 'CAT-DENIM', name: 'Denim Fabrics', parentCategory: 'Woven Fabrics', division: 'Weaving & Dyeing', totalProductsCount: 18, productCount: 18, status: 'Active', description: 'Indigo, sulfur black, stretch and rigid twill denim textiles 9oz to 14oz.', subCategories: ['Stretch Denim', 'Rigid Vintage Twill', 'Cross-Hatch Slub', 'Ecru Unbleached'] },
-  { id: 'cat_03', code: 'CAT-HOMETEX', name: 'Home Textiles', parentCategory: 'Finished Consumer Goods', division: 'Processing & Stitching', totalProductsCount: 32, productCount: 32, status: 'Active', description: 'Bed linens, duvets, terry towels, percale sheets and hospital drapery.', subCategories: ['Percale Sheetings', 'Sateen Weave', 'Waffle & Terry Toweling', 'Institutional Sheeting'] },
-  { id: 'cat_04', code: 'CAT-CHM', name: 'Textile Processing Chemicals', parentCategory: 'Procurement Inputs', division: 'Chemical Procurement', totalProductsCount: 15, productCount: 15, status: 'Active', description: 'Dyes, auxiliaries, sizing binders, softeners and starch enzymes.', subCategories: ['Reactive Dyestuffs', 'Modified Starches', 'Silicone Softeners', 'Dispersing Agents'] },
+  { id: 'cat_01', code: 'CAT-001', name: 'Confectionery', parentCategory: 'Commodity', hsCode: '1704.90', division: 'Food', totalProductsCount: 86, productCount: 86, status: 'Active', description: 'Candies, lollipops, chocolate-coated sweets and seasonal confectionery lines.', subCategories: ['Lollipop', 'Hard Candy', 'Toffee', 'Chocolate'], created: '12/08/2026, 10:15 AM' },
+  { id: 'cat_02', code: 'CAT-002', name: 'Personal Care', parentCategory: 'Commodity', hsCode: '3304.99', division: 'Cosmetics', totalProductsCount: 54, productCount: 54, status: 'Active', description: 'Skin care, bleach cream, serums and body care product families.', subCategories: ['Bleach Cream', 'Face Serum', 'Body Oil', 'Herbal Oil'], created: '12/08/2026, 10:18 AM' },
+  { id: 'cat_03', code: 'CAT-003', name: 'Instant Juice', parentCategory: 'Commodity', hsCode: '2106.90', division: 'Beverages', totalProductsCount: 22, productCount: 22, status: 'Active', description: 'Powdered and ready-mix juice concentrates for export markets.', subCategories: ['Orange', 'Mango', 'Mixed Fruit'], created: '18/08/2026, 02:40 PM' },
+  { id: 'cat_04', code: 'CAT-004', name: 'Bleach Cream', parentCategory: 'Personal Care', hsCode: '3304.99', division: 'Cosmetics', totalProductsCount: 18, productCount: 18, status: 'Active', description: 'Whitening and brightening cream SKUs under multiple brand houses.', subCategories: ['Day Cream', 'Night Cream', 'SPF Range'], created: '20/08/2026, 11:05 AM' },
 ];
 
+/** Brand master — matches ERP Brand grid/view fields */
+export interface BrandItem {
+  id: string;
+  code: string;
+  brandName: string;
+  shortName: string;
+  website: string;
+  registerCountry: string;
+  establishmentDate: string;
+  status: 'Active' | 'Inactive';
+  packagingOnly: 'Yes' | 'No';
+  privateLabel: 'Yes' | 'No';
+  tradeMarkStatus: string;
+  remarks: string;
+  primaryLogo: string;
+  secondaryLogo: string;
+  created: string;
+}
+
+export const MOCK_BRANDS: BrandItem[] = [
+  { id: 'br_01', code: 'BR-080', brandName: 'Savera', shortName: 'SV', website: 'https://savera.example', registerCountry: 'Pakistan', establishmentDate: '12/01/2018', status: 'Active', packagingOnly: 'No', privateLabel: 'No', tradeMarkStatus: 'Registered', remarks: 'Core confectionery brand', primaryLogo: 'savera-primary.png', secondaryLogo: '', created: '25/08/2026, 22:43 PM' },
+  { id: 'br_02', code: 'BR-079', brandName: 'LOVSKIN', shortName: 'LS', website: '', registerCountry: 'Pakistan', establishmentDate: '05/06/2020', status: 'Active', packagingOnly: 'No', privateLabel: 'No', tradeMarkStatus: 'Pending', remarks: '', primaryLogo: '', secondaryLogo: '', created: '25/08/2026, 22:42 PM' },
+  { id: 'br_03', code: 'BR-078', brandName: 'MIRACLE WHITE', shortName: 'MW', website: '', registerCountry: 'United Kingdom', establishmentDate: '18/03/2019', status: 'Active', packagingOnly: 'No', privateLabel: 'Yes', tradeMarkStatus: 'Registered', remarks: 'UK private label line', primaryLogo: 'mw-logo.png', secondaryLogo: '', created: '25/08/2026, 22:42 PM' },
+  { id: 'br_04', code: 'BR-077', brandName: 'AMA BOM BOM', shortName: 'ABB', website: '', registerCountry: 'Pakistan', establishmentDate: '', status: 'Active', packagingOnly: 'No', privateLabel: 'No', tradeMarkStatus: '', remarks: '', primaryLogo: '', secondaryLogo: '', created: '25/08/2026, 22:41 PM' },
+  { id: 'br_05', code: 'BR-076', brandName: 'ROSY AURA', shortName: 'RA', website: 'https://rosyaura.com', registerCountry: 'United Arab Emirates', establishmentDate: '22/09/2021', status: 'Active', packagingOnly: 'Yes', privateLabel: 'No', tradeMarkStatus: 'Applied', remarks: 'Packaging-only export brand', primaryLogo: 'ra-primary.png', secondaryLogo: 'ra-secondary.png', created: '25/08/2026, 22:40 PM' },
+  { id: 'br_06', code: 'BR-075', brandName: 'CHOCOLINA', shortName: 'CH', website: '', registerCountry: 'Pakistan', establishmentDate: '01/11/2016', status: 'Active', packagingOnly: 'No', privateLabel: 'No', tradeMarkStatus: 'Registered', remarks: '', primaryLogo: '', secondaryLogo: '', created: '20/08/2026, 04:12 PM' },
+];
+
+/** Collection master — matches ERP Collection grid/view */
+export interface CollectionItem {
+  id: string;
+  code: string;
+  collectionName: string;
+  collectionDetail: string;
+  brandCode: string;
+  brandName: string;
+  status: 'Active' | 'Inactive';
+  created: string;
+  description: string;
+  thumbnail: string;
+  products: { code: string; name: string; primary: 'Yes' | 'No' }[];
+  instructions: { text: string; sort: number; highlight: boolean }[];
+}
+
+export const MOCK_COLLECTIONS: CollectionItem[] = [
+  {
+    id: 'col_01',
+    code: 'COL-076',
+    collectionName: 'Bleach Cream',
+    collectionDetail: 'Whitening cream SKUs for personal care export',
+    brandCode: 'BR-079',
+    brandName: 'LOVSKIN',
+    status: 'Active',
+    created: '28/08/2026, 03:43 PM',
+    description: 'Whitening cream collection for personal care export.',
+    thumbnail: '',
+    products: [
+      { code: 'PRD-1050', name: 'LOVSKIN BLEACH CREAM 50 ML JAR DAY NIGHT FORMULA', primary: 'Yes' },
+      { code: 'PRD-1049', name: 'LOVSKIN BLEACH CREAM 30 ML TUBE TRAVEL PACK', primary: 'No' },
+    ],
+    instructions: [],
+  },
+  {
+    id: 'col_02',
+    code: 'COL-075',
+    collectionName: 'Body Oil',
+    collectionDetail: 'Herbal vitamin body oil range',
+    brandCode: 'BR-079',
+    brandName: 'LOVSKIN',
+    status: 'Active',
+    created: '28/08/2026, 03:42 PM',
+    description: 'Herbal and vitamin body oil SKUs.',
+    thumbnail: '',
+    products: [
+      { code: 'PRD-1048', name: 'LOVSKIN HERBAL BODY OIL 100 ML', primary: 'Yes' },
+    ],
+    instructions: [],
+  },
+  {
+    id: 'col_03',
+    code: 'COL-194',
+    collectionName: 'Brush Pop',
+    collectionDetail: 'Novelty lollipop assortment',
+    brandCode: 'BR-080',
+    brandName: 'Savera',
+    status: 'Active',
+    created: '27/08/2026, 01:10 PM',
+    description: 'Lollipop novelty brush-pop assortment.',
+    thumbnail: '',
+    products: [
+      { code: 'PRD-1067', name: 'BINGO SINGLE TWIST LOLLIPOP 18 GRAM (G) PER PIECE, 48 PIECES PER BAG/POUCH', primary: 'Yes' },
+    ],
+    instructions: [],
+  },
+  {
+    id: 'col_04',
+    code: 'COL-073',
+    collectionName: 'Chocominta',
+    collectionDetail: '',
+    brandCode: 'BR-075',
+    brandName: 'CHOCOLINA',
+    status: 'Active',
+    created: '26/08/2026, 11:22 AM',
+    description: 'Mint chocolate confectionery range.',
+    thumbnail: '',
+    products: [
+      {
+        code: 'PRD-1040',
+        name: 'CHOCOMINTA CENTER FILLED CHOCOLATE CANDY 3.800 GRAM (G) PER PIECE, 200 PIECES PER JAR, 16 JARS PER CARTON',
+        primary: 'No',
+      },
+      {
+        code: 'PRD-1039',
+        name: 'CHOCOMINTA CENTER FILLED CHOCOLATE CANDY 3.800 GRAM (G) PER PIECE, 200 PIECES PER JAR, 8 JARS PER CARTON',
+        primary: 'No',
+      },
+    ],
+    instructions: [],
+  },
+  {
+    id: 'col_05',
+    code: 'COL-072',
+    collectionName: 'Creamizo',
+    collectionDetail: 'Cream dessert confectionery',
+    brandCode: 'BR-078',
+    brandName: 'MIRACLE WHITE',
+    status: 'Active',
+    created: '26/08/2026, 11:18 AM',
+    description: 'Cream-based dessert confectionery.',
+    thumbnail: '',
+    products: [],
+    instructions: [],
+  },
+  {
+    id: 'col_06',
+    code: 'COL-071',
+    collectionName: 'MILKONA',
+    collectionDetail: 'Milk candy family packs',
+    brandCode: 'BR-080',
+    brandName: 'Savera',
+    status: 'Active',
+    created: '25/08/2026, 09:05 AM',
+    description: 'Milk candy family packs.',
+    thumbnail: '',
+    products: [
+      { code: 'PRD-1064', name: 'CHOCOLINA MILK CANDY FAMILY PACK 200G', primary: 'Yes' },
+    ],
+    instructions: [],
+  },
+  {
+    id: 'col_07',
+    code: 'COL-070',
+    collectionName: 'Birthday Party',
+    collectionDetail: 'Seasonal party assortment',
+    brandCode: 'BR-077',
+    brandName: 'AMA BOM BOM',
+    status: 'Active',
+    created: '24/08/2026, 05:30 PM',
+    description: 'Seasonal party assortment packs.',
+    thumbnail: '',
+    products: [],
+    instructions: [],
+  },
+  {
+    id: 'col_08',
+    code: 'COL-069',
+    collectionName: 'Chilli Bomba',
+    collectionDetail: 'Spicy candy export collection',
+    brandCode: 'BR-077',
+    brandName: 'AMA BOM BOM',
+    status: 'Active',
+    created: '24/08/2026, 05:28 PM',
+    description: 'Spicy candy export collection.',
+    thumbnail: '',
+    products: [],
+    instructions: [],
+  },
+];
+
+/** Backward-compatible alias used by older screens */
 export interface CollectionBrandItem {
   id: string;
   code: string;
@@ -2146,18 +2349,32 @@ export interface CollectionBrandItem {
   featuredFabrics: string[];
 }
 
-export const MOCK_COLLECTION_BRANDS: CollectionBrandItem[] = [
-  { id: 'cb_01', code: 'BRD-SNRYRN', brandCode: 'BRD-SNRYRN', brandName: 'Soneri Gold Spun', collectionTitle: 'Classic Export Combed Ring Spun Series', seasonYear: 'All Season 2025', season: 'All Season 2025', targetMarket: 'European & Far East Weaving Mills', productsCount: 12, totalProducts: 12, status: 'Active', brandBio: 'Premier staple fiber cotton ring spun yarn produced on Swiss Rieter machinery.', concept: 'Premier staple fiber cotton ring spun yarn produced on Swiss Rieter machinery.', featuredFabrics: ['Combed Cotton Ne 30/1', 'Compact Siro Ne 40/1', 'Organic Cotton Ring Spun'] },
-  { id: 'cb_02', code: 'BRD-INDIGO', brandCode: 'BRD-INDIGO', brandName: 'Indigo Luxe Denim', collectionTitle: 'Authentic Heritage Slub Stretch Collection', seasonYear: 'Autumn / Winter 2025', season: 'Autumn / Winter 2025', targetMarket: 'High-Street Apparel Brands UK & USA', productsCount: 9, totalProducts: 9, status: 'Active', brandBio: 'Sustainable rope-dyed denim fabrics with clean washdown and eco-certified indigo.', concept: 'Sustainable rope-dyed denim fabrics with clean washdown and eco-certified indigo.', featuredFabrics: ['11.5 Oz Stretch Denim', '13.5 Oz Selvedge Rigid', '9.5 Oz Shirting Chambray'] },
-  { id: 'cb_03', code: 'BRD-ECOPURE', brandCode: 'BRD-ECOPURE', brandName: 'EcoPure Organics', collectionTitle: 'GOTS Certified Bio Bedlinen Capsule', seasonYear: 'Spring / Summer 2025', season: 'Spring / Summer 2025', targetMarket: 'Hospitality & Luxury Home Boutiques EU', productsCount: 15, totalProducts: 15, status: 'Active', brandBio: '100% Organic combed cotton sheetings free from synthetic pesticides and harmful dyes.', concept: '100% Organic combed cotton sheetings free from synthetic pesticides and harmful dyes.', featuredFabrics: ['200TC Percale Sheeting', '300TC Sateen Sheeting', 'Organic Waffle Terry'] },
-];
+export const MOCK_COLLECTION_BRANDS: CollectionBrandItem[] = MOCK_BRANDS.map((b, i) => ({
+  id: b.id,
+  code: b.code,
+  brandCode: b.code,
+  brandName: b.brandName,
+  collectionTitle: MOCK_COLLECTIONS[i % MOCK_COLLECTIONS.length].collectionName,
+  seasonYear: '2026',
+  season: 'All Season 2026',
+  targetMarket: b.registerCountry,
+  productsCount: 12,
+  totalProducts: 12,
+  status: b.status === 'Active' ? 'Active' : 'Archived',
+  brandBio: b.remarks || `${b.brandName} brand portfolio`,
+  concept: b.remarks || `${b.brandName} brand portfolio`,
+  featuredFabrics: [],
+}));
 
 export interface ProductItem {
   id: string;
+  code: string;
   sku: string;
   name: string;
   title: string;
+  companyName: string;
   category: string;
+  collection: string;
   brand: string;
   unitOfMeasure: string;
   unit: string;
@@ -2172,7 +2389,9 @@ export interface ProductItem {
   gsm: string;
   yarnCount: string;
   widthInch: string | number;
-  status: 'Active' | 'Low Stock' | 'Discontinued';
+  status: 'Active' | 'Draft' | 'R&D In Process' | 'Low Stock' | 'Discontinued';
+  created: string;
+  createdBy: string;
   specifications: {
     composition: string;
     weaveOrCount: string;
@@ -2184,86 +2403,134 @@ export interface ProductItem {
 export const MOCK_PRODUCTS: ProductItem[] = [
   {
     id: 'prd_01',
-    sku: 'SKU-YRN-30-CMB',
-    name: '100% Combed Cotton Weaving Yarn Ne 30/1',
-    title: '100% Combed Cotton Weaving Yarn Ne 30/1',
-    category: 'Cotton & Blended Yarn',
-    brand: 'Soneri Gold Spun',
-    unitOfMeasure: 'Kg',
-    unit: 'Kg',
-    standardCostPKR: 810,
-    exportPriceUSD: 3.25,
-    pricePerUnit: 3.25,
+    code: 'PRD-1067',
+    sku: 'PRD-1067',
+    name: 'BINGO SINGLE TWIST LOLLIPOP 18 GRAM (G) PER PIECE, 48 PIECES PER BAG/POUCH',
+    title: 'BINGO SINGLE TWIST LOLLIPOP 18 GRAM (G) PER PIECE, 48 PIECES PER BAG/POUCH',
+    companyName: 'Soneri Foods Pvt. Ltd.',
+    category: 'Confectionery',
+    collection: 'Brush Pop',
+    brand: 'Savera',
+    unitOfMeasure: 'Pcs',
+    unit: 'Pcs',
+    standardCostPKR: 18,
+    exportPriceUSD: 0.12,
+    pricePerUnit: 0.12,
     currency: 'USD',
-    inStockQty: 48000,
-    stockAvailable: 48000,
-    reorderLevel: 10000,
-    composition: '100% Cotton',
+    inStockQty: 120000,
+    stockAvailable: 120000,
+    reorderLevel: 20000,
+    composition: 'Sugar, Glucose, Flavours',
     gsm: 'N/A',
-    yarnCount: 'Ne 30/1',
-    widthInch: 'Cones',
-    status: 'Active',
+    yarnCount: 'N/A',
+    widthInch: 'N/A',
+    status: 'Draft',
+    created: '07/09/2026, 03:04 PM',
+    createdBy: 'TANVIR',
     specifications: {
-      composition: '100% Premium Pakistani Raw Cotton (MNH-886)',
-      weaveOrCount: 'Ne 30/1 Ring Spun Weaving Twist',
-      widthGsm: 'CSP 2850, Uster CV% 11.2',
-      certification: 'OEKO-TEX Standard 100, BCI Cotton',
+      composition: 'Sugar based hard candy lollipop',
+      weaveOrCount: '18g per piece',
+      widthGsm: '48 pcs per bag',
+      certification: 'Halal',
     },
   },
   {
     id: 'prd_02',
-    sku: 'SKU-DNM-115-SLB',
-    name: 'Indigo Slub Stretch Denim Fabric 11.5 Oz',
-    title: 'Indigo Slub Stretch Denim Fabric 11.5 Oz',
-    category: 'Denim Fabrics',
-    brand: 'Indigo Luxe Denim',
-    unitOfMeasure: 'Meters',
-    unit: 'Meters',
-    standardCostPKR: 690,
-    exportPriceUSD: 2.80,
-    pricePerUnit: 2.80,
+    code: 'PRD-1066',
+    sku: 'PRD-1066',
+    name: 'LOVSKIN BLEACH CREAM 50 ML JAR - DAY NIGHT FORMULA',
+    title: 'LOVSKIN BLEACH CREAM 50 ML JAR - DAY NIGHT FORMULA',
+    companyName: 'Soneri Care',
+    category: 'Personal Care',
+    collection: 'Bleach Cream',
+    brand: 'LOVSKIN',
+    unitOfMeasure: 'Jar',
+    unit: 'Jar',
+    standardCostPKR: 220,
+    exportPriceUSD: 1.85,
+    pricePerUnit: 1.85,
     currency: 'USD',
-    inStockQty: 32500,
-    stockAvailable: 32500,
-    reorderLevel: 8000,
-    composition: '98% Cotton / 2% Lycra',
-    gsm: '390 GSM',
-    yarnCount: 'Slub x Ring',
-    widthInch: '58/60',
-    status: 'Active',
+    inStockQty: 8500,
+    stockAvailable: 8500,
+    reorderLevel: 1500,
+    composition: 'Emulsion cream base',
+    gsm: 'N/A',
+    yarnCount: 'N/A',
+    widthInch: 'N/A',
+    status: 'R&D In Process',
+    created: '07/09/2026, 02:51 PM',
+    createdBy: 'TANVIR',
     specifications: {
-      composition: '98% Cotton / 2% Lycra Spandex',
-      weaveOrCount: '3/1 Right Hand Twill Ring x Slub',
-      widthGsm: '58/60 Inch Cuttable Width, 390 GSM',
-      certification: 'ZDHC Level 3, Cradle to Cradle Gold',
+      composition: 'Whitening cream emulsion',
+      weaveOrCount: '50 ml',
+      widthGsm: 'Retail jar',
+      certification: 'Cosmetic GMP',
     },
   },
   {
     id: 'prd_03',
-    sku: 'SKU-HOM-PER-200',
-    name: 'Organic Cotton Percale 200TC Bedlinen Sheeting',
-    title: 'Organic Cotton Percale 200TC Bedlinen Sheeting',
-    category: 'Home Textiles',
-    brand: 'EcoPure Organics',
-    unitOfMeasure: 'Meters',
-    unit: 'Meters',
-    standardCostPKR: 890,
-    exportPriceUSD: 3.60,
-    pricePerUnit: 3.60,
+    code: 'PRD-1065',
+    sku: 'PRD-1065',
+    name: 'FACE SERUM VITAMIN C 30 ML DROPPER BOTTLE',
+    title: 'FACE SERUM VITAMIN C 30 ML DROPPER BOTTLE',
+    companyName: 'Soneri Care',
+    category: 'Personal Care',
+    collection: 'Face Serum',
+    brand: 'MIRACLE WHITE',
+    unitOfMeasure: 'Bottle',
+    unit: 'Bottle',
+    standardCostPKR: 310,
+    exportPriceUSD: 2.40,
+    pricePerUnit: 2.40,
     currency: 'USD',
-    inStockQty: 6200,
-    stockAvailable: 6200,
-    reorderLevel: 7500,
-    composition: '100% Organic Cotton',
-    gsm: '125 GSM',
-    yarnCount: '40s x 40s',
-    widthInch: '108',
-    status: 'Low Stock',
+    inStockQty: 4200,
+    stockAvailable: 4200,
+    reorderLevel: 800,
+    composition: 'Vitamin C serum',
+    gsm: 'N/A',
+    yarnCount: 'N/A',
+    widthInch: 'N/A',
+    status: 'Draft',
+    created: '06/09/2026, 06:12 PM',
+    createdBy: 'AYAZ',
     specifications: {
-      composition: '100% GOTS Certified Organic Cotton',
-      weaveOrCount: 'Percale 1/1 Plain Weave 40s x 40s (110x90)',
-      widthGsm: '108 Inch Wide Bleached White Finished, 125 GSM',
-      certification: 'GOTS Organic, Fairtrade Cotton',
+      composition: 'Ascorbic acid serum',
+      weaveOrCount: '30 ml',
+      widthGsm: 'Dropper bottle',
+      certification: 'Cosmetic GMP',
+    },
+  },
+  {
+    id: 'prd_04',
+    code: 'PRD-1064',
+    sku: 'PRD-1064',
+    name: 'CHOCOLINA MILK CANDY FAMILY PACK 200G',
+    title: 'CHOCOLINA MILK CANDY FAMILY PACK 200G',
+    companyName: 'Soneri Foods Pvt. Ltd.',
+    category: 'Confectionery',
+    collection: 'MILKONA',
+    brand: 'CHOCOLINA',
+    unitOfMeasure: 'Pack',
+    unit: 'Pack',
+    standardCostPKR: 95,
+    exportPriceUSD: 0.68,
+    pricePerUnit: 0.68,
+    currency: 'USD',
+    inStockQty: 64000,
+    stockAvailable: 64000,
+    reorderLevel: 10000,
+    composition: 'Milk solids, sugar, cocoa',
+    gsm: 'N/A',
+    yarnCount: 'N/A',
+    widthInch: 'N/A',
+    status: 'Active',
+    created: '05/09/2026, 01:20 PM',
+    createdBy: 'BILAL',
+    specifications: {
+      composition: 'Milk candy',
+      weaveOrCount: '200g',
+      widthGsm: 'Family pack',
+      certification: 'Halal',
     },
   },
 ];
@@ -2271,8 +2538,12 @@ export const MOCK_PRODUCTS: ProductItem[] = [
 // Catalog Aliases for components
 export type CatalogCategoryItem = CategoryItem;
 export type CatalogProductItem = ProductItem;
+export type CatalogBrandItem = BrandItem;
+export type CatalogCollectionItem = CollectionItem;
 export const MOCK_CATALOG_CATEGORIES = MOCK_CATEGORIES;
 export const MOCK_CATALOG_PRODUCTS = MOCK_PRODUCTS;
+export const MOCK_CATALOG_BRANDS = MOCK_BRANDS;
+export const MOCK_CATALOG_COLLECTIONS = MOCK_COLLECTIONS;
 
 // ==========================================
 // 7. ADMINISTRATOR WORKSTREAMS
@@ -2358,41 +2629,103 @@ export const MOCK_AUTH_ROLES: UserAuthorizationRole[] = [
 
 export interface ExchangeRateItem {
   id: string;
+  fromCurrency: string;
+  toCurrency: string;
   currencyCode: string;
   currencyName: string;
   symbol: string;
+  buyingRate: number;
+  sellingRate: number;
   interbankBuying: number;
   interbankSelling: number;
   openMarketBuying: number;
   openMarketSelling: number;
   effectiveDate: string;
+  created: string;
   lastUpdated: string;
+  status: 'Active' | 'Inactive';
   isBaseCurrency?: boolean;
 }
 
 export const MOCK_EXCHANGE_RATES: ExchangeRateItem[] = [
-  { id: 'rate_usd', currencyCode: 'USD', currencyName: 'US Dollar', symbol: '$', interbankBuying: 279.15, interbankSelling: 279.65, openMarketBuying: 280.20, openMarketSelling: 281.50, effectiveDate: '2025-02-18', lastUpdated: 'Today 09:30 AM' },
-  { id: 'rate_eur', currencyCode: 'EUR', currencyName: 'Euro', symbol: '€', interbankBuying: 290.40, interbankSelling: 291.10, openMarketBuying: 291.80, openMarketSelling: 293.40, effectiveDate: '2025-02-18', lastUpdated: 'Today 09:30 AM' },
-  { id: 'rate_gbp', currencyCode: 'GBP', currencyName: 'British Pound', symbol: '£', interbankBuying: 348.80, interbankSelling: 349.70, openMarketBuying: 350.50, openMarketSelling: 352.20, effectiveDate: '2025-02-18', lastUpdated: 'Today 09:30 AM' },
-  { id: 'rate_aed', currencyCode: 'AED', currencyName: 'UAE Dirham', symbol: 'AED', interbankBuying: 76.00, interbankSelling: 76.25, openMarketBuying: 76.40, openMarketSelling: 76.90, effectiveDate: '2025-02-18', lastUpdated: 'Today 09:30 AM' },
-  { id: 'rate_cny', currencyCode: 'CNY', currencyName: 'Chinese Yuan', symbol: '¥', interbankBuying: 38.45, interbankSelling: 38.65, openMarketBuying: 38.80, openMarketSelling: 39.20, effectiveDate: '2025-02-18', lastUpdated: 'Today 09:30 AM' },
+  { id: '1', fromCurrency: 'Euro', toCurrency: 'United States Dollar', currencyCode: 'EUR', currencyName: 'Euro', symbol: '€', buyingRate: 1.08, sellingRate: 1.12, interbankBuying: 290.4, interbankSelling: 291.1, openMarketBuying: 291.8, openMarketSelling: 293.4, effectiveDate: '2026-09-01', created: '01/09/2026, 10:12 AM', lastUpdated: 'Today 09:30 AM', status: 'Active' },
+  { id: '2', fromCurrency: 'United States Dollar', toCurrency: 'Pakistani Rupee', currencyCode: 'USD', currencyName: 'US Dollar', symbol: '$', buyingRate: 279.15, sellingRate: 279.65, interbankBuying: 279.15, interbankSelling: 279.65, openMarketBuying: 280.2, openMarketSelling: 281.5, effectiveDate: '2026-09-08', created: '08/09/2026, 09:05 AM', lastUpdated: 'Today 09:30 AM', status: 'Active' },
+  { id: '3', fromCurrency: 'British Pound', toCurrency: 'Pakistani Rupee', currencyCode: 'GBP', currencyName: 'British Pound', symbol: '£', buyingRate: 348.8, sellingRate: 349.7, interbankBuying: 348.8, interbankSelling: 349.7, openMarketBuying: 350.5, openMarketSelling: 352.2, effectiveDate: '2026-09-08', created: '08/09/2026, 09:06 AM', lastUpdated: 'Today 09:30 AM', status: 'Active' },
+  { id: '4', fromCurrency: 'UAE Dirham', toCurrency: 'Pakistani Rupee', currencyCode: 'AED', currencyName: 'UAE Dirham', symbol: 'AED', buyingRate: 76.0, sellingRate: 76.25, interbankBuying: 76.0, interbankSelling: 76.25, openMarketBuying: 76.4, openMarketSelling: 76.9, effectiveDate: '2026-09-07', created: '07/09/2026, 11:20 AM', lastUpdated: 'Today 09:30 AM', status: 'Active' },
+  { id: '5', fromCurrency: 'Chinese Yuan', toCurrency: 'Pakistani Rupee', currencyCode: 'CNY', currencyName: 'Chinese Yuan', symbol: '¥', buyingRate: 38.45, sellingRate: 38.65, interbankBuying: 38.45, interbankSelling: 38.65, openMarketBuying: 38.8, openMarketSelling: 39.2, effectiveDate: '2026-09-06', created: '06/09/2026, 02:40 PM', lastUpdated: 'Today 09:30 AM', status: 'Active' },
+  { id: '6', fromCurrency: 'Saudi Riyal', toCurrency: 'Pakistani Rupee', currencyCode: 'SAR', currencyName: 'Saudi Riyal', symbol: 'SAR', buyingRate: 74.2, sellingRate: 74.55, interbankBuying: 74.2, interbankSelling: 74.55, openMarketBuying: 74.7, openMarketSelling: 75.1, effectiveDate: '2026-09-05', created: '05/09/2026, 04:15 PM', lastUpdated: 'Yesterday', status: 'Active' },
+  { id: '7', fromCurrency: 'Euro', toCurrency: 'Pakistani Rupee', currencyCode: 'EUR-PKR', currencyName: 'Euro', symbol: '€', buyingRate: 302.1, sellingRate: 303.4, interbankBuying: 302.1, interbankSelling: 303.4, openMarketBuying: 304.0, openMarketSelling: 305.5, effectiveDate: '2026-09-08', created: '08/09/2026, 09:08 AM', lastUpdated: 'Today 09:30 AM', status: 'Active' },
+  { id: '8', fromCurrency: 'United States Dollar', toCurrency: 'United Arab Emirates Dirham', currencyCode: 'USD-AED', currencyName: 'US Dollar', symbol: '$', buyingRate: 3.66, sellingRate: 3.68, interbankBuying: 3.66, interbankSelling: 3.68, openMarketBuying: 3.67, openMarketSelling: 3.69, effectiveDate: '2026-09-04', created: '04/09/2026, 01:00 PM', lastUpdated: '04/09/2026', status: 'Active' },
 ];
 
 export interface IPWhitelistItem {
   id: string;
-  ipAddress: string;
-  description: string;
-  networkLocation: string;
+  ipName: string;
+  fromIp: string;
+  toIp: string;
+  /** Legacy single-address field — prefer fromIp/toIp */
+  ipAddress?: string;
+  description?: string;
+  networkLocation?: string;
   addedBy: string;
-  dateAdded: string;
-  status: 'Active' | 'Disabled';
+  addedDate: string;
+  dateAdded?: string;
+  status: 'Active' | 'Disabled' | 'Blocked';
 }
 
 export const MOCK_IP_WHITELIST: IPWhitelistItem[] = [
-  { id: 'ip_1', ipAddress: '182.180.124.52/32', description: 'Head Office PTCL Dedicated Fiber Line', networkLocation: 'Lahore Head Office', addedBy: 'software.admin', dateAdded: '2025-01-10', status: 'Active' },
-  { id: 'ip_2', ipAddress: '39.44.18.210/32', description: 'Spinning Mill No. 1 StormFiber Corporate Link', networkLocation: 'Raiwind Mill Site', addedBy: 'software.admin', dateAdded: '2025-01-12', status: 'Active' },
-  { id: 'ip_3', ipAddress: '111.119.160.84/29', description: 'Dyeing & Bleaching Unit Static Subnet', networkLocation: 'Sheikhupura Plant', addedBy: 'software.admin', dateAdded: '2025-01-18', status: 'Active' },
-  { id: 'ip_4', ipAddress: '175.107.198.14/32', description: 'Executive Remote Access WireGuard VPN', networkLocation: 'Cloud VPN Gateway', addedBy: 'md.soneri', dateAdded: '2025-02-01', status: 'Active' },
+  {
+    id: 'ip_1',
+    ipName: 'Head Office PTCL Fiber',
+    fromIp: '182.180.124.52',
+    toIp: '182.180.124.52',
+    ipAddress: '182.180.124.52/32',
+    description: 'Head Office PTCL Dedicated Fiber Line',
+    networkLocation: 'Lahore Head Office',
+    addedBy: 'software.admin',
+    addedDate: '2025-01-10',
+    dateAdded: '2025-01-10',
+    status: 'Active',
+  },
+  {
+    id: 'ip_2',
+    ipName: 'Raiwind Mill Link',
+    fromIp: '39.44.18.210',
+    toIp: '39.44.18.210',
+    ipAddress: '39.44.18.210/32',
+    description: 'Spinning Mill No. 1 StormFiber Corporate Link',
+    networkLocation: 'Raiwind Mill Site',
+    addedBy: 'software.admin',
+    addedDate: '2025-01-12',
+    dateAdded: '2025-01-12',
+    status: 'Active',
+  },
+  {
+    id: 'ip_3',
+    ipName: 'Sheikhupura Plant Subnet',
+    fromIp: '111.119.160.80',
+    toIp: '111.119.160.87',
+    ipAddress: '111.119.160.84/29',
+    description: 'Dyeing & Bleaching Unit Static Subnet',
+    networkLocation: 'Sheikhupura Plant',
+    addedBy: 'software.admin',
+    addedDate: '2025-01-18',
+    dateAdded: '2025-01-18',
+    status: 'Active',
+  },
+  {
+    id: 'ip_4',
+    ipName: 'Executive WireGuard VPN',
+    fromIp: '175.107.198.14',
+    toIp: '175.107.198.14',
+    ipAddress: '175.107.198.14/32',
+    description: 'Executive Remote Access WireGuard VPN',
+    networkLocation: 'Cloud VPN Gateway',
+    addedBy: 'md.soneri',
+    addedDate: '2025-02-01',
+    dateAdded: '2025-02-01',
+    status: 'Active',
+  },
 ];
 
 export interface UserAuthItem {
@@ -2473,66 +2806,13 @@ export const MOCK_USER_AUTHORIZATIONS: UserAuthItem[] = [
   },
 ];
 
-export interface IpWhitelistItem {
-  id: string;
-  ipAddress: string;
-  description: string;
+export type IpWhitelistItem = IPWhitelistItem & {
   location?: string;
-  networkLocation?: string;
-  status: 'Active' | 'Blocked' | 'Disabled';
   allowedRoles?: string[];
-  addedDate?: string;
-  dateAdded?: string;
-  addedBy: string;
-}
+};
 
-export const MOCK_IP_WHITELISTS: IpWhitelistItem[] = [
-  {
-    id: 'ip_1',
-    ipAddress: '182.180.124.52/32',
-    description: 'Head Office PTCL Dedicated Fiber Line',
-    location: 'Lahore Corporate Head Office',
-    networkLocation: 'Lahore Head Office',
-    status: 'Active',
-    allowedRoles: ['Super Admin', 'Finance Approver', 'Senior Marketer'],
-    addedDate: '2025-01-10',
-    dateAdded: '2025-01-10',
-    addedBy: 'software.admin',
-  },
-  {
-    id: 'ip_2',
-    ipAddress: '39.44.18.210/32',
-    description: 'Spinning Mill No. 1 StormFiber Link',
-    location: 'Raiwind Mill Operations',
-    networkLocation: 'Raiwind Mill Site',
-    status: 'Active',
-    allowedRoles: ['Super Admin', 'Plant Director'],
-    addedDate: '2025-01-12',
-    dateAdded: '2025-01-12',
-    addedBy: 'software.admin',
-  },
-  {
-    id: 'ip_3',
-    ipAddress: '111.119.160.84/29',
-    description: 'Dyeing & Bleaching Unit Static Subnet',
-    location: 'Sheikhupura Plant Terminal',
-    networkLocation: 'Sheikhupura Plant',
-    status: 'Active',
-    allowedRoles: ['Super Admin', 'Production Manager'],
-    addedDate: '2025-01-18',
-    dateAdded: '2025-01-18',
-    addedBy: 'software.admin',
-  },
-  {
-    id: 'ip_4',
-    ipAddress: '175.107.198.14/32',
-    description: 'Executive Remote Access WireGuard VPN',
-    location: 'Encrypted Cloud Gateway',
-    networkLocation: 'Cloud VPN Gateway',
-    status: 'Active',
-    allowedRoles: ['Super Admin'],
-    addedDate: '2025-02-01',
-    dateAdded: '2025-02-01',
-    addedBy: 'md.soneri',
-  },
-];
+export const MOCK_IP_WHITELISTS: IpWhitelistItem[] = MOCK_IP_WHITELIST.map((ip) => ({
+  ...ip,
+  location: ip.networkLocation,
+  allowedRoles: ['Super Admin'],
+}));

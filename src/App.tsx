@@ -48,6 +48,10 @@ import { ProfileScreen } from './screens/ProfileScreen';
 import { FinanceModuleScreen } from './screens/modules/FinanceModuleScreen';
 import { ExportModuleScreen } from './screens/modules/ExportModuleScreen';
 import { PurchaseModuleScreen } from './screens/modules/PurchaseModuleScreen';
+import { SupplierTrackingScreen } from './screens/modules/SupplierTrackingScreen';
+import { ReadinessCalendarScreen } from './screens/modules/ReadinessCalendarScreen';
+import { ReportsModuleScreen } from './screens/modules/ReportsModuleScreen';
+import { ReportsExtraScreen } from './screens/modules/ReportsExtraScreen';
 import { SalesModuleScreen } from './screens/modules/SalesModuleScreen';
 import { MarketingModuleScreen } from './screens/modules/MarketingModuleScreen';
 import { CatalogModuleScreen } from './screens/modules/CatalogModuleScreen';
@@ -572,6 +576,158 @@ export default function App() {
       // ============================================
       // 3. Purchase Workstreams
       // ============================================
+      case 'purchase_readiness':
+        return (
+          <ReadinessCalendarScreen
+            onBack={() => navigateBack('module_purchase')}
+            onShowSnackBar={showSnackBar}
+          />
+        );
+
+      case 'report_purchase_summary':
+        return (
+          <ReportsModuleScreen
+            reportId="purchase_summary"
+            onBack={() => navigateBack('module_reports')}
+            onShowSnackBar={showSnackBar}
+          />
+        );
+
+      case 'report_pl_container':
+        return (
+          <ReportsModuleScreen
+            reportId="pl_container"
+            onBack={() => navigateBack('module_reports')}
+            onShowSnackBar={showSnackBar}
+          />
+        );
+
+      case 'report_export_document':
+        return (
+          <ReportsModuleScreen
+            reportId="export_document"
+            onBack={() => navigateBack('module_reports')}
+            onShowSnackBar={showSnackBar}
+          />
+        );
+
+      case 'report_shipment_pnl':
+        return (
+          <ReportsModuleScreen
+            reportId="shipment_pnl"
+            onBack={() => navigateBack('module_reports')}
+            onShowSnackBar={showSnackBar}
+          />
+        );
+
+      case 'report_order':
+        return (
+          <ReportsModuleScreen
+            reportId="order_report"
+            onBack={() => navigateBack('module_reports')}
+            onShowSnackBar={showSnackBar}
+          />
+        );
+
+      case 'report_unconfirmed':
+        return (
+          <ReportsModuleScreen
+            reportId="unconfirmed_order"
+            onBack={() => navigateBack('module_reports')}
+            onShowSnackBar={showSnackBar}
+          />
+        );
+
+      case 'report_supplier_aging':
+        return (
+          <ReportsExtraScreen
+            reportId="supplier_aging"
+            onBack={() => navigateBack('module_reports')}
+            onShowSnackBar={showSnackBar}
+          />
+        );
+
+      case 'report_customer_aging':
+        return (
+          <ReportsExtraScreen
+            reportId="customer_aging"
+            onBack={() => navigateBack('module_reports')}
+            onShowSnackBar={showSnackBar}
+          />
+        );
+
+      case 'report_payable':
+        return (
+          <ReportsExtraScreen
+            reportId="payable"
+            onBack={() => navigateBack('module_reports')}
+            onShowSnackBar={showSnackBar}
+          />
+        );
+
+      case 'report_receivable':
+        return (
+          <ReportsExtraScreen
+            reportId="receivable"
+            onBack={() => navigateBack('module_reports')}
+            onShowSnackBar={showSnackBar}
+          />
+        );
+
+      case 'report_overall_pnl':
+        return (
+          <ReportsExtraScreen
+            reportId="overall_pnl"
+            onBack={() => navigateBack('module_reports')}
+            onShowSnackBar={showSnackBar}
+          />
+        );
+
+      case 'report_cashflow':
+        return (
+          <ReportsExtraScreen
+            reportId="cashflow"
+            onBack={() => navigateBack('module_reports')}
+            onShowSnackBar={showSnackBar}
+          />
+        );
+
+      case 'report_trial':
+        return (
+          <ReportsExtraScreen
+            reportId="trial"
+            onBack={() => navigateBack('module_reports')}
+            onShowSnackBar={showSnackBar}
+          />
+        );
+
+      case 'report_inventory':
+        return (
+          <ReportsExtraScreen
+            reportId="inventory"
+            onBack={() => navigateBack('module_reports')}
+            onShowSnackBar={showSnackBar}
+          />
+        );
+
+      case 'report_party':
+        return (
+          <ReportsExtraScreen
+            reportId="party"
+            onBack={() => navigateBack('module_reports')}
+            onShowSnackBar={showSnackBar}
+          />
+        );
+
+      case 'report_sales_summary':
+        return (
+          <ReportsExtraScreen
+            reportId="sales_summary"
+            onBack={() => navigateBack('module_reports')}
+            onShowSnackBar={showSnackBar}
+          />
+        );
+
       case 'purchase_requisition':
         return (
           <PurchaseModuleScreen
@@ -594,6 +750,14 @@ export default function App() {
         return (
           <PurchaseModuleScreen
             workstream="invoice"
+            onBack={() => navigateBack('module_purchase')}
+            onShowSnackBar={showSnackBar}
+          />
+        );
+
+      case 'purchase_supplier_tracking':
+        return (
+          <SupplierTrackingScreen
             onBack={() => navigateBack('module_purchase')}
             onShowSnackBar={showSnackBar}
           />
@@ -671,10 +835,28 @@ export default function App() {
           />
         );
 
+      case 'catalog_brand':
+        return (
+          <CatalogModuleScreen
+            workstream="brand"
+            onBack={() => navigateBack('module_catalog')}
+            onShowSnackBar={showSnackBar}
+          />
+        );
+
+      case 'catalog_collection':
+        return (
+          <CatalogModuleScreen
+            workstream="collection"
+            onBack={() => navigateBack('module_catalog')}
+            onShowSnackBar={showSnackBar}
+          />
+        );
+
       case 'catalog_collection_brand':
         return (
           <CatalogModuleScreen
-            workstream="collection_brand"
+            workstream="brand"
             onBack={() => navigateBack('module_catalog')}
             onShowSnackBar={showSnackBar}
           />

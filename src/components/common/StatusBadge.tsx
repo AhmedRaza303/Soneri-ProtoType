@@ -14,7 +14,7 @@ interface StatusBadgeProps {
 
 export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, size = 'md' }) => {
   const { isDark } = useTheme();
-  const isActive = status.toLowerCase() === 'active';
+  const isActive = (status ?? '').toLowerCase() === 'active';
 
   return (
     <span

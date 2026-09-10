@@ -35,11 +35,15 @@ export interface ContainerForecastMonth {
 export interface PendingPaymentItem {
   id: string;
   customerName: string;
+  marketingPersonal: string;
   totalInvoiceAmount: string;
+  totalReceivedAmount: string;
   totalSaleReturnAmount: string;
   totalJvAdjAmount: string;
   remainingAdvance: string;
   totalRemainingAmount: string;
+  gateOutDate: string;
+  portOfDischarge: string;
   isNegative?: boolean;
 }
 
@@ -180,71 +184,99 @@ export const PENDING_PAYMENTS_DATA: PendingPaymentItem[] = [
   {
     id: 'cu-057',
     customerName: 'CU-057 - ADE KOMPANI DOOEL',
+    marketingPersonal: 'BILAL',
     totalInvoiceAmount: '$ 30,303',
+    totalReceivedAmount: '$ 25,303.8500',
     totalSaleReturnAmount: '$ 0',
     totalJvAdjAmount: '$ 0',
     remainingAdvance: '$ 0',
     totalRemainingAmount: '$ 4,999.1500',
+    gateOutDate: '12/08/2026',
+    portOfDischarge: 'Skopje',
     isNegative: false,
   },
   {
     id: 'cu-238',
     customerName: 'CU-238 - AHA TRADING',
+    marketingPersonal: 'ANUM KHAN',
     totalInvoiceAmount: '$ 44,980',
+    totalReceivedAmount: '$ 44,962.0000',
     totalSaleReturnAmount: '$ 0',
     totalJvAdjAmount: '$ 0',
     remainingAdvance: '$ 0',
     totalRemainingAmount: '$ 18.0000',
+    gateOutDate: '05/09/2026',
+    portOfDischarge: 'Jebel Ali',
     isNegative: false,
   },
   {
     id: 'cu-092',
     customerName: 'CU-092 - AL ABBAS FOR GENERAL TRADING',
+    marketingPersonal: 'PERVAIZ MORANI',
     totalInvoiceAmount: '$ 108,906.25',
+    totalReceivedAmount: '$ 63,438.5000',
     totalSaleReturnAmount: '$ 0',
     totalJvAdjAmount: '$ 736.5',
     remainingAdvance: '$ 29,797.48',
     totalRemainingAmount: '$ 15,670.2700',
+    gateOutDate: '28/07/2026',
+    portOfDischarge: 'Aqaba',
     isNegative: false,
   },
   {
     id: 'cu-121',
     customerName: 'CU-121 - AL MAGHALI COMPANY FOR TRADING & AGENCIES LTD',
+    marketingPersonal: 'AYAZ',
     totalInvoiceAmount: '$ 38,580',
+    totalReceivedAmount: '$ 0',
     totalSaleReturnAmount: '$ 0',
     totalJvAdjAmount: '$ 28,580',
     remainingAdvance: '$ 0',
     totalRemainingAmount: '$ 10,000.0000',
+    gateOutDate: '18/08/2026',
+    portOfDischarge: 'Aden',
     isNegative: false,
   },
   {
     id: 'cu-150',
     customerName: 'CU-150 - AL NAJAH GENERAL TRADING',
+    marketingPersonal: 'TEHSEENA',
     totalInvoiceAmount: '$ 19,200',
+    totalReceivedAmount: '$ 19,212.1125',
     totalSaleReturnAmount: '$ 0',
     totalJvAdjAmount: '$ 0',
     remainingAdvance: '$ 0',
     totalRemainingAmount: '$ (12.1125)',
+    gateOutDate: '02/09/2026',
+    portOfDischarge: 'Beirut',
     isNegative: true,
   },
   {
     id: 'cu-063',
     customerName: 'CU-063 - AL-HASHIM CO. FOR GENERAL TRADE & AGENCIES',
+    marketingPersonal: 'BILAL',
     totalInvoiceAmount: '$ 41,975',
+    totalReceivedAmount: '$ 41,975',
     totalSaleReturnAmount: '$ 0',
     totalJvAdjAmount: '$ 1,425',
     remainingAdvance: '$ 0',
     totalRemainingAmount: '$ (1,425.0000)',
+    gateOutDate: '22/08/2026',
+    portOfDischarge: 'Jeddah',
     isNegative: true,
   },
   {
     id: 'cu-048',
     customerName: 'CU-048 - AL-MOSHRAA COMPANY FOR TRADING & COOLING LTD',
+    marketingPersonal: 'HASSAN KHANIA',
     totalInvoiceAmount: '$ 280,394.75',
+    totalReceivedAmount: '$ 280,394.75',
     totalSaleReturnAmount: '$ 0',
     totalJvAdjAmount: '$ 6,250',
     remainingAdvance: '$ 24,680',
     totalRemainingAmount: '$ (6,250.0000)',
+    gateOutDate: '15/07/2026',
+    portOfDischarge: 'Tripoli',
     isNegative: true,
   },
 ];

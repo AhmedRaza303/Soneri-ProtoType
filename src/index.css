@@ -1,14 +1,41 @@
 @import "tailwindcss";
 
+@theme {
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --color-soneri-navy: #0f2b3c;
+  --color-soneri-teal: #0d9488;
+  --color-soneri-mist: #e8f4f7;
+  --color-soneri-canvas: #f3f6f8;
+  --breakpoint-xs: 420px;
+}
+
 @layer base {
-  html, body {
+  html,
+  body {
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
     user-select: none;
-    background-color: #020617;
+    font-family: var(--font-sans);
+    background-color: #071018;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(13, 148, 136, 0.18), transparent),
+      radial-gradient(ellipse 60% 40% at 100% 0%, rgba(15, 43, 60, 0.45), transparent);
   }
 
-  input, textarea, select {
+  input,
+  textarea,
+  select {
     user-select: text;
+  }
+
+  ::selection {
+    background: rgba(13, 148, 136, 0.25);
+  }
+}
+
+@layer utilities {
+  .font-mono {
+    font-family: var(--font-mono);
   }
 }

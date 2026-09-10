@@ -3,20 +3,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
-  Search,
-  Filter,
-  SlidersHorizontal,
-  ChevronLeft,
-  Printer,
   Edit3,
   ChevronDown,
   ChevronUp,
   MoreVertical,
   Eye,
-  LayoutGrid,
-  CreditCard,
 } from 'lucide-react';
 import {
   MOCK_PROFORMA_INVOICES,
@@ -26,6 +19,25 @@ import {
   SaleInvoiceItem,
   CustomerPaymentItem,
 } from '../../data/erpWorkstreamsData';
+import {
+  ListToolbar,
+  ListPagination,
+  usePagedList,
+  StatusPill,
+  RecordCard,
+  CardGrid,
+  DataTable,
+  DataRow,
+  Td,
+  ListViewMode,
+} from '../../components/common/DataListShell';
+import {
+  MobilePage,
+  MobileHeader,
+  SoftCard,
+  MobileContent,
+  HeaderIconBtn,
+} from '../../components/common/MobileLayout';
 
 interface SalesModuleScreenProps {
   workstream: 'proforma' | 'invoice' | 'payment';
@@ -38,10 +50,9 @@ export const SalesModuleScreen: React.FC<SalesModuleScreenProps> = ({
   onBack,
   onShowSnackBar,
 }) => {
-  const [viewMode, setViewMode] = useState<'grid' | 'card'>('grid');
+  const [viewMode, setViewMode] = useState<ListViewMode>('card');
   const [activeTab, setActiveTab] = useState<'ALL' | 'PENDING'>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
-  const [pageSize, setPageSize] = useState(10);
   const [containerMappingOpen, setContainerMappingOpen] = useState(true);
 
   // Selected item for View Page
@@ -51,6 +62,60 @@ export const SalesModuleScreen: React.FC<SalesModuleScreenProps> = ({
 
   // Dropdown actions tracking
   const [openActionId, setOpenActionId] = useState<string | null>(null);
+
+  const q = searchQuery.toLowerCase();
+
+  const filteredPIs = useMemo(
+    () =>
+      MOCK_PROFORMA_INVOICES.filter((p) =>
+        activeTab === 'PENDING' ? p.marketingStatus.toLowerCase().includes('draft') : true
+      ).filter(
+        (p) =>
+          p.proformaCode.toLowerCase().includes(q) ||
+          p.customer.toLowerCase().includes(q) ||
+          p.marketingPersonal.toLowerCase().includes(q) ||
+          p.company.toLowerCase().includes(q)
+      ),
+    [activeTab, q]
+  );
+
+  const filteredSINVs = useMemo(
+    () =>
+      MOCK_SALE_INVOICES.filter(
+        (s) =>
+          s.saleInvoiceCode.toLowerCase().includes(q) ||
+          s.proformaCode.toLowerCase().includes(q) ||
+          s.company.toLowerCase().includes(q)
+      ),
+    [q]
+  );
+
+  const filteredPayments = useMemo(
+    () =>
+      MOCK_CUSTOMER_PAYMENTS.filter(
+        (p) =>
+          p.paymentCode.toLowerCase().includes(q) ||
+          p.customer.toLowerCase().includes(q) ||
+          p.proforma.toLowerCase().includes(q)
+      ),
+    [q]
+  );
+
+  const piPaging = usePagedList(filteredPIs);
+  const sinvPaging = usePagedList(filteredSINVs);
+  const payPaging = usePagedList(filteredPayments);
+
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    piPaging.resetPage();
+    sinvPaging.resetPage();
+    payPaging.resetPage();
+  };
+
+  const handleTabChange = (tab: 'ALL' | 'PENDING') => {
+    setActiveTab(tab);
+    piPaging.resetPage();
+  };
 
   // ============================================================================
   // 1. VIEW: PROFORMA INVOICE DETAIL VIEW (PI-1004)
@@ -104,43 +169,30 @@ export const SalesModuleScreen: React.FC<SalesModuleScreenProps> = ({
     const colInstructions = pi.collectionInstructions || [];
 
     return (
-      <div className="min-h-screen bg-slate-50 text-slate-800 pb-20">
-        {/* Top Header Bar */}
-        <div className="bg-white border-b border-slate-200 px-6 py-4 flex flex-wrap items-center justify-between gap-4 sticky top-0 z-10 shadow-xs">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setSelectedPI(null)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-md transition-colors cursor-pointer"
-            >
-              <ChevronLeft className="w-4 h-4" /> Back to List
-            </button>
-            <h1 className="text-xl font-bold text-slate-900 tracking-tight">View Proforma</h1>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-300">
-              <span className="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
-              {pi.marketingStatus}
-            </span>
-          </div>
+      <MobilePage>
+        <MobileHeader
+          title="View Proforma"
+          subtitle={pi.proformaCode}
+          status={pi.marketingStatus}
+          onBack={() => setSelectedPI(null)}
+          actions={
+            <>
+              <HeaderIconBtn
+                label="Edit"
+                icon="edit"
+                variant="soft"
+                onClick={() => onShowSnackBar?.(`Editing Proforma ${pi.proformaCode}`, 'info')}
+              />
+              <HeaderIconBtn
+                label="Print"
+                icon="print"
+                onClick={() => { window.print(); onShowSnackBar?.(`Preparing ${pi.proformaCode} for printing...`, 'info'); }}
+              />
+            </>
+          }
+        />
+        <MobileContent>
 
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => onShowSnackBar?.(`Editing Proforma ${pi.proformaCode}`, 'info')}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-md hover:bg-slate-50 transition-colors cursor-pointer"
-            >
-              <Edit3 className="w-3.5 h-3.5 text-slate-500" /> Edit
-            </button>
-            <button
-              onClick={() => {
-                window.print();
-                onShowSnackBar?.(`Preparing ${pi.proformaCode} for printing...`, 'info');
-              }}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors shadow-xs cursor-pointer"
-            >
-              <Printer className="w-3.5 h-3.5" /> Print
-            </button>
-          </div>
-        </div>
-
-        <div className="max-w-7xl mx-auto px-6 py-6 space-y-6">
           {/* Top Info 3-Column Card (Company, Bank Details, Customer) */}
           <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-xs grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Column 1: Company */}
@@ -216,52 +268,54 @@ export const SalesModuleScreen: React.FC<SalesModuleScreenProps> = ({
             <div className="px-6 py-4 border-b border-slate-200 bg-slate-50/50">
               <h3 className="text-sm font-bold text-slate-800">Products</h3>
             </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs text-left">
-                <thead className="bg-slate-50 text-slate-600 uppercase text-[10.5px] font-semibold border-b border-slate-200">
-                  <tr>
-                    <th className="py-3 px-3">Thumbnail</th>
-                    <th className="py-3 px-3">Product Name</th>
-                    <th className="py-3 px-3">Variation</th>
-                    <th className="py-3 px-3 text-right">Quantity</th>
-                    <th className="py-3 px-3 text-right">Price</th>
-                    <th className="py-3 px-3 text-right">Total</th>
-                    <th className="py-3 px-3">Shelf Life Duration</th>
-                    <th className="py-3 px-3 text-right">CBM</th>
-                    <th className="py-3 px-3 text-right">Weight</th>
-                    <th className="py-3 px-3">Notes</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {prods.map((prod, idx) => (
-                    <tr key={idx} className="hover:bg-slate-50/50">
-                      <td className="py-3 px-3">
-                        <img src={prod.thumbnail} alt={prod.productName} className="w-10 h-10 object-cover rounded border border-slate-200" />
-                      </td>
-                      <td className="py-3 px-3 font-medium text-slate-900 max-w-xs">{prod.productName}</td>
-                      <td className="py-3 px-3 text-slate-600">{prod.variation}</td>
-                      <td className="py-3 px-3 text-right font-semibold text-slate-900 whitespace-nowrap">{prod.quantity}</td>
-                      <td className="py-3 px-3 text-right font-semibold text-slate-900">{prod.price}</td>
-                      <td className="py-3 px-3 text-right font-bold text-slate-900">{prod.total}</td>
-                      <td className="py-3 px-3 text-slate-600">{prod.shelfLifeDuration}</td>
-                      <td className="py-3 px-3 text-right text-slate-700">{prod.cbm}</td>
-                      <td className="py-3 px-3 text-right text-slate-700">{prod.weight}</td>
-                      <td className="py-3 px-3 text-slate-500">{prod.notes || '-'}</td>
-                    </tr>
-                  ))}
-                  {/* Total Row */}
-                  <tr className="bg-slate-50 font-bold border-t border-slate-200 text-slate-900">
-                    <td colSpan={3} className="py-3 px-3 text-right">Total</td>
-                    <td className="py-3 px-3 text-right">1,268 Carton</td>
-                    <td className="py-3 px-3 text-right">-</td>
-                    <td className="py-3 px-3 text-right">$ 24,676.0000</td>
-                    <td className="py-3 px-3 text-center">-</td>
-                    <td className="py-3 px-3 text-right">68.052</td>
-                    <td className="py-3 px-3 text-right">9,306 KG</td>
-                    <td className="py-3 px-3 text-center">-</td>
-                  </tr>
-                </tbody>
-              </table>
+            <div className="p-4 sm:px-6 sm:py-3 space-y-2.5">
+              {prods.map((prod, idx) => (
+                <div key={idx} className="bg-white rounded-2xl border border-slate-200 p-3.5 shadow-xs">
+                  <div className="flex items-start gap-3">
+                    <img src={prod.thumbnail} alt={prod.productName} className="w-12 h-12 object-cover rounded-xl border border-slate-200 shrink-0" />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[11px] font-extrabold text-[#0f2b3c] leading-snug">{prod.productName}</p>
+                      <div className="flex items-center gap-2 mt-1 flex-wrap">
+                        <span className="inline-flex px-2 py-0.5 rounded-lg bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-bold">
+                          {prod.variation}
+                        </span>
+                        <span className="text-[10px] font-bold text-slate-500">{prod.shelfLifeDuration}</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 mt-3">
+                        <div>
+                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Qty</p>
+                          <p className="text-[11px] font-bold text-slate-900 whitespace-nowrap">{prod.quantity}</p>
+                        </div>
+                        <div>
+                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Total</p>
+                          <p className="text-[11px] font-black text-slate-900 font-mono tabular-nums">{prod.total}</p>
+                        </div>
+                        <div>
+                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Price</p>
+                          <p className="text-[11px] font-semibold text-slate-900 font-mono">{prod.price}</p>
+                        </div>
+                        <div>
+                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">CBM</p>
+                          <p className="text-[11px] font-semibold text-slate-700 tabular-nums">{prod.cbm}</p>
+                        </div>
+                        <div>
+                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Weight</p>
+                          <p className="text-[11px] font-semibold text-slate-700 tabular-nums">{prod.weight}</p>
+                        </div>
+                        <div>
+                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Notes</p>
+                          <p className="text-[11px] font-medium text-slate-600 break-words">{prod.notes || '-'}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              <div className="rounded-2xl bg-[#0f2b3c] text-white p-3.5 flex items-center justify-between shadow-sm">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-white/70">Products Total</span>
+                <span className="text-[12px] font-black font-mono tabular-nums">{sum.productsTotal}</span>
+              </div>
             </div>
           </div>
 
@@ -332,13 +386,10 @@ export const SalesModuleScreen: React.FC<SalesModuleScreenProps> = ({
               <p className="text-xs text-slate-500 italic">{pi.remarks || 'No remarks found'}</p>
             </div>
           </div>
-        </div>
-      </div>
+        </MobileContent>
+      </MobilePage>
     );
   }
-
-  // ============================================================================
-  // 2. VIEW: SALE INVOICE DETAIL VIEW (SI-609)
   // ============================================================================
   if (workstream === 'invoice' && selectedSINV) {
     const si = selectedSINV;
@@ -365,43 +416,30 @@ export const SalesModuleScreen: React.FC<SalesModuleScreenProps> = ({
     };
 
     return (
-      <div className="min-h-screen bg-slate-50 text-slate-800 pb-20">
-        {/* Top Header Bar */}
-        <div className="bg-white border-b border-slate-200 px-6 py-4 flex flex-wrap items-center justify-between gap-4 sticky top-0 z-10 shadow-xs">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setSelectedSINV(null)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-md transition-colors cursor-pointer"
-            >
-              <ChevronLeft className="w-4 h-4" /> Back to List
-            </button>
-            <h1 className="text-xl font-bold text-slate-900 tracking-tight">View Sale Invoice</h1>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-              {si.status}
-            </span>
-          </div>
+      <MobilePage>
+        <MobileHeader
+          title="View Sale Invoice"
+          subtitle={si.saleInvoiceCode}
+          status={si.status}
+          onBack={() => setSelectedSINV(null)}
+          actions={
+            <>
+              <HeaderIconBtn
+                label="Edit"
+                icon="edit"
+                variant="soft"
+                onClick={() => onShowSnackBar?.(`Editing Sale Invoice ${si.saleInvoiceCode}`, 'info')}
+              />
+              <HeaderIconBtn
+                label="Print"
+                icon="print"
+                onClick={() => { window.print(); onShowSnackBar?.(`Preparing ${si.saleInvoiceCode} for printing...`, 'info'); }}
+              />
+            </>
+          }
+        />
+        <MobileContent>
 
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => onShowSnackBar?.(`Editing Sale Invoice ${si.saleInvoiceCode}`, 'info')}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-md hover:bg-slate-50 transition-colors cursor-pointer"
-            >
-              <Edit3 className="w-3.5 h-3.5 text-slate-500" /> Edit
-            </button>
-            <button
-              onClick={() => {
-                window.print();
-                onShowSnackBar?.(`Preparing ${si.saleInvoiceCode} for printing...`, 'info');
-              }}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors shadow-xs cursor-pointer"
-            >
-              <Printer className="w-3.5 h-3.5" /> Print
-            </button>
-          </div>
-        </div>
-
-        <div className="max-w-7xl mx-auto px-6 py-6 space-y-6">
           {/* Top Info 3-Column Card */}
           <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-xs grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Column 1: Invoice Details */}
@@ -449,49 +487,53 @@ export const SalesModuleScreen: React.FC<SalesModuleScreenProps> = ({
             <div className="px-6 py-4 border-b border-slate-200 bg-slate-50/50">
               <h3 className="text-sm font-bold text-slate-800">Products</h3>
             </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs text-left">
-                <thead className="bg-slate-50 text-slate-600 uppercase text-[10.5px] font-semibold border-b border-slate-200">
-                  <tr>
-                    <th className="py-3 px-3">Thumbnail</th>
-                    <th className="py-3 px-3">Product Name</th>
-                    <th className="py-3 px-3">Variation</th>
-                    <th className="py-3 px-3 text-right">Quantity</th>
-                    <th className="py-3 px-3 text-right">Price</th>
-                    <th className="py-3 px-3 text-right">Total</th>
-                    <th className="py-3 px-3 text-right">CBM</th>
-                    <th className="py-3 px-3 text-right">Weight</th>
-                    <th className="py-3 px-3">Notes</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {prods.map((prod, idx) => (
-                    <tr key={idx} className="hover:bg-slate-50/50">
-                      <td className="py-3 px-3">
-                        <img src={prod.thumbnail} alt={prod.productName} className="w-10 h-10 object-cover rounded border border-slate-200" />
-                      </td>
-                      <td className="py-3 px-3 font-medium text-slate-900 max-w-xs">{prod.productName}</td>
-                      <td className="py-3 px-3 text-slate-600">{prod.variation}</td>
-                      <td className="py-3 px-3 text-right font-semibold text-slate-900 whitespace-nowrap">{prod.quantity}</td>
-                      <td className="py-3 px-3 text-right font-semibold text-slate-900">{prod.price}</td>
-                      <td className="py-3 px-3 text-right font-bold text-slate-900">{prod.total}</td>
-                      <td className="py-3 px-3 text-right text-slate-700">{prod.cbm}</td>
-                      <td className="py-3 px-3 text-right text-slate-700">{prod.weight}</td>
-                      <td className="py-3 px-3 text-slate-500">{prod.notes || '-'}</td>
-                    </tr>
-                  ))}
-                  {/* Total Row */}
-                  <tr className="bg-slate-50 font-bold border-t border-slate-200 text-slate-900">
-                    <td colSpan={3} className="py-3 px-3 text-right">Total</td>
-                    <td className="py-3 px-3 text-right">16,800</td>
-                    <td className="py-3 px-3 text-right">-</td>
-                    <td className="py-3 px-3 text-right">$ 205,800.0000</td>
-                    <td className="py-3 px-3 text-right">413.28</td>
-                    <td className="py-3 px-3 text-right">122,976 KG</td>
-                    <td className="py-3 px-3 text-center">-</td>
-                  </tr>
-                </tbody>
-              </table>
+            <div className="p-4 sm:px-6 sm:py-3 space-y-2.5">
+              {prods.map((prod, idx) => (
+                <div key={idx} className="bg-white rounded-2xl border border-slate-200 p-3.5 shadow-xs">
+                  <div className="flex items-start gap-3">
+                    <img src={prod.thumbnail} alt={prod.productName} className="w-12 h-12 object-cover rounded-xl border border-slate-200 shrink-0" />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[11px] font-extrabold text-[#0f2b3c] leading-snug">{prod.productName}</p>
+                      <div className="flex items-center gap-2 mt-1 flex-wrap">
+                        <span className="inline-flex px-2 py-0.5 rounded-lg bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-bold">
+                          {prod.variation}
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 mt-3">
+                        <div>
+                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Qty</p>
+                          <p className="text-[11px] font-bold text-slate-900 whitespace-nowrap">{prod.quantity}</p>
+                        </div>
+                        <div>
+                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Total</p>
+                          <p className="text-[11px] font-black text-slate-900 font-mono tabular-nums">{prod.total}</p>
+                        </div>
+                        <div>
+                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Price</p>
+                          <p className="text-[11px] font-semibold text-slate-900 font-mono">{prod.price}</p>
+                        </div>
+                        <div>
+                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">CBM</p>
+                          <p className="text-[11px] font-semibold text-slate-700 tabular-nums">{prod.cbm}</p>
+                        </div>
+                        <div>
+                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Weight</p>
+                          <p className="text-[11px] font-semibold text-slate-700 tabular-nums">{prod.weight}</p>
+                        </div>
+                        <div>
+                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Notes</p>
+                          <p className="text-[11px] font-medium text-slate-600 break-words">{prod.notes || '-'}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              <div className="rounded-2xl bg-[#0f2b3c] text-white p-3.5 flex items-center justify-between shadow-sm">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-white/70">Products Total</span>
+                <span className="text-[12px] font-black font-mono tabular-nums">{sum.productsTotal}</span>
+              </div>
             </div>
           </div>
 
@@ -529,13 +571,10 @@ export const SalesModuleScreen: React.FC<SalesModuleScreenProps> = ({
               <p className="text-xs text-slate-700">{si.remarks || 'No Remarks Found'}</p>
             </div>
           </div>
-        </div>
-      </div>
+        </MobileContent>
+      </MobilePage>
     );
   }
-
-  // ============================================================================
-  // 3. VIEW: CUSTOMER PAYMENT DETAIL VIEW (CP-744)
   // ============================================================================
   if (workstream === 'payment' && selectedPayment) {
     const cp = selectedPayment;
@@ -546,39 +585,29 @@ export const SalesModuleScreen: React.FC<SalesModuleScreenProps> = ({
     const paymentDetails = cp.paymentDetails || [];
 
     return (
-      <div className="min-h-screen bg-slate-50 text-slate-800 pb-20">
-        {/* Top Header Bar */}
-        <div className="bg-white border-b border-slate-200 px-6 py-4 flex flex-wrap items-center justify-between gap-4 sticky top-0 z-10 shadow-xs">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setSelectedPayment(null)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-md transition-colors cursor-pointer"
-            >
-              <ChevronLeft className="w-4 h-4" /> Back to List
-            </button>
-            <h1 className="text-xl font-bold text-slate-900 tracking-tight">View Customer Payment</h1>
-          </div>
+      <MobilePage>
+        <MobileHeader
+          title="View Customer Payment"
+          subtitle={cp.paymentCode}
+          onBack={() => setSelectedPayment(null)}
+          actions={
+            <>
+              <HeaderIconBtn
+                label="Edit"
+                icon="edit"
+                variant="soft"
+                onClick={() => onShowSnackBar?.(`Editing Payment ${cp.paymentCode}`, 'info')}
+              />
+              <HeaderIconBtn
+                label="Print"
+                icon="print"
+                onClick={() => { window.print(); onShowSnackBar?.(`Preparing ${cp.paymentCode} for printing...`, 'info'); }}
+              />
+            </>
+          }
+        />
+        <MobileContent>
 
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => onShowSnackBar?.(`Editing Payment ${cp.paymentCode}`, 'info')}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-md hover:bg-slate-50 transition-colors cursor-pointer"
-            >
-              <Edit3 className="w-3.5 h-3.5 text-slate-500" /> Edit
-            </button>
-            <button
-              onClick={() => {
-                window.print();
-                onShowSnackBar?.(`Preparing ${cp.paymentCode} for printing...`, 'info');
-              }}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors shadow-xs cursor-pointer"
-            >
-              <Printer className="w-3.5 h-3.5" /> Print
-            </button>
-          </div>
-        </div>
-
-        <div className="max-w-7xl mx-auto px-6 py-6 space-y-6">
           {/* Top Info 3-Column Card */}
           <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-xs grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Column 1: Customer */}
@@ -624,41 +653,58 @@ export const SalesModuleScreen: React.FC<SalesModuleScreenProps> = ({
                 </div>
 
                 {/* Table for Invoice Breakdown */}
-                <div className="overflow-x-auto">
-                  <table className="w-full text-xs text-left">
-                    <thead className="bg-slate-50 text-slate-600 uppercase text-[10.5px] font-semibold border-b border-slate-200">
-                      <tr>
-                        <th className="py-2.5 px-3">Proforma Amount</th>
-                        <th className="py-2.5 px-3">SI Amount</th>
-                        <th className="py-2.5 px-3">JV Adj</th>
-                        <th className="py-2.5 px-3">Net Sale Invoice</th>
-                        <th className="py-2.5 px-3">Sale Return</th>
-                        <th className="py-2.5 px-3">Net Customer R/P</th>
-                        <th className="py-2.5 px-3">Previously Paid</th>
-                        <th className="py-2.5 px-3">Current Amount</th>
-                        <th className="py-2.5 px-3">Exchanged Amount</th>
-                        <th className="py-2.5 px-3">Advance</th>
-                        <th className="py-2.5 px-3">Remaining Balance</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                      <tr>
-                        <td className="py-2.5 px-3 font-semibold text-slate-900">{pd.proformaAmount}</td>
-                        <td className="py-2.5 px-3 text-slate-800">{pd.invoiceAmount.siAmount}</td>
-                        <td className="py-2.5 px-3 text-slate-500">{pd.invoiceAmount.jvAdj}</td>
-                        <td className="py-2.5 px-3 text-slate-800">{pd.invoiceAmount.netSaleInvoice}</td>
-                        <td className="py-2.5 px-3 text-slate-500">{pd.invoiceAmount.saleReturn}</td>
-                        <td className="py-2.5 px-3 text-slate-800">{pd.invoiceAmount.netCustomerRP}</td>
-                        <td className="py-2.5 px-3 text-slate-700">{pd.previouslyPaid}</td>
-                        <td className="py-2.5 px-3 font-semibold text-slate-900">{pd.currentAmount}</td>
-                        <td className="py-2.5 px-3 font-semibold text-slate-900">{pd.exchangedAmount}</td>
-                        <td className="py-2.5 px-3">
-                          <input type="checkbox" checked={pd.advance} readOnly className="rounded text-blue-600 cursor-default" />
-                        </td>
-                        <td className="py-2.5 px-3 font-bold text-slate-900">{pd.remainingBalance}</td>
-                      </tr>
-                    </tbody>
-                  </table>
+                <div className="space-y-2">
+                  <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs">
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="text-[11px] font-extrabold text-[#0f2b3c]">Invoice Breakdown</p>
+                      <p className="text-[11px] font-black text-rose-700 font-mono">{pd.remainingBalance}</p>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 mt-3">
+                      <div>
+                        <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Proforma</p>
+                        <p className="text-[11px] font-semibold text-slate-800 font-mono">{pd.proformaAmount}</p>
+                      </div>
+                      <div>
+                        <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">SI Amount</p>
+                        <p className="text-[11px] font-semibold text-slate-800 font-mono">{pd.invoiceAmount.siAmount}</p>
+                      </div>
+                      <div>
+                        <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">JV Adj</p>
+                        <p className="text-[11px] font-semibold text-slate-800 font-mono">{pd.invoiceAmount.jvAdj}</p>
+                      </div>
+                      <div>
+                        <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Net Sale Invoice</p>
+                        <p className="text-[11px] font-semibold text-slate-800 font-mono">{pd.invoiceAmount.netSaleInvoice}</p>
+                      </div>
+                      <div>
+                        <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Sale Return</p>
+                        <p className="text-[11px] font-semibold text-slate-800 font-mono">{pd.invoiceAmount.saleReturn}</p>
+                      </div>
+                      <div>
+                        <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Net Customer R/P</p>
+                        <p className="text-[11px] font-semibold text-slate-800 font-mono">{pd.invoiceAmount.netCustomerRP}</p>
+                      </div>
+                      <div>
+                        <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Previously Paid</p>
+                        <p className="text-[11px] font-semibold text-slate-800 font-mono">{pd.previouslyPaid}</p>
+                      </div>
+                      <div>
+                        <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Current Amount</p>
+                        <p className="text-[11px] font-semibold text-slate-900 font-mono">{pd.currentAmount}</p>
+                      </div>
+                      <div>
+                        <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Exchanged Amount</p>
+                        <p className="text-[11px] font-semibold text-slate-900 font-mono">{pd.exchangedAmount}</p>
+                      </div>
+                      <div>
+                        <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Advance</p>
+                        <p className={`text-[11px] font-bold ${pd.advance ? 'text-emerald-700' : 'text-slate-600'}`}>
+                          {pd.advance ? 'Yes' : 'No'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
@@ -675,421 +721,386 @@ export const SalesModuleScreen: React.FC<SalesModuleScreenProps> = ({
               <p className="text-xs text-slate-500 italic">No remarks found</p>
             </div>
           </div>
-        </div>
-      </div>
+        </MobileContent>
+      </MobilePage>
     );
   }
+  // ============================================================================
+  const paging =
+    workstream === 'proforma' ? piPaging : workstream === 'invoice' ? sinvPaging : payPaging;
 
-  // ============================================================================
-  // 4. GRID: SALES WORKSTREAMS (Proforma, Sale Invoice, Payment)
-  // ============================================================================
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 pb-20">
-      {/* Title Bar */}
-      <div className="bg-white border-b border-slate-200 px-6 py-4 flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="text-xl font-bold text-slate-900 tracking-tight">
-            {workstream === 'proforma' && 'Manage Proforma Invoices'}
-            {workstream === 'invoice' && 'Manage Sale Invoices'}
-            {workstream === 'payment' && 'Manage Customer Payments'}
-          </h1>
-        </div>
+    <MobilePage>
+      <MobileHeader
+        title={
+          workstream === 'proforma'
+            ? 'Manage Proforma Invoices'
+            : workstream === 'invoice'
+            ? 'Manage Sale Invoices'
+            : 'Manage Customer Payments'
+        }
+        onBack={onBack}
+      />
 
-        {/* Action Controls Top Right: View Mode Toggle, Filters, Columns, Search */}
-        <div className="flex items-center gap-3">
-          {/* View Mode Toggle */}
-          <div className="inline-flex rounded-md bg-slate-100 p-0.5 border border-slate-200 shadow-2xs">
-            <button
-              onClick={() => setViewMode('grid')}
-              title="Grid View"
-              className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded transition-all cursor-pointer ${
-                viewMode === 'grid'
-                  ? 'bg-white text-slate-900 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              <LayoutGrid className="w-3.5 h-3.5" />
-              <span>Grid View</span>
-            </button>
-            <button
-              onClick={() => setViewMode('card')}
-              title="Card View"
-              className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded transition-all cursor-pointer ${
-                viewMode === 'card'
-                  ? 'bg-white text-slate-900 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              <CreditCard className="w-3.5 h-3.5" />
-              <span>Card View</span>
-            </button>
-          </div>
+      <MobileContent>
+        <SoftCard>
+          <ListToolbar
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
+            searchQuery={searchQuery}
+            onSearchChange={handleSearchChange}
+            searchPlaceholder={
+              workstream === 'proforma'
+                ? 'Search proformas…'
+                : workstream === 'invoice'
+                ? 'Search invoices…'
+                : 'Search payments…'
+            }
+            onFilterClick={() => onShowSnackBar?.('Filter panel opened', 'info')}
+            onColumnsClick={() => onShowSnackBar?.('Column selection opened', 'info')}
+          />
+        </SoftCard>
 
-          <button
-            onClick={() => onShowSnackBar?.('Filter panel opened', 'info')}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-md hover:bg-slate-50 shadow-xs cursor-pointer"
-          >
-            <Filter className="w-3.5 h-3.5 text-slate-500" /> Filters
-          </button>
-          <button
-            onClick={() => onShowSnackBar?.('Column selection opened', 'info')}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-md hover:bg-slate-50 shadow-xs cursor-pointer"
-          >
-            <SlidersHorizontal className="w-3.5 h-3.5 text-slate-500" /> Columns
-          </button>
-          <div className="relative">
-            <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Search..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 pr-3 py-1.5 text-xs bg-white border border-slate-300 rounded-md focus:outline-hidden focus:ring-1 focus:ring-blue-500 w-48 transition-all"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Tabs (for Proforma and Sale Invoice) */}
-      {workstream === 'proforma' && (
-        <div className="bg-white border-b border-slate-200 px-6 flex gap-6 text-xs font-semibold">
-          <button
-            onClick={() => setActiveTab('ALL')}
-            className={`py-3 border-b-2 transition-colors cursor-pointer ${
-              activeTab === 'ALL'
-                ? 'border-blue-600 text-blue-600'
-                : 'border-transparent text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            All Proforma Invoices
-          </button>
-          <button
-            onClick={() => setActiveTab('PENDING')}
-            className={`py-3 border-b-2 transition-colors cursor-pointer ${
-              activeTab === 'PENDING'
-                ? 'border-blue-600 text-blue-600'
-                : 'border-transparent text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            Pending Proforma Invoices
-          </button>
-        </div>
-      )}
-
-      {/* Table Content */}
-      <div className="max-w-7xl mx-auto px-6 py-6">
-        <div className="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-xs">
-          <div className="overflow-x-auto">
-            {/* ------------------------------------------------------------- */}
-            {/* GRID: PROFORMA INVOICE                                        */}
-            {/* ------------------------------------------------------------- */}
-            {workstream === 'proforma' && (
-              <table className="w-full text-xs text-left">
-                <thead className="bg-slate-50 text-slate-600 uppercase text-[11px] font-semibold border-b border-slate-200">
-                  <tr>
-                    <th className="py-3 px-4">Proforma Code</th>
-                    <th className="py-3 px-4">Ref. Proforma Code</th>
-                    <th className="py-3 px-4">Sale Return Code</th>
-                    <th className="py-3 px-4">Ticket Code</th>
-                    <th className="py-3 px-4">Quote Code</th>
-                    <th className="py-3 px-4">Customer</th>
-                    <th className="py-3 px-4">Company</th>
-                    <th className="py-3 px-4">Marketing Personal</th>
-                    <th className="py-3 px-4">Place Of Delivery</th>
-                    <th className="py-3 px-4">Marketing Status</th>
-                    <th className="py-3 px-4">Finance Status</th>
-                    <th className="py-3 px-4">Payment</th>
-                    <th className="py-3 px-4 text-center">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {MOCK_PROFORMA_INVOICES.filter((p) =>
-                    activeTab === 'PENDING' ? p.marketingStatus.toLowerCase().includes('draft') : true
-                  )
-                    .filter(
-                      (p) =>
-                        p.proformaCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                        p.customer.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                        p.marketingPersonal.toLowerCase().includes(searchQuery.toLowerCase())
-                    )
-                    .map((item) => (
-                      <tr key={item.id} className="hover:bg-slate-50/70 transition-colors">
-                        <td className="py-3 px-4">
-                          <button
-                            onClick={() => setSelectedPI(item)}
-                            className="text-blue-600 font-semibold hover:underline cursor-pointer"
-                          >
-                            {item.proformaCode}
-                          </button>
-                        </td>
-                        <td className="py-3 px-4 text-slate-500">{item.referenceProformaCode}</td>
-                        <td className="py-3 px-4 text-slate-500">{item.saleReturnCode}</td>
-                        <td className="py-3 px-4 text-slate-500">{item.ticketCode}</td>
-                        <td className="py-3 px-4 text-blue-600 font-medium hover:underline cursor-pointer">
-                          {item.quoteCode}
-                        </td>
-                        <td className="py-3 px-4 text-slate-800 max-w-xs truncate">{item.customer}</td>
-                        <td className="py-3 px-4 text-slate-600">{item.company}</td>
-                        <td className="py-3 px-4 font-medium text-slate-800">{item.marketingPersonal}</td>
-                        <td className="py-3 px-4 text-slate-800">{item.placeOfDelivery}</td>
-                        <td className="py-3 px-4">
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-300">
-                            <span className="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
-                            {item.marketingStatus}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4 text-slate-500">{item.financeStatus}</td>
-                        <td className="py-3 px-4 text-slate-600">{item.payment}</td>
-                        <td className="py-3 px-4 text-center relative">
-                          <button
-                            onClick={() => setOpenActionId(openActionId === item.id ? null : item.id)}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold cursor-pointer"
-                          >
-                            Actions <MoreVertical className="w-3.5 h-3.5" />
-                          </button>
-                          {openActionId === item.id && (
-                            <div className="absolute right-4 mt-1 w-32 bg-white border border-slate-200 rounded-md shadow-lg z-20 py-1 text-left text-xs">
-                              <button
-                                onClick={() => {
-                                  setSelectedPI(item);
-                                  setOpenActionId(null);
-                                }}
-                                className="w-full px-3 py-1.5 hover:bg-slate-50 flex items-center gap-1.5 text-slate-700"
-                              >
-                                <Eye className="w-3.5 h-3.5 text-blue-600" /> View
-                              </button>
-                              <button
-                                onClick={() => {
-                                  onShowSnackBar?.(`Editing ${item.proformaCode}`, 'info');
-                                  setOpenActionId(null);
-                                }}
-                                className="w-full px-3 py-1.5 hover:bg-slate-50 flex items-center gap-1.5 text-slate-700"
-                              >
-                                <Edit3 className="w-3.5 h-3.5 text-slate-500" /> Edit
-                              </button>
-                            </div>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            )}
-
-            {/* ------------------------------------------------------------- */}
-            {/* GRID: SALE INVOICE                                            */}
-            {/* ------------------------------------------------------------- */}
-            {workstream === 'invoice' && (
-              <table className="w-full text-xs text-left">
-                <thead className="bg-slate-50 text-slate-600 uppercase text-[11px] font-semibold border-b border-slate-200">
-                  <tr>
-                    <th className="py-3 px-4">Sale Invoice Code</th>
-                    <th className="py-3 px-4">Export Inquiry Code</th>
-                    <th className="py-3 px-4">Proforma Code</th>
-                    <th className="py-3 px-4">Sale Return Code</th>
-                    <th className="py-3 px-4">Company</th>
-                    <th className="py-3 px-4">Port Of Discharge</th>
-                    <th className="py-3 px-4 text-right">Amount</th>
-                    <th className="py-3 px-4">Status</th>
-                    <th className="py-3 px-4">Finance Status</th>
-                    <th className="py-3 px-4">Created</th>
-                    <th className="py-3 px-4 text-center">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {MOCK_SALE_INVOICES.filter(
-                    (s) =>
-                      s.saleInvoiceCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                      s.proformaCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                      s.company.toLowerCase().includes(searchQuery.toLowerCase())
-                  ).map((item) => (
-                    <tr key={item.id} className="hover:bg-slate-50/70 transition-colors">
-                      <td className="py-3 px-4">
-                        <button
-                          onClick={() => setSelectedSINV(item)}
-                          className="text-blue-600 font-semibold hover:underline cursor-pointer"
-                        >
-                          {item.saleInvoiceCode}
-                        </button>
-                      </td>
-                      <td className="py-3 px-4 text-blue-600 font-medium hover:underline cursor-pointer">
-                        {item.exportInquiryCode}
-                      </td>
-                      <td className="py-3 px-4 text-blue-600 font-medium hover:underline cursor-pointer max-w-xs truncate">
-                        {item.proformaCode}
-                      </td>
-                      <td className="py-3 px-4 text-slate-500">{item.saleReturnCode}</td>
-                      <td className="py-3 px-4 text-slate-600 max-w-xs truncate">{item.company}</td>
-                      <td className="py-3 px-4 text-slate-800">{item.portOfDischarge}</td>
-                      <td className="py-3 px-4 text-right font-bold text-slate-900">{item.amount}</td>
-                      <td className="py-3 px-4">
-                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium ${
-                          item.status.toLowerCase().includes('approved')
-                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                            : 'bg-amber-50 text-amber-700 border border-amber-200'
-                        }`}>
-                          <span className={`w-1.5 h-1.5 rounded-full ${
-                            item.status.toLowerCase().includes('approved') ? 'bg-emerald-500' : 'bg-amber-500'
-                          }`}></span>
-                          {item.status}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 text-slate-500">{item.financeStatus}</td>
-                      <td className="py-3 px-4 text-slate-500 whitespace-nowrap">{item.created}</td>
-                      <td className="py-3 px-4 text-center relative">
-                        <button
-                          onClick={() => setOpenActionId(openActionId === item.id ? null : item.id)}
-                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold cursor-pointer"
-                        >
-                          Actions <MoreVertical className="w-3.5 h-3.5" />
-                        </button>
-                        {openActionId === item.id && (
-                          <div className="absolute right-4 mt-1 w-32 bg-white border border-slate-200 rounded-md shadow-lg z-20 py-1 text-left text-xs">
-                            <button
-                              onClick={() => {
-                                setSelectedSINV(item);
-                                setOpenActionId(null);
-                              }}
-                              className="w-full px-3 py-1.5 hover:bg-slate-50 flex items-center gap-1.5 text-slate-700"
-                            >
-                              <Eye className="w-3.5 h-3.5 text-blue-600" /> View
-                            </button>
-                            <button
-                              onClick={() => {
-                                onShowSnackBar?.(`Editing ${item.saleInvoiceCode}`, 'info');
-                                setOpenActionId(null);
-                              }}
-                              className="w-full px-3 py-1.5 hover:bg-slate-50 flex items-center gap-1.5 text-slate-700"
-                            >
-                              <Edit3 className="w-3.5 h-3.5 text-slate-500" /> Edit
-                            </button>
-                          </div>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-
-            {/* ------------------------------------------------------------- */}
-            {/* GRID: CUSTOMER PAYMENT                                        */}
-            {/* ------------------------------------------------------------- */}
-            {workstream === 'payment' && (
-              <table className="w-full text-xs text-left">
-                <thead className="bg-slate-50 text-slate-600 uppercase text-[11px] font-semibold border-b border-slate-200">
-                  <tr>
-                    <th className="py-3 px-4">Payment Code</th>
-                    <th className="py-3 px-4">Proforma</th>
-                    <th className="py-3 px-4">Customer</th>
-                    <th className="py-3 px-4">Notify Party Name</th>
-                    <th className="py-3 px-4 text-right">Payment Amount</th>
-                    <th className="py-3 px-4">Payment Method</th>
-                    <th className="py-3 px-4">Payment Date</th>
-                    <th className="py-3 px-4">Status</th>
-                    <th className="py-3 px-4">Created</th>
-                    <th className="py-3 px-4 text-center">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {MOCK_CUSTOMER_PAYMENTS.filter(
-                    (p) =>
-                      p.paymentCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                      p.customer.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                      p.proforma.toLowerCase().includes(searchQuery.toLowerCase())
-                  ).map((item) => (
-                    <tr key={item.id} className="hover:bg-slate-50/70 transition-colors">
-                      <td className="py-3 px-4">
-                        <button
-                          onClick={() => setSelectedPayment(item)}
-                          className="text-blue-600 font-semibold hover:underline cursor-pointer"
-                        >
-                          {item.paymentCode}
-                        </button>
-                      </td>
-                      <td className="py-3 px-4 text-blue-600 hover:underline cursor-pointer font-medium">
-                        {item.proforma}
-                      </td>
-                      <td className="py-3 px-4 text-slate-800 font-medium max-w-xs truncate">{item.customer}</td>
-                      <td className="py-3 px-4 text-slate-500">{item.notifyPartyName}</td>
-                      <td className="py-3 px-4 text-right font-bold text-slate-900">{item.paymentAmount}</td>
-                      <td className="py-3 px-4 text-slate-700">{item.paymentMethod}</td>
-                      <td className="py-3 px-4 text-slate-600">{item.paymentDate}</td>
-                      <td className="py-3 px-4 text-slate-500">{item.status}</td>
-                      <td className="py-3 px-4 text-slate-500 whitespace-nowrap">{item.created}</td>
-                      <td className="py-3 px-4 text-center relative">
-                        <button
-                          onClick={() => setOpenActionId(openActionId === item.id ? null : item.id)}
-                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold cursor-pointer"
-                        >
-                          Actions <MoreVertical className="w-3.5 h-3.5" />
-                        </button>
-                        {openActionId === item.id && (
-                          <div className="absolute right-4 mt-1 w-32 bg-white border border-slate-200 rounded-md shadow-lg z-20 py-1 text-left text-xs">
-                            <button
-                              onClick={() => {
-                                setSelectedPayment(item);
-                                setOpenActionId(null);
-                              }}
-                              className="w-full px-3 py-1.5 hover:bg-slate-50 flex items-center gap-1.5 text-slate-700"
-                            >
-                              <Eye className="w-3.5 h-3.5 text-blue-600" /> View
-                            </button>
-                            <button
-                              onClick={() => {
-                                onShowSnackBar?.(`Editing ${item.paymentCode}`, 'info');
-                                setOpenActionId(null);
-                              }}
-                              className="w-full px-3 py-1.5 hover:bg-slate-50 flex items-center gap-1.5 text-slate-700"
-                            >
-                              <Edit3 className="w-3.5 h-3.5 text-slate-500" /> Edit
-                            </button>
-                          </div>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
-
-          {/* Pagination Footer */}
-          <div className="px-6 py-3.5 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-600">
-            <div>
-              {workstream === 'proforma' && 'Showing 1 to 10 of 1004 records'}
-              {workstream === 'invoice' && 'Showing 1 to 10 of 609 records'}
-              {workstream === 'payment' && 'Showing 1 to 10 of 744 records'}
+        {workstream === 'proforma' && (
+          <SoftCard padding={false}>
+            <div className="px-4 sm:px-5 flex gap-6 text-xs font-semibold">
+              <button
+                type="button"
+                onClick={() => handleTabChange('ALL')}
+                className={`py-3 border-b-2 transition-colors cursor-pointer ${
+                  activeTab === 'ALL'
+                    ? 'border-[#0f2b3c] text-[#0f2b3c]'
+                    : 'border-transparent text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                All Proforma Invoices
+              </button>
+              <button
+                type="button"
+                onClick={() => handleTabChange('PENDING')}
+                className={`py-3 border-b-2 transition-colors cursor-pointer ${
+                  activeTab === 'PENDING'
+                    ? 'border-[#0f2b3c] text-[#0f2b3c]'
+                    : 'border-transparent text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Pending Proforma Invoices
+              </button>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1">
-                <button className="px-2.5 py-1 rounded border border-slate-300 bg-white hover:bg-slate-100 cursor-pointer">&lt;</button>
-                <button className="px-2.5 py-1 rounded bg-blue-600 text-white font-semibold">1</button>
-                <button className="px-2.5 py-1 rounded border border-slate-300 bg-white hover:bg-slate-100 cursor-pointer">2</button>
-                <button className="px-2.5 py-1 rounded border border-slate-300 bg-white hover:bg-slate-100 cursor-pointer">3</button>
-                <button className="px-2.5 py-1 rounded border border-slate-300 bg-white hover:bg-slate-100 cursor-pointer">4</button>
-                <button className="px-2.5 py-1 rounded border border-slate-300 bg-white hover:bg-slate-100 cursor-pointer">5</button>
-                <span className="px-1 text-slate-400">...</span>
-                <button className="px-2.5 py-1 rounded border border-slate-300 bg-white hover:bg-slate-100 cursor-pointer">
-                  {workstream === 'proforma' ? '101' : workstream === 'invoice' ? '61' : '75'}
-                </button>
-                <button className="px-2.5 py-1 rounded border border-slate-300 bg-white hover:bg-slate-100 cursor-pointer">&gt;</button>
-              </div>
-              <div className="relative">
-                <select
-                  value={pageSize}
-                  onChange={(e) => setPageSize(Number(e.target.value))}
-                  className="px-2 py-1 rounded border border-slate-300 bg-white text-xs cursor-pointer focus:outline-hidden"
-                >
-                  <option value={10}>10 / page</option>
-                  <option value={20}>20 / page</option>
-                  <option value={50}>50 / page</option>
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+          </SoftCard>
+        )}
+
+
+        {/* ---- Proforma ---- */}
+        {workstream === 'proforma' &&
+          (viewMode === 'grid' ? (
+            <DataTable
+              headers={[
+                'Proforma Code',
+                'Customer',
+                'Company',
+                'Place Of Delivery',
+                'Marketing Status',
+                'Finance Status',
+                'Payment',
+                'Actions',
+              ]}
+            >
+              {piPaging.paged.map((item) => (
+                <DataRow key={item.id} onClick={() => setSelectedPI(item)}>
+                  <Td accent mono>
+                    {item.proformaCode}
+                  </Td>
+                  <Td className="max-w-[180px] truncate">{item.customer}</Td>
+                  <Td className="max-w-[160px] truncate">{item.company}</Td>
+                  <Td>{item.placeOfDelivery}</Td>
+                  <Td>
+                    <StatusPill status={item.marketingStatus} />
+                  </Td>
+                  <Td>
+                    <StatusPill status={item.financeStatus || '—'} />
+                  </Td>
+                  <Td>
+                    <StatusPill status={item.payment} />
+                  </Td>
+                  <Td className="relative">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setOpenActionId(openActionId === item.id ? null : item.id);
+                      }}
+                      className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold cursor-pointer"
+                    >
+                      Actions <MoreVertical className="w-3.5 h-3.5" />
+                    </button>
+                    {openActionId === item.id && (
+                      <div className="absolute right-2 mt-1 w-32 bg-white border border-slate-200 rounded-xl shadow-lg z-20 py-1 text-left text-xs">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedPI(item);
+                            setOpenActionId(null);
+                          }}
+                          className="w-full px-3 py-1.5 hover:bg-slate-50 flex items-center gap-1.5 text-slate-700 cursor-pointer"
+                        >
+                          <Eye className="w-3.5 h-3.5 text-teal-600" /> View
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onShowSnackBar?.(`Editing ${item.proformaCode}`, 'info');
+                            setOpenActionId(null);
+                          }}
+                          className="w-full px-3 py-1.5 hover:bg-slate-50 flex items-center gap-1.5 text-slate-700 cursor-pointer"
+                        >
+                          <Edit3 className="w-3.5 h-3.5 text-slate-500" /> Edit
+                        </button>
+                      </div>
+                    )}
+                  </Td>
+                </DataRow>
+              ))}
+            </DataTable>
+          ) : (
+            <CardGrid>
+              {piPaging.paged.map((item) => (
+                <RecordCard
+                  key={item.id}
+                  code={item.proformaCode}
+                  title={item.customer}
+                  subtitle={item.company}
+                  status={item.marketingStatus}
+                  badges={<StatusPill status={item.financeStatus || '—'} />}
+                  fields={[
+                    { label: 'Place of Delivery', value: item.placeOfDelivery },
+                    { label: 'Payment', value: <StatusPill status={item.payment} /> },
+                    { label: 'Marketing', value: item.marketingPersonal },
+                    { label: 'Quote', value: item.quoteCode },
+                  ]}
+                  onClick={() => setSelectedPI(item)}
+                  actions={[
+                    { label: 'View', icon: 'view', onClick: () => setSelectedPI(item) },
+                    {
+                      label: 'Edit',
+                      icon: 'edit',
+                      onClick: () => onShowSnackBar?.(`Editing ${item.proformaCode}`, 'info'),
+                    },
+                  ]}
+                />
+              ))}
+            </CardGrid>
+          ))}
+
+        {/* ---- Sale Invoice ---- */}
+        {workstream === 'invoice' &&
+          (viewMode === 'grid' ? (
+            <DataTable
+              headers={[
+                'Sale Invoice Code',
+                'Company',
+                'Port Of Discharge',
+                'Amount',
+                'Status',
+                'Finance Status',
+                'Created',
+                'Actions',
+              ]}
+            >
+              {sinvPaging.paged.map((item) => (
+                <DataRow key={item.id} onClick={() => setSelectedSINV(item)}>
+                  <Td accent mono>
+                    {item.saleInvoiceCode}
+                  </Td>
+                  <Td className="max-w-[180px] truncate">{item.company}</Td>
+                  <Td>{item.portOfDischarge}</Td>
+                  <Td className="font-bold">{item.amount}</Td>
+                  <Td>
+                    <StatusPill status={item.status} />
+                  </Td>
+                  <Td>
+                    <StatusPill status={item.financeStatus || '—'} />
+                  </Td>
+                  <Td className="whitespace-nowrap">{item.created}</Td>
+                  <Td className="relative">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setOpenActionId(openActionId === item.id ? null : item.id);
+                      }}
+                      className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold cursor-pointer"
+                    >
+                      Actions <MoreVertical className="w-3.5 h-3.5" />
+                    </button>
+                    {openActionId === item.id && (
+                      <div className="absolute right-2 mt-1 w-32 bg-white border border-slate-200 rounded-xl shadow-lg z-20 py-1 text-left text-xs">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedSINV(item);
+                            setOpenActionId(null);
+                          }}
+                          className="w-full px-3 py-1.5 hover:bg-slate-50 flex items-center gap-1.5 text-slate-700 cursor-pointer"
+                        >
+                          <Eye className="w-3.5 h-3.5 text-teal-600" /> View
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onShowSnackBar?.(`Editing ${item.saleInvoiceCode}`, 'info');
+                            setOpenActionId(null);
+                          }}
+                          className="w-full px-3 py-1.5 hover:bg-slate-50 flex items-center gap-1.5 text-slate-700 cursor-pointer"
+                        >
+                          <Edit3 className="w-3.5 h-3.5 text-slate-500" /> Edit
+                        </button>
+                      </div>
+                    )}
+                  </Td>
+                </DataRow>
+              ))}
+            </DataTable>
+          ) : (
+            <CardGrid>
+              {sinvPaging.paged.map((item) => (
+                <RecordCard
+                  key={item.id}
+                  code={item.saleInvoiceCode}
+                  title={item.company}
+                  subtitle={item.portOfDischarge}
+                  status={item.status}
+                  badges={<StatusPill status={item.financeStatus || '—'} />}
+                  fields={[
+                    { label: 'Amount', value: item.amount },
+                    { label: 'Created', value: item.created },
+                    { label: 'Proforma', value: item.proformaCode },
+                    { label: 'Export Inquiry', value: item.exportInquiryCode },
+                  ]}
+                  onClick={() => setSelectedSINV(item)}
+                  actions={[
+                    { label: 'View', icon: 'view', onClick: () => setSelectedSINV(item) },
+                    {
+                      label: 'Edit',
+                      icon: 'edit',
+                      onClick: () => onShowSnackBar?.(`Editing ${item.saleInvoiceCode}`, 'info'),
+                    },
+                  ]}
+                />
+              ))}
+            </CardGrid>
+          ))}
+
+        {/* ---- Customer Payment ---- */}
+        {workstream === 'payment' &&
+          (viewMode === 'grid' ? (
+            <DataTable
+              headers={[
+                'Payment Code',
+                'Customer',
+                'Amount',
+                'Method',
+                'Date',
+                'Status',
+                'Created',
+                'Actions',
+              ]}
+            >
+              {payPaging.paged.map((item) => (
+                <DataRow key={item.id} onClick={() => setSelectedPayment(item)}>
+                  <Td accent mono>
+                    {item.paymentCode}
+                  </Td>
+                  <Td className="max-w-[180px] truncate">{item.customer}</Td>
+                  <Td className="font-bold">{item.paymentAmount}</Td>
+                  <Td>{item.paymentMethod}</Td>
+                  <Td>{item.paymentDate}</Td>
+                  <Td>
+                    <StatusPill status={item.status || '—'} />
+                  </Td>
+                  <Td className="whitespace-nowrap">{item.created}</Td>
+                  <Td className="relative">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setOpenActionId(openActionId === item.id ? null : item.id);
+                      }}
+                      className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold cursor-pointer"
+                    >
+                      Actions <MoreVertical className="w-3.5 h-3.5" />
+                    </button>
+                    {openActionId === item.id && (
+                      <div className="absolute right-2 mt-1 w-32 bg-white border border-slate-200 rounded-xl shadow-lg z-20 py-1 text-left text-xs">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedPayment(item);
+                            setOpenActionId(null);
+                          }}
+                          className="w-full px-3 py-1.5 hover:bg-slate-50 flex items-center gap-1.5 text-slate-700 cursor-pointer"
+                        >
+                          <Eye className="w-3.5 h-3.5 text-teal-600" /> View
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onShowSnackBar?.(`Editing ${item.paymentCode}`, 'info');
+                            setOpenActionId(null);
+                          }}
+                          className="w-full px-3 py-1.5 hover:bg-slate-50 flex items-center gap-1.5 text-slate-700 cursor-pointer"
+                        >
+                          <Edit3 className="w-3.5 h-3.5 text-slate-500" /> Edit
+                        </button>
+                      </div>
+                    )}
+                  </Td>
+                </DataRow>
+              ))}
+            </DataTable>
+          ) : (
+            <CardGrid>
+              {payPaging.paged.map((item) => (
+                <RecordCard
+                  key={item.id}
+                  code={item.paymentCode}
+                  title={item.customer}
+                  subtitle={item.proforma}
+                  status={item.status || '—'}
+                  fields={[
+                    { label: 'Amount', value: item.paymentAmount },
+                    { label: 'Method', value: item.paymentMethod },
+                    { label: 'Date', value: item.paymentDate },
+                    { label: 'Created', value: item.created },
+                  ]}
+                  onClick={() => setSelectedPayment(item)}
+                  actions={[
+                    { label: 'View', icon: 'view', onClick: () => setSelectedPayment(item) },
+                    {
+                      label: 'Edit',
+                      icon: 'edit',
+                      onClick: () => onShowSnackBar?.(`Editing ${item.paymentCode}`, 'info'),
+                    },
+                  ]}
+                />
+              ))}
+            </CardGrid>
+          ))}
+
+        <ListPagination
+          page={paging.page}
+          pageSize={paging.pageSize}
+          total={paging.total}
+          onPageChange={paging.setPage}
+          onPageSizeChange={paging.setPageSize}
+        />
+      </MobileContent>
+    </MobilePage>
   );
 };

@@ -37,7 +37,7 @@ export const getThemeClasses = (isDark: boolean) => ({
   textPrimary: isDark ? 'text-slate-100' : 'text-slate-900',
   textSecondary: isDark ? 'text-slate-400' : 'text-slate-500',
   textMuted: isDark ? 'text-slate-500' : 'text-slate-400',
-  textAccent: isDark ? 'text-indigo-400' : 'text-blue-600',
+  textAccent: isDark ? 'text-teal-300' : 'text-teal-700',
 
   // Borders & Dividers
   border: isDark ? 'border-slate-800/80' : 'border-slate-200/80',
@@ -46,16 +46,16 @@ export const getThemeClasses = (isDark: boolean) => ({
 
   // Inputs, Dropdowns & Controls
   input: isDark
-    ? 'bg-[#131929] border-slate-800 text-slate-100 placeholder:text-slate-500 focus:border-indigo-500 focus:ring-indigo-500/20'
-    : 'bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-slate-900 focus:ring-slate-900/15',
+    ? 'bg-[#131929] border-slate-800 text-slate-100 placeholder:text-slate-500 focus:border-teal-500 focus:ring-teal-500/20'
+    : 'bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-teal-700 focus:ring-teal-700/15',
   inputSubtle: isDark
     ? 'bg-[#0b101e] border-slate-800 text-slate-100 placeholder:text-slate-500'
     : 'bg-slate-50 border-slate-200 text-slate-800 placeholder:text-slate-400',
 
   // Buttons
   btnPrimary: isDark
-    ? 'bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white shadow-sm shadow-indigo-950/40'
-    : 'bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white shadow-sm shadow-slate-900/10',
+    ? 'bg-teal-600 hover:bg-teal-500 active:bg-teal-700 text-white shadow-sm shadow-teal-950/40'
+    : 'bg-[#0f2b3c] hover:bg-[#163a50] active:bg-[#0a1f2c] text-white shadow-sm shadow-slate-900/10',
   btnSecondary: isDark
     ? 'bg-[#111726] hover:bg-[#182136] active:bg-[#1f2a45] text-slate-200 border-slate-800 shadow-2xs'
     : 'bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-700 border-slate-200 shadow-2xs',
@@ -65,8 +65,8 @@ export const getThemeClasses = (isDark: boolean) => ({
 
   // Chips & Badges
   chipActive: isDark
-    ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30'
-    : 'bg-blue-50 text-blue-700 border border-blue-200',
+    ? 'bg-teal-500/20 text-teal-300 border border-teal-500/30'
+    : 'bg-teal-50 text-teal-800 border border-teal-200',
   chipDefault: isDark
     ? 'bg-slate-800/60 text-slate-300 border border-slate-700/60 hover:bg-slate-800'
     : 'bg-slate-100 text-slate-700 border border-slate-200 hover:bg-slate-200',
