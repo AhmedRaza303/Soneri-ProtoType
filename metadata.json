@@ -1,0 +1,6 @@
+{
+  "name": "SONERI ERP",
+  "description": "Business Management System - Mobile-first ERP application prototype",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
