@@ -158,35 +158,35 @@ export interface ForecastWithoutTrackingRow {
 
 export const FORECAST_WITHOUT_TRACKING_ROWS: ForecastWithoutTrackingRow[] = [
   {
-    shipmentMonths: 'JAN 26',
+    shipmentMonths: 'JAN26',
     totalNoContainers: 5,
     deliveredContainers: 0,
     confirmedUndelivered: 5,
     projectedProfit: '$ 26,140.1000',
   },
   {
-    shipmentMonths: 'FEB 26',
+    shipmentMonths: 'FEB26',
     totalNoContainers: 8,
     deliveredContainers: 0,
     confirmedUndelivered: 8,
     projectedProfit: '$ 41,205.1700',
   },
   {
-    shipmentMonths: 'MAR 26',
+    shipmentMonths: 'MAR26',
     totalNoContainers: 10,
     deliveredContainers: 2,
     confirmedUndelivered: 8,
     projectedProfit: '$ 24,653.0000',
   },
   {
-    shipmentMonths: 'APR 26',
+    shipmentMonths: 'APR26',
     totalNoContainers: 2,
     deliveredContainers: 1,
     confirmedUndelivered: 1,
     projectedProfit: '$ 14,540.5000',
   },
   {
-    shipmentMonths: 'JUN 26',
+    shipmentMonths: 'JUN26',
     totalNoContainers: 5,
     deliveredContainers: 0,
     confirmedUndelivered: 5,

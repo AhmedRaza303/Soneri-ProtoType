@@ -684,48 +684,49 @@ export const PurchaseDashboardScreen: React.FC<PurchaseDashboardScreenProps> = (
                         </td>
                       </tr>
 
-                      {/* Expanded Sub-row matching Image 2 */}
+                      {/* Expanded Sub-row: Product | Requisition / Supplier */}
                       {isExpanded && (
                         <tr className="bg-slate-50/70 border-b border-slate-200/80">
                           <td className="py-3 px-3" />
                           <td colSpan={6} className="py-3 pr-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white p-3.5 rounded-xl border border-slate-200/90 shadow-2xs">
-                              {/* Product Name Column */}
-                              <div>
-                                <span className="text-[10.5px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">
+                            <div className="bg-white p-3.5 rounded-xl border border-slate-200/90 shadow-2xs">
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-2">
+                                <span className="text-[10.5px] font-bold text-slate-400 uppercase tracking-wider">
                                   Product Name
                                 </span>
-                                <div className="space-y-1">
-                                  {row.expandedDetails.products.map((prod, idx) => (
-                                    <div
-                                      key={idx}
-                                      className="text-xs font-semibold text-blue-600 hover:underline cursor-pointer"
-                                    >
-                                      {prod}
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-
-                              {/* Requisition / Supplier Column */}
-                              <div>
-                                <span className="text-[10.5px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">
+                                <span className="hidden md:block text-[10.5px] font-bold text-slate-400 uppercase tracking-wider">
                                   Requisition / Supplier
                                 </span>
-                                <div className="space-y-1.5">
-                                  {row.expandedDetails.requisitionsAndSuppliers.map(
-                                    (item, idx) => (
-                                      <div key={idx} className="text-xs space-y-0.5">
-                                        <span className="font-semibold text-blue-600 hover:underline cursor-pointer block">
-                                          {item.requisition}
+                              </div>
+                              <div className="space-y-2">
+                                {row.lineItems.map((item, idx) => (
+                                  <div
+                                    key={`${row.id}-line-${idx}`}
+                                    className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3 py-1.5 border-b border-slate-100 last:border-0"
+                                  >
+                                    <span className="text-xs font-semibold text-blue-600 hover:underline cursor-pointer">
+                                      {item.product}
+                                    </span>
+                                    <div className="text-xs space-y-0.5">
+                                      {item.requisition ? (
+                                        <>
+                                          <span className="font-semibold text-blue-600 hover:underline cursor-pointer block">
+                                            {item.requisition}
+                                          </span>
+                                          {item.supplier && (
+                                            <span className="font-semibold text-blue-600 hover:underline cursor-pointer block">
+                                              {item.supplier}
+                                            </span>
+                                          )}
+                                        </>
+                                      ) : (
+                                        <span className="text-slate-400 italic font-medium">
+                                          Direct product
                                         </span>
-                                        <span className="font-semibold text-blue-600 hover:underline cursor-pointer block">
-                                          {item.supplier}
-                                        </span>
-                                      </div>
-                                    )
-                                  )}
-                                </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                ))}
                               </div>
                             </div>
                           </td>

@@ -7,8 +7,8 @@
 import React from 'react';
 
 export const DashHero: React.FC<{
-  eyebrow: string;
-  title: string;
+  eyebrow?: string;
+  title?: string;
   subtitle?: string;
   accent?: 'navy' | 'teal' | 'sky' | 'violet' | 'amber';
   children?: React.ReactNode;
@@ -20,14 +20,17 @@ export const DashHero: React.FC<{
     violet: 'from-[#4c1d95] via-[#6d28d9] to-[#7c3aed]',
     amber: 'from-[#92400e] via-[#b45309] to-[#d97706]',
   };
+  const hasHeader = Boolean(eyebrow || title || subtitle);
   return (
     <div className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${gradients[accent]} p-4 text-white shadow-lg`}>
       <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-white/10 blur-2xl" />
       <div className="absolute -left-6 bottom-0 w-24 h-24 rounded-full bg-teal-300/10 blur-xl" />
-      <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-white/60 relative">{eyebrow}</p>
-      <h2 className="text-xl font-black tracking-tight mt-1 relative">{title}</h2>
+      {eyebrow && (
+        <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-white/60 relative">{eyebrow}</p>
+      )}
+      {title && <h2 className="text-xl font-black tracking-tight mt-1 relative">{title}</h2>}
       {subtitle && <p className="text-[11px] text-white/70 mt-1 relative leading-snug">{subtitle}</p>}
-      {children && <div className="mt-3 relative">{children}</div>}
+      {children && <div className={`${hasHeader ? 'mt-3' : ''} relative`}>{children}</div>}
     </div>
   );
 };
@@ -47,9 +50,9 @@ export const DashKpi: React.FC<{
   };
   return (
     <div className={`rounded-2xl border p-3 shadow-sm ${tones[tone]}`}>
-      <p className="text-[9px] font-bold uppercase tracking-wider opacity-60">{label}</p>
-      <p className="text-xl font-black tabular-nums mt-1 leading-none">{value}</p>
-      {hint && <p className="text-[10px] font-semibold opacity-50 mt-1.5 line-clamp-1">{hint}</p>}
+      <p className="text-[8px] font-bold uppercase tracking-wider opacity-60">{label}</p>
+      <p className="text-sm font-black tabular-nums mt-1 leading-none">{value}</p>
+      {hint && <p className="text-[9px] font-semibold opacity-50 mt-1.5 line-clamp-1">{hint}</p>}
     </div>
   );
 };
@@ -61,7 +64,7 @@ export const DashSection: React.FC<{
 }> = ({ title, action, children }) => (
   <section className="space-y-2.5">
     <div className="flex items-center justify-between gap-2 px-0.5">
-      <h3 className="text-[11px] font-extrabold uppercase tracking-[0.12em] text-[#0f2b3c]">{title}</h3>
+      <h3 className="text-[10px] font-extrabold uppercase tracking-[0.12em] text-[#0f2b3c]">{title}</h3>
       {action}
     </div>
     {children}
@@ -82,15 +85,15 @@ export const DashTaskTile: React.FC<{
     className="w-full text-left bg-white rounded-2xl border border-slate-200 p-3 shadow-sm active:scale-[0.99] transition-transform cursor-pointer"
   >
     <div className="flex items-start gap-3">
-      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border border-white/60 ${iconBg}`}>
+      <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border border-white/60 ${iconBg}`}>
         {icon}
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-[11px] font-extrabold text-[#0f2b3c] leading-snug line-clamp-2">{title}</p>
-        {subtitle && <p className="text-[10px] text-slate-500 mt-0.5 line-clamp-1">{subtitle}</p>}
+        <p className="text-[10px] font-extrabold text-[#0f2b3c] leading-snug line-clamp-2">{title}</p>
+        {subtitle && <p className="text-[9px] text-slate-500 mt-0.5 line-clamp-1">{subtitle}</p>}
       </div>
       {value !== undefined && (
-        <span className="text-lg font-black tabular-nums text-[#0f2b3c] shrink-0">{value}</span>
+        <span className="text-sm font-black tabular-nums text-[#0f2b3c] shrink-0">{value}</span>
       )}
     </div>
   </button>
@@ -129,8 +132,8 @@ export const DashListCard: React.FC<{
     <button type="button" onClick={onClick} className="w-full text-left p-3.5 cursor-pointer">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <p className="text-[12px] font-extrabold text-[#0f2b3c] truncate">{title}</p>
-          {subtitle && <p className="text-[10px] text-slate-500 mt-0.5 truncate">{subtitle}</p>}
+          <p className="text-[11px] font-extrabold text-[#0f2b3c] truncate">{title}</p>
+          {subtitle && <p className="text-[9px] text-slate-500 mt-0.5 truncate">{subtitle}</p>}
         </div>
         {badge}
       </div>

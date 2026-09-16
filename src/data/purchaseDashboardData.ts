@@ -25,6 +25,13 @@ export interface ReadinessCard {
   infoTooltip?: string;
 }
 
+export interface DelayedOrderLineItem {
+  product: string;
+  /** Present when a requisition exists for this product */
+  requisition?: string;
+  supplier?: string;
+}
+
 export interface DelayedOrderItem {
   id: string;
   proformaCode: string;
@@ -33,13 +40,7 @@ export interface DelayedOrderItem {
   portOfDischarge: string;
   croType: 'Applied' | 'Received' | 'Not Applied';
   marketingPersonal: string;
-  expandedDetails: {
-    products: string[];
-    requisitionsAndSuppliers: Array<{
-      requisition: string;
-      supplier: string;
-    }>;
-  };
+  lineItems: DelayedOrderLineItem[];
 }
 
 // 1. Tasks
@@ -147,15 +148,14 @@ export const DELAYED_ORDERS: DelayedOrderItem[] = [
     portOfDischarge: 'PT-484 - Walvis Bay',
     croType: 'Applied',
     marketingPersonal: 'PERVAIZ MORANI',
-    expandedDetails: {
-      products: ['PRD-223 Magic Ball', 'PRD-1012 Fruita Bon'],
-      requisitionsAndSuppliers: [
-        {
-          requisition: 'RQ-955',
-          supplier: 'SP-042 - SILVER LAKE FOOD INDUSTRIES',
-        },
-      ],
-    },
+    lineItems: [
+      { product: 'PRD-223 Magic Ball' },
+      {
+        product: 'PRD-1012 Fruita Bon',
+        requisition: 'RQ-955',
+        supplier: 'SP-042 - SILVER LAKE FOOD INDUSTRIES',
+      },
+    ],
   },
   {
     id: 'pi-802',
@@ -165,15 +165,14 @@ export const DELAYED_ORDERS: DelayedOrderItem[] = [
     portOfDischarge: 'PT-197 - Bata',
     croType: 'Not Applied',
     marketingPersonal: 'ANUM KHAN',
-    expandedDetails: {
-      products: ['PRD-104 Choco Crunch', 'PRD-401 Mini Drops'],
-      requisitionsAndSuppliers: [
-        {
-          requisition: 'RQ-951',
-          supplier: 'SP-025 - BM CONFECTIONERY',
-        },
-      ],
-    },
+    lineItems: [
+      {
+        product: 'PRD-104 Choco Crunch',
+        requisition: 'RQ-951',
+        supplier: 'SP-025 - BM CONFECTIONERY',
+      },
+      { product: 'PRD-401 Mini Drops' },
+    ],
   },
   {
     id: 'pi-799',
@@ -183,15 +182,13 @@ export const DELAYED_ORDERS: DelayedOrderItem[] = [
     portOfDischarge: 'PT-831 - Mersin',
     croType: 'Not Applied',
     marketingPersonal: 'PERVAIZ MORANI',
-    expandedDetails: {
-      products: ['PRD-310 Milky Roll'],
-      requisitionsAndSuppliers: [
-        {
-          requisition: 'RQ-948',
-          supplier: 'SP-024 - DANPAK FOOD INDUSTRIES',
-        },
-      ],
-    },
+    lineItems: [
+      {
+        product: 'PRD-310 Milky Roll',
+        requisition: 'RQ-948',
+        supplier: 'SP-024 - DANPAK FOOD INDUSTRIES',
+      },
+    ],
   },
   {
     id: 'pi-795',
@@ -201,15 +198,15 @@ export const DELAYED_ORDERS: DelayedOrderItem[] = [
     portOfDischarge: 'PT-824 - Salalah',
     croType: 'Applied',
     marketingPersonal: 'BILAL',
-    expandedDetails: {
-      products: ['PRD-032 Bisclik Chocolate Wafer'],
-      requisitionsAndSuppliers: [
-        {
-          requisition: 'RQ-942',
-          supplier: 'SP-038 - KMG EXPORT MILLS',
-        },
-      ],
-    },
+    lineItems: [
+      { product: 'PRD-032 Bisclik Chocolate Wafer' },
+      { product: 'PRD-033 Bisclik Vanilla Wafer' },
+      {
+        product: 'PRD-036 Cliker Pop Candy',
+        requisition: 'RQ-942',
+        supplier: 'SP-038 - KMG EXPORT MILLS',
+      },
+    ],
   },
   {
     id: 'pi-794',
@@ -219,15 +216,13 @@ export const DELAYED_ORDERS: DelayedOrderItem[] = [
     portOfDischarge: 'PT-824 - Salalah',
     croType: 'Received',
     marketingPersonal: 'BILAL',
-    expandedDetails: {
-      products: ['PRD-036 Cliker Pop Candy'],
-      requisitionsAndSuppliers: [
-        {
-          requisition: 'RQ-940',
-          supplier: 'SP-026 - SUNRISE COMMODITIES FZE',
-        },
-      ],
-    },
+    lineItems: [
+      {
+        product: 'PRD-036 Cliker Pop Candy',
+        requisition: 'RQ-940',
+        supplier: 'SP-026 - SUNRISE COMMODITIES FZE',
+      },
+    ],
   },
   {
     id: 'pi-763',
@@ -237,15 +232,15 @@ export const DELAYED_ORDERS: DelayedOrderItem[] = [
     portOfDischarge: 'PT-274 - Puerto Barrios',
     croType: 'Received',
     marketingPersonal: 'ANUM KHAN',
-    expandedDetails: {
-      products: ['PRD-211 Gummy Bear Assorted'],
-      requisitionsAndSuppliers: [
-        {
-          requisition: 'RQ-932',
-          supplier: 'SP-027 - EUROPA PACKAGING SYSTEMS',
-        },
-      ],
-    },
+    lineItems: [
+      { product: 'PRD-211 Gummy Bear Assorted' },
+      {
+        product: 'PRD-275 Rofill Chocolate Roll',
+        requisition: 'RQ-932',
+        supplier: 'SP-027 - EUROPA PACKAGING SYSTEMS',
+      },
+      { product: 'PRD-451 Picard Toffee Cream' },
+    ],
   },
   {
     id: 'pi-755',
@@ -255,15 +250,13 @@ export const DELAYED_ORDERS: DelayedOrderItem[] = [
     portOfDischarge: 'PT-626 - Durban',
     croType: 'Applied',
     marketingPersonal: 'PERVAIZ MORANI',
-    expandedDetails: {
-      products: ['PRD-275 Rofill Chocolate Roll'],
-      requisitionsAndSuppliers: [
-        {
-          requisition: 'RQ-928',
-          supplier: 'SP-045 - AMBER PAPER PRODUCTS',
-        },
-      ],
-    },
+    lineItems: [
+      {
+        product: 'PRD-275 Rofill Chocolate Roll',
+        requisition: 'RQ-928',
+        supplier: 'SP-045 - AMBER PAPER PRODUCTS',
+      },
+    ],
   },
   {
     id: 'pi-744',
@@ -273,15 +266,10 @@ export const DELAYED_ORDERS: DelayedOrderItem[] = [
     portOfDischarge: 'PT-724 - London',
     croType: 'Applied',
     marketingPersonal: 'TEHSEENA .',
-    expandedDetails: {
-      products: ['PRD-451 Picard Toffee Cream'],
-      requisitionsAndSuppliers: [
-        {
-          requisition: 'RQ-921',
-          supplier: 'SP-024 - DANPAK FOOD INDUSTRIES',
-        },
-      ],
-    },
+    lineItems: [
+      { product: 'PRD-451 Picard Toffee Cream' },
+      { product: 'PRD-499 Picard Butter Toffee' },
+    ],
   },
   {
     id: 'pi-743',
@@ -291,15 +279,13 @@ export const DELAYED_ORDERS: DelayedOrderItem[] = [
     portOfDischarge: 'PT-724 - London',
     croType: 'Applied',
     marketingPersonal: 'TEHSEENA .',
-    expandedDetails: {
-      products: ['PRD-342 Conito Sweet Cone'],
-      requisitionsAndSuppliers: [
-        {
-          requisition: 'RQ-919',
-          supplier: 'SP-025 - BM CONFECTIONERY',
-        },
-      ],
-    },
+    lineItems: [
+      {
+        product: 'PRD-342 Conito Sweet Cone',
+        requisition: 'RQ-919',
+        supplier: 'SP-025 - BM CONFECTIONERY',
+      },
+    ],
   },
   {
     id: 'pi-731',
@@ -309,14 +295,9 @@ export const DELAYED_ORDERS: DelayedOrderItem[] = [
     portOfDischarge: 'PT-724 - London',
     croType: 'Not Applied',
     marketingPersonal: 'TEHSEENA .',
-    expandedDetails: {
-      products: ['PRD-001 Boom Bubble Gum'],
-      requisitionsAndSuppliers: [
-        {
-          requisition: 'RQ-912',
-          supplier: 'SP-038 - KMG EXPORT MILLS',
-        },
-      ],
-    },
+    lineItems: [
+      { product: 'PRD-001 Boom Bubble Gum' },
+      { product: 'PRD-021 Boom Bubble Gum Blueberry' },
+    ],
   },
 ];
