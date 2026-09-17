@@ -8,7 +8,6 @@ import {
   LayoutGrid,
   Rows3,
   Filter,
-  Settings2,
   Search,
   ChevronLeft,
   ChevronRight,
@@ -85,7 +84,7 @@ export const StatusPill: React.FC<{ status: string; className?: string }> = ({
   const colors = TONE_MAP[tone];
   return (
     <span
-      className={`inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-full border whitespace-nowrap ${
+      className={`inline-flex items-center gap-1.5 text-label sm:text-body-sm font-semibold px-2 py-0.5 rounded-full border whitespace-nowrap ${
         isDark ? colors.dark : colors.light
       } ${className}`}
     >
@@ -103,7 +102,7 @@ export const FieldLabel: React.FC<{ children: React.ReactNode }> = ({ children }
   const { isDark } = useTheme();
   return (
     <span
-      className={`text-[10px] font-semibold uppercase tracking-wider ${
+      className={`text-label font-semibold uppercase tracking-wider ${
         isDark ? 'text-slate-500' : 'text-slate-400'
       }`}
     >
@@ -173,7 +172,7 @@ export const ViewModeToggle: React.FC<{
       <button
         type="button"
         onClick={() => onChange('grid')}
-        className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] font-bold rounded-lg transition-all cursor-pointer ${
+        className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 text-body-sm font-bold rounded-lg transition-all cursor-pointer ${
           viewMode === 'grid'
             ? isDark
               ? 'bg-teal-600 text-white shadow-sm'
@@ -189,7 +188,7 @@ export const ViewModeToggle: React.FC<{
       <button
         type="button"
         onClick={() => onChange('card')}
-        className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] font-bold rounded-lg transition-all cursor-pointer ${
+        className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 text-body-sm font-bold rounded-lg transition-all cursor-pointer ${
           viewMode === 'card'
             ? isDark
               ? 'bg-teal-600 text-white shadow-sm'
@@ -217,6 +216,7 @@ export const ListToolbar: React.FC<{
   onSearchChange: (q: string) => void;
   searchPlaceholder?: string;
   onFilterClick?: () => void;
+  /** @deprecated Columns control removed from toolbar */
   onColumnsClick?: () => void;
   trailing?: React.ReactNode;
 }> = ({
@@ -226,14 +226,9 @@ export const ListToolbar: React.FC<{
   onSearchChange,
   searchPlaceholder = 'Search records…',
   onFilterClick,
-  onColumnsClick,
   trailing,
 }) => {
   const { isDark } = useTheme();
-  const btn =
-    isDark
-      ? 'bg-[#111726] border-slate-700 text-slate-200 hover:bg-slate-800'
-      : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50';
 
   return (
     <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3">
@@ -242,7 +237,7 @@ export const ListToolbar: React.FC<{
         <button
           type="button"
           onClick={onFilterClick}
-          className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-bold rounded-xl border transition-colors cursor-pointer ${
+          className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-body-sm font-bold rounded-xl border transition-colors cursor-pointer ${
             isDark
               ? 'bg-teal-600 border-teal-500 text-white hover:bg-teal-500'
               : 'bg-[#0f2b3c] border-[#0f2b3c] text-white hover:bg-[#163a50]'
@@ -250,14 +245,6 @@ export const ListToolbar: React.FC<{
         >
           <Filter className="w-3.5 h-3.5" />
           Filters
-        </button>
-        <button
-          type="button"
-          onClick={onColumnsClick}
-          className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-bold rounded-xl border transition-colors cursor-pointer ${btn}`}
-        >
-          <Settings2 className="w-3.5 h-3.5" />
-          Columns
         </button>
         {trailing}
       </div>
@@ -329,7 +316,7 @@ export const ListPagination: React.FC<{
         isDark ? 'border-slate-800' : 'border-slate-100'
       }`}
     >
-      <p className={`text-[11px] font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+      <p className={`text-body-sm font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
         Showing {from} to {to} of {total} records
       </p>
       <div className="flex items-center gap-1.5 flex-wrap">
@@ -371,7 +358,7 @@ export const ListPagination: React.FC<{
           <select
             value={pageSize}
             onChange={(e) => onPageSizeChange(Number(e.target.value))}
-            className={`ml-1 text-[11px] font-semibold rounded-lg border px-2 py-1.5 cursor-pointer outline-none ${chip}`}
+            className={`ml-1 text-body-sm font-semibold rounded-lg border px-2 py-1.5 cursor-pointer outline-none ${chip}`}
           >
             {[5, 10, 20, 50].map((n) => (
               <option key={n} value={n}>
@@ -417,7 +404,7 @@ export const RecordCard: React.FC<{
           <div className="flex items-center gap-2 flex-wrap">
             {code && (
               <span
-                className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-md ${
+                className={`text-label font-mono font-bold px-2 py-0.5 rounded-md ${
                   isDark ? 'bg-teal-500/15 text-teal-300' : 'bg-teal-50 text-teal-800'
                 }`}
               >
@@ -435,7 +422,7 @@ export const RecordCard: React.FC<{
             {title}
           </h3>
           {subtitle && (
-            <p className={`text-[11px] line-clamp-2 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+            <p className={`text-body-sm line-clamp-2 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
               {subtitle}
             </p>
           )}
@@ -443,46 +430,69 @@ export const RecordCard: React.FC<{
 
         {actions && actions.length > 0 && (
           <div className="relative shrink-0" onClick={(e) => e.stopPropagation()}>
-            <button
-              type="button"
-              onClick={() => setMenuOpen((v) => !v)}
-              className={`p-1.5 rounded-lg cursor-pointer ${
-                isDark ? 'hover:bg-slate-800 text-slate-400' : 'hover:bg-slate-100 text-slate-400'
-              }`}
-            >
-              <MoreVertical className="w-4 h-4" />
-            </button>
-            {menuOpen && (
-              <div
-                className={`absolute right-0 top-8 z-20 w-36 rounded-xl border shadow-xl py-1 text-xs ${
+            {actions.length === 1 ? (
+              <button
+                type="button"
+                onClick={() => actions[0].onClick()}
+                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-body-sm font-semibold cursor-pointer ${
                   isDark
-                    ? 'bg-[#151c2f] border-slate-700 text-slate-200'
-                    : 'bg-white border-slate-200 text-slate-700'
+                    ? 'bg-slate-800 hover:bg-slate-700 text-slate-200'
+                    : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
                 }`}
               >
-                {actions.map((a) => (
-                  <button
-                    key={a.label}
-                    type="button"
-                    onClick={() => {
-                      setMenuOpen(false);
-                      a.onClick();
-                    }}
-                    className={`w-full flex items-center gap-2 px-3 py-2 text-left cursor-pointer ${
-                      isDark ? 'hover:bg-slate-800' : 'hover:bg-slate-50'
+                {actions[0].icon === 'edit' ? (
+                  <Pencil className="w-3.5 h-3.5 text-slate-400" />
+                ) : actions[0].icon === 'print' ? (
+                  <Printer className="w-3.5 h-3.5 text-slate-400" />
+                ) : (
+                  <Eye className="w-3.5 h-3.5 text-teal-600" />
+                )}
+                {actions[0].label}
+              </button>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setMenuOpen((v) => !v)}
+                  className={`p-1.5 rounded-lg cursor-pointer ${
+                    isDark ? 'hover:bg-slate-800 text-slate-400' : 'hover:bg-slate-100 text-slate-400'
+                  }`}
+                >
+                  <MoreVertical className="w-4 h-4" />
+                </button>
+                {menuOpen && (
+                  <div
+                    className={`absolute right-0 top-8 z-20 w-36 rounded-xl border shadow-xl py-1 text-xs ${
+                      isDark
+                        ? 'bg-[#151c2f] border-slate-700 text-slate-200'
+                        : 'bg-white border-slate-200 text-slate-700'
                     }`}
                   >
-                    {a.icon === 'edit' ? (
-                      <Pencil className="w-3.5 h-3.5 text-slate-400" />
-                    ) : a.icon === 'print' ? (
-                      <Printer className="w-3.5 h-3.5 text-slate-400" />
-                    ) : (
-                      <Eye className="w-3.5 h-3.5 text-slate-400" />
-                    )}
-                    {a.label}
-                  </button>
-                ))}
-              </div>
+                    {actions.map((a) => (
+                      <button
+                        key={a.label}
+                        type="button"
+                        onClick={() => {
+                          setMenuOpen(false);
+                          a.onClick();
+                        }}
+                        className={`w-full flex items-center gap-2 px-3 py-2 text-left cursor-pointer ${
+                          isDark ? 'hover:bg-slate-800' : 'hover:bg-slate-50'
+                        }`}
+                      >
+                        {a.icon === 'edit' ? (
+                          <Pencil className="w-3.5 h-3.5 text-slate-400" />
+                        ) : a.icon === 'print' ? (
+                          <Printer className="w-3.5 h-3.5 text-slate-400" />
+                        ) : (
+                          <Eye className="w-3.5 h-3.5 text-slate-400" />
+                        )}
+                        {a.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </>
             )}
           </div>
         )}
@@ -502,7 +512,7 @@ export const RecordCard: React.FC<{
 
       {footer && (
         <div
-          className={`mt-3 pt-2.5 border-t text-[11px] ${
+          className={`mt-3 pt-2.5 border-t text-body-sm ${
             isDark ? 'border-slate-800 text-slate-400' : 'border-slate-100 text-slate-500'
           }`}
         >
@@ -547,7 +557,7 @@ export const DataTable: React.FC<{
               {headers.map((h) => (
                 <th
                   key={h}
-                  className={`px-3.5 py-3 text-[10px] font-bold uppercase tracking-wider whitespace-nowrap ${
+                  className={`px-3.5 py-3 text-label font-bold uppercase tracking-wider whitespace-nowrap ${
                     isDark ? 'text-slate-400' : 'text-slate-500'
                   }`}
                 >

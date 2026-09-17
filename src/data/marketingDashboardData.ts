@@ -3,15 +3,24 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+export interface MarketingCriteria {
+  eyebrow?: string;
+  title?: string;
+  items?: string[];
+  description?: string;
+  variant?: 'card' | 'dark';
+  tintClassName?: string;
+}
+
 export interface MarketingFollowUpItem {
   id: string;
   label: string;
   value: string | number;
   subtitle: string;
-  infoTooltip?: string;
+  criteria?: MarketingCriteria;
   extraBadge?: {
     text: string;
-    infoTooltip?: string;
+    criteria?: MarketingCriteria;
   };
   icon: 'orders' | 'payments' | 'shipping' | 'quotations';
 }
@@ -21,13 +30,13 @@ export interface MarketingTaskItem {
   label: string;
   value: number;
   subtitle: string;
-  infoTooltip?: string;
+  criteria?: MarketingCriteria;
   icon: 'ticket' | 'freight' | 'artwork' | 'container';
 }
 
 export interface PerformanceSummaryItem {
   criteria: string;
-  infoTooltip?: string;
+  tip?: MarketingCriteria;
   currentMonth: number;
   splyMonth: number;
   percentageChangeMonth: string;
@@ -114,7 +123,11 @@ export const MARKETING_FOLLOW_UPS: MarketingFollowUpItem[] = [
     label: 'PENDING PAYMENTS',
     value: '$ 951,635.031',
     subtitle: 'Payment follow-ups pending',
-    infoTooltip: 'Payment follow-ups pending',
+    criteria: {
+      title: 'Disclaimer',
+      items: ['As per payment terms'],
+      tintClassName: 'bg-cyan-50',
+    },
     icon: 'payments',
   },
   {
@@ -123,10 +136,17 @@ export const MARKETING_FOLLOW_UPS: MarketingFollowUpItem[] = [
     value: 104,
     extraBadge: {
       text: 'ALL 210',
-      infoTooltip: 'All orders pending shipment',
+      criteria: {
+        variant: 'dark',
+        description: 'All orders pending shipment',
+      },
     },
     subtitle: 'Orders pending shipment',
-    infoTooltip: 'Orders pending shipment',
+    criteria: {
+      title: 'Disclaimer',
+      items: ['All confirmed & shipped orders'],
+      tintClassName: 'bg-violet-50',
+    },
     icon: 'shipping',
   },
   {
@@ -134,7 +154,18 @@ export const MARKETING_FOLLOW_UPS: MarketingFollowUpItem[] = [
     label: 'QUOTATIONS',
     value: 10,
     subtitle: 'Quotations pending proforma',
-    infoTooltip: 'Quotations pending proforma',
+    criteria: {
+      eyebrow: '(After 30 days of issuance)',
+      title: 'Statuses not included:',
+      items: [
+        'Initiated',
+        'Pending Customer Response',
+        'Revision Needed',
+        'Revision in Process',
+      ],
+      description: 'This count includes all quotation statuses except those listed above.',
+      tintClassName: 'bg-orange-50',
+    },
     icon: 'quotations',
   },
 ];
@@ -146,7 +177,12 @@ export const MARKETING_TASKS: MarketingTaskItem[] = [
     label: 'OPEN TICKET',
     value: 37,
     subtitle: 'Tickets still open',
-    infoTooltip: 'Tickets still open',
+    criteria: {
+      title: 'Statuses included:',
+      items: ['Initiated'],
+      description: 'This count includes all above statuses of tickets.',
+      tintClassName: 'bg-emerald-50',
+    },
     icon: 'ticket',
   },
   {
@@ -176,7 +212,10 @@ export const MARKETING_TASKS: MarketingTaskItem[] = [
 export const PERFORMANCE_SUMMARY: PerformanceSummaryItem[] = [
   {
     criteria: 'Orders (Confirmed)',
-    infoTooltip: 'Orders confirmed by sales/finance',
+    tip: {
+      variant: 'dark',
+      description: 'Includes proformas that are confirmed, based on their confirmation date.',
+    },
     currentMonth: 21,
     splyMonth: 0,
     percentageChangeMonth: '+100%',
@@ -186,7 +225,10 @@ export const PERFORMANCE_SUMMARY: PerformanceSummaryItem[] = [
   },
   {
     criteria: 'Orders (Shipped)',
-    infoTooltip: 'Orders shipped to destination',
+    tip: {
+      variant: 'dark',
+      description: 'Includes orders based on their shipment created date.',
+    },
     currentMonth: 17,
     splyMonth: 0,
     percentageChangeMonth: '+100%',

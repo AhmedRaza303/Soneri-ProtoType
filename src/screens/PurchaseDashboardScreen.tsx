@@ -14,11 +14,9 @@ import {
   Clock,
   Edit3,
   FileSpreadsheet,
-  Info,
   ChevronDown,
   ChevronRight,
   Filter,
-  Columns as ColumnsIcon,
   Search,
   ChevronLeft,
   X,
@@ -28,11 +26,12 @@ import {
   CURRENT_MONTH_PERFORMANCE,
   NEXT_MONTH_SUMMARY,
   DELAYED_ORDERS,
-  DELAYED_ORDERS_TOOLTIP,
+  DELAYED_ORDERS_CRITERIA,
   PurchaseTaskItem,
   DelayedOrderItem,
 } from '../data/purchaseDashboardData';
 import { PurchaseDashboardJourney } from '../components/dashboard/DashboardJourneys';
+import { DashCriteriaTip } from '../components/dashboard/DashboardChrome';
 import { useTheme } from '../context/ThemeContext';
 
 interface PurchaseDashboardScreenProps {
@@ -41,14 +40,12 @@ interface PurchaseDashboardScreenProps {
 
 export const PurchaseDashboardScreen: React.FC<PurchaseDashboardScreenProps> = () => {
   const { isDark } = useTheme();
-  const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
   const [expandedRows, setExpandedRows] = useState<Record<string, boolean>>({
     'pi-809': true, // Default expanded as in reference image
   });
   const [searchQuery, setSearchQuery] = useState('');
   const [croFilter, setCroFilter] = useState<string>('All');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [isColumnsOpen, setIsColumnsOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState('10');
   const [mobileMonthTab, setMobileMonthTab] = useState<'current' | 'next'>('current');
@@ -82,21 +79,21 @@ export const PurchaseDashboardScreen: React.FC<PurchaseDashboardScreenProps> = (
     switch (type) {
       case 'Applied':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200/80">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-body font-semibold bg-amber-50 text-amber-700 border border-amber-200/80">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
             Applied
           </span>
         );
       case 'Received':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-body font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
             Received
           </span>
         );
       case 'Not Applied':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200/80">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-body font-semibold bg-rose-50 text-rose-700 border border-rose-200/80">
             <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
             Not Applied
           </span>
@@ -136,7 +133,7 @@ export const PurchaseDashboardScreen: React.FC<PurchaseDashboardScreenProps> = (
   };
 
   return (
-    <div>
+    <div className="dash-type">
       {/* Journey-style mobile dashboard */}
       <PurchaseDashboardJourney />
 
@@ -146,7 +143,7 @@ export const PurchaseDashboardScreen: React.FC<PurchaseDashboardScreenProps> = (
       <div className="hidden md:block space-y-6">
         {/* Header with Title (matching Image 1 & 2) */}
         <div className="pt-1">
-          <span className="text-[10px] sm:text-xs font-bold tracking-wider text-slate-400 uppercase block">
+          <span className="text-label sm:text-body font-bold tracking-wider text-slate-400 uppercase block">
             OVERVIEW
           </span>
           <h1 className="text-2xl sm:text-3xl font-black text-[#1e293b] tracking-tight">
@@ -161,36 +158,34 @@ export const PurchaseDashboardScreen: React.FC<PurchaseDashboardScreenProps> = (
             <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">
               Tasks
             </h2>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-blue-50 text-blue-700 border border-blue-200/80">
+            <span className="px-2.5 py-0.5 rounded-full text-body font-extrabold bg-blue-50 text-blue-700 border border-blue-200/80">
               Total 75
             </span>
           </div>
-          <span className="text-[11px] font-semibold text-slate-400">Procurement Pipeline</span>
+          <span className="text-body-sm font-semibold text-slate-400">Procurement Pipeline</span>
         </div>
 
         {/* 5 Task Segments in a cohesive responsive grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
           {PURCHASE_TASKS.map((task) => {
-            const hasTooltip = Boolean(task.infoTooltip);
-            const isTooltipActive = activeTooltip === task.id;
             const hasActiveItems = Number(task.value) > 0;
 
             const styleConfig =
               task.icon === 'ticket'
-                ? { bar: 'bg-emerald-600', iconBg: 'bg-emerald-50 text-emerald-700 border-emerald-200' }
+                ? { bar: 'bg-emerald-600', iconBg: 'bg-emerald-50 text-emerald-700 border-emerald-200', accent: '#059669' }
                 : task.icon === 'artwork'
-                ? { bar: 'bg-rose-600', iconBg: 'bg-rose-50 text-rose-700 border-rose-200' }
+                ? { bar: 'bg-rose-600', iconBg: 'bg-rose-50 text-rose-700 border-rose-200', accent: '#e11d48' }
                 : task.icon === 'requisition'
-                ? { bar: 'bg-purple-600', iconBg: 'bg-purple-50 text-purple-700 border-purple-200' }
+                ? { bar: 'bg-purple-600', iconBg: 'bg-purple-50 text-purple-700 border-purple-200', accent: '#7c3aed' }
                 : task.icon === 'order'
-                ? { bar: 'bg-blue-600', iconBg: 'bg-blue-50 text-blue-700 border-blue-200' }
-                : { bar: 'bg-amber-600', iconBg: 'bg-amber-50 text-amber-700 border-amber-200' };
+                ? { bar: 'bg-blue-600', iconBg: 'bg-blue-50 text-blue-700 border-blue-200', accent: '#2563eb' }
+                : { bar: 'bg-amber-600', iconBg: 'bg-amber-50 text-amber-700 border-amber-200', accent: '#d97706' };
 
             return (
               <div
                 key={task.id}
                 id={`purchase-task-${task.id}`}
-                className={`relative rounded-2xl border p-4 flex flex-col justify-between transition-all overflow-hidden ${
+                className={`relative rounded-2xl border p-4 flex flex-col justify-between transition-all overflow-visible ${
                   hasActiveItems
                     ? 'border-blue-200/90 bg-white shadow-xs'
                     : 'border-slate-200/80 bg-white hover:border-slate-300'
@@ -199,46 +194,34 @@ export const PurchaseDashboardScreen: React.FC<PurchaseDashboardScreenProps> = (
                 <div className={`absolute top-0 left-0 right-0 h-1 ${styleConfig.bar}`} />
 
                 <div className="pt-1">
-                  <div className="flex items-center justify-between gap-2 mb-2.5">
+                  <div className="flex items-center justify-between gap-2 mb-2">
                     <div
-                      className={`w-9 h-9 rounded-xl flex items-center justify-center border shrink-0 ${styleConfig.iconBg}`}
+                      className={`w-8 h-8 rounded-xl flex items-center justify-center border shrink-0 ${styleConfig.iconBg}`}
                     >
                       {renderTaskIcon(task.icon)}
                     </div>
+                  </div>
 
-                    {hasTooltip && (
-                      <div className="relative">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setActiveTooltip(isTooltipActive ? null : task.id)
-                          }
-                          onMouseEnter={() => setActiveTooltip(task.id)}
-                          onMouseLeave={() => setActiveTooltip(null)}
-                          className="p-1 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
-                        >
-                          <Info className="w-3.5 h-3.5" />
-                        </button>
-                        {isTooltipActive && (
-                          <div className="absolute right-0 bottom-full mb-1.5 z-30 px-2.5 py-1 text-[11px] font-medium text-white bg-slate-900 rounded-lg shadow-md whitespace-nowrap">
-                            {task.infoTooltip}
-                          </div>
-                        )}
-                      </div>
+                  <div className="flex items-start gap-1 min-w-0">
+                    <span className="text-micro font-bold text-slate-500 uppercase tracking-normal leading-[1.4] break-words [overflow-wrap:anywhere]">
+                      {task.label}
+                    </span>
+                    {task.criteria && (
+                      <DashCriteriaTip
+                        criteria={task.criteria}
+                        accentColor={styleConfig.accent}
+                        className="shrink-0 mt-px"
+                      />
                     )}
                   </div>
 
-                  <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block truncate">
-                    {task.label}
-                  </span>
-
-                  <div className="text-2xl sm:text-3xl font-black text-slate-900 my-1 tracking-tight">
+                  <div className="text-2xl sm:text-3xl font-black text-slate-900 my-1.5 tracking-tight">
                     {task.value}
                   </div>
                 </div>
 
-                <p className="text-[11px] font-medium text-slate-400 pt-2 border-t border-slate-100 truncate flex items-center gap-1.5">
-                  <span className={`w-1.5 h-1.5 rounded-full ${styleConfig.bar}`} />
+                <p className="text-micro font-medium text-slate-400 pt-2 border-t border-slate-100 leading-[1.4] break-words flex items-start gap-1.5">
+                  <span className={`w-1.5 h-1.5 rounded-full ${styleConfig.bar} mt-1 shrink-0`} />
                   <span>{task.subtitle}</span>
                 </p>
               </div>
@@ -258,26 +241,26 @@ export const PurchaseDashboardScreen: React.FC<PurchaseDashboardScreenProps> = (
             <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">
               Current Month Performance
             </h2>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-blue-50 text-blue-700 border border-blue-200/80">
+            <span className="px-2.5 py-0.5 rounded-full text-body font-extrabold bg-blue-50 text-blue-700 border border-blue-200/80">
               Total {CURRENT_MONTH_PERFORMANCE.total}
             </span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {/* Expected Readiness */}
-            <div className="relative bg-white border border-emerald-200/80 rounded-2xl p-4 flex items-center gap-3.5 shadow-xs overflow-hidden">
+            <div className="relative bg-white border border-emerald-200/80 rounded-2xl p-4 flex items-center gap-3.5 shadow-xs overflow-visible">
               <div className="absolute top-0 left-0 bottom-0 w-1 bg-emerald-600" />
               <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center shrink-0">
                 <CheckCircle2 className="w-5 h-5" />
               </div>
               <div className="min-w-0">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block truncate">
+                <span className="text-micro font-bold uppercase tracking-normal text-slate-500 block leading-[1.4] break-words">
                   {CURRENT_MONTH_PERFORMANCE.expectedReadiness.label}
                 </span>
                 <span className="text-2xl font-black text-slate-900 block tracking-tight">
                   {CURRENT_MONTH_PERFORMANCE.expectedReadiness.value}
                 </span>
-                <span className="text-[11px] text-slate-400 truncate block">
+                <span className="text-micro text-slate-400 block leading-[1.4] break-words">
                   {CURRENT_MONTH_PERFORMANCE.expectedReadiness.subtitle}
                 </span>
               </div>
@@ -289,75 +272,85 @@ export const PurchaseDashboardScreen: React.FC<PurchaseDashboardScreenProps> = (
               <div className="flex items-center justify-between pl-1">
                 <div className="flex items-center gap-1.5">
                   <FileSpreadsheet className="w-4 h-4 text-indigo-600" />
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-700">
+                  <span className="text-body-sm font-bold uppercase tracking-wider text-slate-700">
                     {CURRENT_MONTH_PERFORMANCE.croStatus.label}
                   </span>
                 </div>
               </div>
-              <div className="grid grid-cols-3 gap-1.5 text-center text-xs pl-1">
+              <div className="grid grid-cols-3 gap-1.5 text-center text-body pl-1">
                 <div className="bg-amber-50/50 rounded-xl p-1.5 border border-amber-200/70">
-                  <span className="text-[10px] font-bold text-amber-800 block">Applied</span>
-                  <span className="text-sm font-black text-amber-900">
+                  <span className="text-label font-bold text-amber-800 block">Applied</span>
+                  <span className="text-md font-black text-amber-900">
                     {CURRENT_MONTH_PERFORMANCE.croStatus.applied}
                   </span>
                 </div>
                 <div className="bg-emerald-50/50 rounded-xl p-1.5 border border-emerald-200/70">
-                  <span className="text-[10px] font-bold text-emerald-800 block">Received</span>
-                  <span className="text-sm font-black text-emerald-900">
+                  <span className="text-label font-bold text-emerald-800 block">Received</span>
+                  <span className="text-md font-black text-emerald-900">
                     {CURRENT_MONTH_PERFORMANCE.croStatus.received}
                   </span>
                 </div>
                 <div className="bg-rose-50/50 rounded-xl p-1.5 border border-rose-200/70">
-                  <span className="text-[10px] font-bold text-rose-800 block">Not App.</span>
-                  <span className="text-sm font-black text-rose-900">
+                  <span className="text-label font-bold text-rose-800 block">Not App.</span>
+                  <span className="text-md font-black text-rose-900">
                     {CURRENT_MONTH_PERFORMANCE.croStatus.notApplied}
                   </span>
                 </div>
               </div>
-              <span className="text-[11px] text-slate-400 block truncate pl-1">
+              <span className="text-body-sm text-slate-400 block truncate pl-1">
                 {CURRENT_MONTH_PERFORMANCE.croStatus.subtitle}
               </span>
             </div>
 
             {/* Pending Readiness */}
-            <div className="relative bg-white border border-amber-200/80 rounded-2xl p-4 flex items-center gap-3.5 shadow-xs overflow-hidden">
+            <div className="relative bg-white border border-amber-200/80 rounded-2xl p-4 flex items-center gap-3.5 shadow-xs overflow-visible">
               <div className="absolute top-0 left-0 bottom-0 w-1 bg-amber-600" />
               <div className="w-11 h-11 rounded-xl bg-amber-50 text-amber-600 border border-amber-200 flex items-center justify-center shrink-0">
                 <Clock className="w-5 h-5" />
               </div>
               <div className="min-w-0">
                 <div className="flex items-center gap-1">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block truncate">
+                  <span className="text-micro font-bold uppercase tracking-normal text-slate-500 leading-[1.4] break-words">
                     {CURRENT_MONTH_PERFORMANCE.pendingReadiness.label}
                   </span>
-                  <Info className="w-3 h-3 text-slate-400 shrink-0" />
+                  {CURRENT_MONTH_PERFORMANCE.pendingReadiness.criteria && (
+                    <DashCriteriaTip
+                      criteria={CURRENT_MONTH_PERFORMANCE.pendingReadiness.criteria}
+                      accentColor="#d97706"
+                    />
+                  )}
                 </div>
                 <span className="text-2xl font-black text-slate-900 block tracking-tight">
                   {CURRENT_MONTH_PERFORMANCE.pendingReadiness.value}
                 </span>
-                <span className="text-[11px] text-slate-400 truncate block">
+                <span className="text-micro text-slate-400 block leading-[1.4] break-words">
                   {CURRENT_MONTH_PERFORMANCE.pendingReadiness.subtitle}
                 </span>
               </div>
             </div>
 
             {/* Pending Survey */}
-            <div className="relative bg-white border border-pink-200/80 rounded-2xl p-4 flex items-center gap-3.5 shadow-xs overflow-hidden">
+            <div className="relative bg-white border border-pink-200/80 rounded-2xl p-4 flex items-center gap-3.5 shadow-xs overflow-visible">
               <div className="absolute top-0 left-0 bottom-0 w-1 bg-pink-600" />
               <div className="w-11 h-11 rounded-xl bg-pink-50 text-pink-600 border border-pink-200 flex items-center justify-center shrink-0">
                 <Edit3 className="w-5 h-5" />
               </div>
               <div className="min-w-0">
                 <div className="flex items-center gap-1">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block truncate">
+                  <span className="text-micro font-bold uppercase tracking-normal text-slate-500 leading-[1.4] break-words">
                     {CURRENT_MONTH_PERFORMANCE.pendingSurvey.label}
                   </span>
-                  <Info className="w-3 h-3 text-slate-400 shrink-0" />
+                  {CURRENT_MONTH_PERFORMANCE.pendingSurvey.criteria && (
+                    <DashCriteriaTip
+                      criteria={CURRENT_MONTH_PERFORMANCE.pendingSurvey.criteria}
+                      accentColor="#db2777"
+                    />
+                  )}
                 </div>
                 <span className="text-2xl font-black text-slate-900 block tracking-tight">
                   {CURRENT_MONTH_PERFORMANCE.pendingSurvey.value}
                 </span>
-                <span className="text-[11px] text-slate-400 truncate block">
+                <span className="text-micro text-slate-400 block leading-[1.4] break-words">
                   {CURRENT_MONTH_PERFORMANCE.pendingSurvey.subtitle}
                 </span>
               </div>
@@ -374,7 +367,7 @@ export const PurchaseDashboardScreen: React.FC<PurchaseDashboardScreenProps> = (
             <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">
               Next Month Summary
             </h2>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-indigo-50 text-indigo-700 border border-indigo-200/80">
+            <span className="px-2.5 py-0.5 rounded-full text-body font-extrabold bg-indigo-50 text-indigo-700 border border-indigo-200/80">
               Total {NEXT_MONTH_SUMMARY.total}
             </span>
           </div>
@@ -387,7 +380,7 @@ export const PurchaseDashboardScreen: React.FC<PurchaseDashboardScreenProps> = (
                 <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center shrink-0">
                   <CheckCircle2 className="w-4 h-4" />
                 </div>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block leading-tight">
+                <span className="text-micro font-bold uppercase tracking-normal text-slate-500 block leading-[1.4] break-words">
                   {NEXT_MONTH_SUMMARY.expectedReadiness.label}
                 </span>
               </div>
@@ -395,7 +388,7 @@ export const PurchaseDashboardScreen: React.FC<PurchaseDashboardScreenProps> = (
                 <span className="text-2xl font-black text-slate-900 block tracking-tight">
                   {NEXT_MONTH_SUMMARY.expectedReadiness.value}
                 </span>
-                <span className="text-[11px] text-slate-400 block truncate">
+                <span className="text-micro text-slate-400 block leading-[1.4] break-words">
                   {NEXT_MONTH_SUMMARY.expectedReadiness.subtitle}
                 </span>
               </div>
@@ -408,54 +401,59 @@ export const PurchaseDashboardScreen: React.FC<PurchaseDashboardScreenProps> = (
                 <div className="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 border border-purple-200 flex items-center justify-center shrink-0">
                   <FileSpreadsheet className="w-4 h-4" />
                 </div>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-700 block leading-tight">
+                <span className="text-body-sm font-bold uppercase tracking-wider text-slate-700 block leading-tight">
                   {NEXT_MONTH_SUMMARY.croStatus.label}
                 </span>
               </div>
-              <div className="space-y-1 text-xs py-1">
-                <div className="flex items-center justify-between text-[11px]">
+              <div className="space-y-1 text-body py-1">
+                <div className="flex items-center justify-between text-body-sm">
                   <span className="text-amber-700 font-medium">Applied</span>
                   <span className="font-black text-slate-800">
                     {NEXT_MONTH_SUMMARY.croStatus.applied}
                   </span>
                 </div>
-                <div className="flex items-center justify-between text-[11px]">
+                <div className="flex items-center justify-between text-body-sm">
                   <span className="text-emerald-700 font-medium">Received</span>
                   <span className="font-black text-slate-800">
                     {NEXT_MONTH_SUMMARY.croStatus.received}
                   </span>
                 </div>
-                <div className="flex items-center justify-between text-[11px]">
+                <div className="flex items-center justify-between text-body-sm">
                   <span className="text-rose-700 font-medium">Not Applied</span>
                   <span className="font-black text-slate-800">
                     {NEXT_MONTH_SUMMARY.croStatus.notApplied}
                   </span>
                 </div>
               </div>
-              <span className="text-[11px] text-slate-400 block truncate">
+              <span className="text-body-sm text-slate-400 block truncate">
                 {NEXT_MONTH_SUMMARY.croStatus.subtitle}
               </span>
             </div>
 
             {/* Pending Survey */}
-            <div className="relative bg-white border border-pink-200/80 rounded-2xl p-4 flex flex-col justify-between shadow-xs overflow-hidden">
+            <div className="relative bg-white border border-pink-200/80 rounded-2xl p-4 flex flex-col justify-between shadow-xs overflow-visible">
               <div className="absolute top-0 left-0 right-0 h-1 bg-pink-600" />
               <div className="flex items-center gap-2 mb-2 pt-1">
                 <div className="w-8 h-8 rounded-xl bg-pink-50 text-pink-600 border border-pink-200 flex items-center justify-center shrink-0">
                   <Edit3 className="w-4 h-4" />
                 </div>
-                <div className="flex items-center gap-1">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block leading-tight">
+                <div className="flex items-center gap-1 min-w-0">
+                  <span className="text-micro font-bold uppercase tracking-normal text-slate-500 leading-[1.4] break-words">
                     {NEXT_MONTH_SUMMARY.pendingSurvey.label}
                   </span>
-                  <Info className="w-3 h-3 text-slate-400 shrink-0" />
+                  {NEXT_MONTH_SUMMARY.pendingSurvey.criteria && (
+                    <DashCriteriaTip
+                      criteria={NEXT_MONTH_SUMMARY.pendingSurvey.criteria}
+                      accentColor="#db2777"
+                    />
+                  )}
                 </div>
               </div>
               <div>
                 <span className="text-2xl font-black text-slate-900 block tracking-tight">
                   {NEXT_MONTH_SUMMARY.pendingSurvey.value}
                 </span>
-                <span className="text-[11px] text-slate-400 block truncate">
+                <span className="text-micro text-slate-400 block leading-[1.4] break-words">
                   {NEXT_MONTH_SUMMARY.pendingSurvey.subtitle}
                 </span>
               </div>
@@ -475,76 +473,17 @@ export const PurchaseDashboardScreen: React.FC<PurchaseDashboardScreenProps> = (
             <h2 className="text-base sm:text-lg font-black text-[#1e293b] tracking-tight">
               Delayed Orders
             </h2>
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() =>
-                  setActiveTooltip(activeTooltip === 'delayed_orders' ? null : 'delayed_orders')
-                }
-                onMouseEnter={() => setActiveTooltip('delayed_orders')}
-                onMouseLeave={() => setActiveTooltip(null)}
-                className="text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
-                title="Info"
-              >
-                <Info className="w-4 h-4" />
-              </button>
-              {activeTooltip === 'delayed_orders' && (
-                <div className="absolute left-0 sm:left-1/2 sm:-translate-x-1/2 bottom-full mb-2 z-30 w-72 p-2.5 text-xs text-white bg-slate-900 rounded-xl shadow-xl leading-relaxed">
-                  {DELAYED_ORDERS_TOOLTIP}
-                </div>
-              )}
-            </div>
+            <DashCriteriaTip criteria={DELAYED_ORDERS_CRITERIA} accentColor="#d97706" />
           </div>
 
-          {/* Controls: Columns, Filters, Search */}
+          {/* Controls: Filters, Search */}
           <div className="flex flex-wrap items-center gap-2.5">
-            {/* Columns Toggle */}
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => setIsColumnsOpen(!isColumnsOpen)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 text-xs font-semibold text-slate-700 rounded-xl shadow-2xs hover:bg-slate-50 transition-colors cursor-pointer"
-              >
-                <ColumnsIcon className="w-3.5 h-3.5 text-slate-500" />
-                <span>Columns</span>
-              </button>
-              {isColumnsOpen && (
-                <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-slate-200 rounded-xl shadow-lg p-2 z-20 text-xs space-y-1">
-                  <div className="font-bold text-slate-800 px-2 py-1">Visible Columns</div>
-                  <div className="px-2 py-1 text-slate-600 flex items-center gap-2">
-                    <input type="checkbox" defaultChecked disabled />
-                    <span>Proforma Code</span>
-                  </div>
-                  <div className="px-2 py-1 text-slate-600 flex items-center gap-2">
-                    <input type="checkbox" defaultChecked disabled />
-                    <span>Customer Name</span>
-                  </div>
-                  <div className="px-2 py-1 text-slate-600 flex items-center gap-2">
-                    <input type="checkbox" defaultChecked disabled />
-                    <span>Expected Delivery Month</span>
-                  </div>
-                  <div className="px-2 py-1 text-slate-600 flex items-center gap-2">
-                    <input type="checkbox" defaultChecked disabled />
-                    <span>Port of Discharge</span>
-                  </div>
-                  <div className="px-2 py-1 text-slate-600 flex items-center gap-2">
-                    <input type="checkbox" defaultChecked disabled />
-                    <span>CRO Type</span>
-                  </div>
-                  <div className="px-2 py-1 text-slate-600 flex items-center gap-2">
-                    <input type="checkbox" defaultChecked disabled />
-                    <span>Marketing Personal</span>
-                  </div>
-                </div>
-              )}
-            </div>
-
             {/* Filters Toggle */}
             <div className="relative">
               <button
                 type="button"
                 onClick={() => setIsFilterOpen(!isFilterOpen)}
-                className={`inline-flex items-center gap-1.5 px-3 py-1.5 border text-xs font-semibold rounded-xl shadow-2xs transition-colors cursor-pointer ${
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 border text-body font-semibold rounded-xl shadow-2xs transition-colors cursor-pointer ${
                   croFilter !== 'All'
                     ? 'bg-blue-50 text-blue-700 border-blue-200'
                     : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
@@ -554,7 +493,7 @@ export const PurchaseDashboardScreen: React.FC<PurchaseDashboardScreenProps> = (
                 <span>Filters {croFilter !== 'All' ? `(${croFilter})` : ''}</span>
               </button>
               {isFilterOpen && (
-                <div className="absolute right-0 top-full mt-1 w-44 bg-white border border-slate-200 rounded-xl shadow-lg p-2 z-20 text-xs space-y-1">
+                <div className="absolute right-0 top-full mt-1 w-44 bg-white border border-slate-200 rounded-xl shadow-lg p-2 z-20 text-body space-y-1">
                   <div className="font-bold text-slate-800 px-2 py-1">Filter CRO Type</div>
                   {['All', 'Applied', 'Received', 'Not Applied'].map((type) => (
                     <button
@@ -585,7 +524,7 @@ export const PurchaseDashboardScreen: React.FC<PurchaseDashboardScreenProps> = (
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search..."
-                className="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl py-1.5 pl-8 pr-7 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-slate-800 placeholder-slate-400"
+                className="w-full text-body bg-slate-50 border border-slate-200 rounded-xl py-1.5 pl-8 pr-7 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-slate-800 placeholder-slate-400"
               />
               {searchQuery && (
                 <button
@@ -602,7 +541,7 @@ export const PurchaseDashboardScreen: React.FC<PurchaseDashboardScreenProps> = (
 
         {/* Responsive Table / Cards */}
         <div className="overflow-x-auto -mx-4 sm:mx-0">
-          <table className="w-full text-xs text-left border-collapse min-w-[720px]">
+          <table className="w-full text-body text-left border-collapse min-w-[720px]">
             <thead>
               <tr className="border-b border-slate-200 bg-slate-50/60 text-slate-600">
                 <th className="py-2.5 px-3 w-8 text-center" aria-label="Expand" />
@@ -691,10 +630,10 @@ export const PurchaseDashboardScreen: React.FC<PurchaseDashboardScreenProps> = (
                           <td colSpan={6} className="py-3 pr-4">
                             <div className="bg-white p-3.5 rounded-xl border border-slate-200/90 shadow-2xs">
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-2">
-                                <span className="text-[10.5px] font-bold text-slate-400 uppercase tracking-wider">
+                                <span className="text-body-sm font-bold text-slate-400 uppercase tracking-wider">
                                   Product Name
                                 </span>
-                                <span className="hidden md:block text-[10.5px] font-bold text-slate-400 uppercase tracking-wider">
+                                <span className="hidden md:block text-body-sm font-bold text-slate-400 uppercase tracking-wider">
                                   Requisition / Supplier
                                 </span>
                               </div>
@@ -704,10 +643,10 @@ export const PurchaseDashboardScreen: React.FC<PurchaseDashboardScreenProps> = (
                                     key={`${row.id}-line-${idx}`}
                                     className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3 py-1.5 border-b border-slate-100 last:border-0"
                                   >
-                                    <span className="text-xs font-semibold text-blue-600 hover:underline cursor-pointer">
+                                    <span className="text-body font-semibold text-blue-600 hover:underline cursor-pointer">
                                       {item.product}
                                     </span>
-                                    <div className="text-xs space-y-0.5">
+                                    <div className="text-body space-y-0.5">
                                       {item.requisition ? (
                                         <>
                                           <span className="font-semibold text-blue-600 hover:underline cursor-pointer block">
@@ -741,7 +680,7 @@ export const PurchaseDashboardScreen: React.FC<PurchaseDashboardScreenProps> = (
         </div>
 
         {/* Footer: Total Records & Pagination Controls (matching Image 2) */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-slate-100 text-xs text-slate-500">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-slate-100 text-body text-slate-500">
           <div>
             Total Records: <span className="font-bold text-slate-800">50</span>
           </div>
@@ -763,7 +702,7 @@ export const PurchaseDashboardScreen: React.FC<PurchaseDashboardScreenProps> = (
                   key={pageNum}
                   type="button"
                   onClick={() => setCurrentPage(pageNum)}
-                  className={`w-7 h-7 rounded-lg text-xs font-bold transition-colors ${
+                  className={`w-7 h-7 rounded-lg text-body font-bold transition-colors ${
                     currentPage === pageNum
                       ? 'bg-blue-600 text-white shadow-xs'
                       : 'border border-slate-200 text-slate-700 hover:bg-slate-50'
@@ -788,7 +727,7 @@ export const PurchaseDashboardScreen: React.FC<PurchaseDashboardScreenProps> = (
               <select
                 value={rowsPerPage}
                 onChange={(e) => setRowsPerPage(e.target.value)}
-                className="appearance-none bg-white border border-slate-200 text-xs font-semibold text-slate-700 py-1.5 pl-2.5 pr-7 rounded-xl focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer"
+                className="appearance-none bg-white border border-slate-200 text-body font-semibold text-slate-700 py-1.5 pl-2.5 pr-7 rounded-xl focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer"
               >
                 <option value="10">10 / page</option>
                 <option value="20">20 / page</option>

@@ -7,8 +7,6 @@ import React, { useState, useEffect } from 'react';
 import {
   Calendar,
   UploadCloud,
-  Eye,
-  EyeOff,
   Plus,
   ArrowRight,
   ArrowLeft,
@@ -28,6 +26,7 @@ import {
   List,
   RotateCcw,
   RotateCw,
+  X,
 } from 'lucide-react';
 import { AppBar } from '../components/common/AppBar';
 import { User, BankAccount, ProfessionalInfo } from '../types';
@@ -74,16 +73,14 @@ export const ModifyUserScreen: React.FC<ModifyUserScreenProps> = ({
     user.designation && user.designation !== '-' ? user.designation : 'Manager'
   );
   const [role, setRole] = useState(user.role || 'MasterAdmin');
-  const [password, setPassword] = useState(user.password || 'password123');
-  const [confirmPassword, setConfirmPassword] = useState(
+  const [password] = useState(user.password || 'password123');
+  const [confirmPassword] = useState(
     user.confirmPassword || user.password || 'password123'
   );
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [passwordExpiryEnabled, setPasswordExpiryEnabled] = useState(
+  const [passwordExpiryEnabled] = useState(
     user.passwordExpiryEnabled ?? true
   );
-  const [passwordExpiryDays, setPasswordExpiryDays] = useState(
+  const [passwordExpiryDays] = useState(
     user.passwordExpiryDays || '90'
   );
   const [chartOfAccount, setChartOfAccount] = useState(
@@ -112,37 +109,49 @@ export const ModifyUserScreen: React.FC<ModifyUserScreenProps> = ({
     user.companyExitDate || ''
   );
 
-  // Pre-fill Professional Information #1
-  const firstProf = user.professionalInfos?.[0];
-  const [professionalCompany, setProfessionalCompany] = useState(
-    firstProf?.company || 'Soneri Group'
+  // Pre-fill Professional Information (repeatable)
+  const [professionalInfos, setProfessionalInfos] = useState<ProfessionalInfo[]>(
+    user.professionalInfos && user.professionalInfos.length > 0
+      ? user.professionalInfos
+      : [
+          {
+            id: 'prof_1',
+            company: 'Soneri Group',
+            emailAddress: user.email || '',
+            mobileNumber: user.phone || '300 8472910',
+            landlineNumber: '(042)35789012',
+            emailSignature:
+              `${user.fullName}\n${user.role} - Soneri Group of Companies\nWeb: www.sonerigroup.com`,
+            extensionNumber: '104',
+          },
+        ]
   );
-  const [professionalEmail, setProfessionalEmail] = useState(
-    firstProf?.emailAddress || user.email || ''
-  );
-  const [professionalMobile, setProfessionalMobile] = useState(
-    firstProf?.mobileNumber || user.phone || '300 8472910'
-  );
-  const [professionalLandline, setProfessionalLandline] = useState(
-    firstProf?.landlineNumber || '(042)35789012'
-  );
-  const [professionalSignature, setProfessionalSignature] = useState(
-    firstProf?.emailSignature ||
-      `${user.fullName}\n${user.role} - Soneri Group of Companies\nWeb: www.sonerigroup.com`
-  );
-  const [professionalExtension, setProfessionalExtension] = useState(
-    firstProf?.extensionNumber || '104'
-  );
-
-  // Additional professional sections count
-  const [additionalProfCount, setAdditionalProfCount] = useState(0);
 
   // Documents & Canvas State
   const [selectedDocType, setSelectedDocType] = useState('CNIC');
-  const [uploadedDocs, setUploadedDocs] = useState<{ [key: string]: string }>(
-    user.documents || {
-      CNIC: 'cnic_front_back_scanned.pdf',
-      Passport: 'passport_verified_copy.pdf',
+  const [canvasDocs, setCanvasDocs] = useState<
+    {
+      id: string;
+      docType: string;
+      fileName: string;
+      previewUrl: string | null;
+      expiryDate: string;
+    }[]
+  >(() => {
+    const docs = user.documents || {};
+    return Object.entries(docs).map(([docType, fileName], i) => ({
+      id: `doc_existing_${i}`,
+      docType,
+      fileName,
+      previewUrl: null,
+      expiryDate: '',
+    }));
+  });
+  const [activeCanvasDocId, setActiveCanvasDocId] = useState<string | null>(
+    () => {
+      const docs = user.documents || {};
+      const keys = Object.keys(docs);
+      return keys.length > 0 ? 'doc_existing_0' : null;
     }
   );
 
@@ -222,18 +231,6 @@ export const ModifyUserScreen: React.FC<ModifyUserScreenProps> = ({
 
     const fullName = `${firstName.trim()} ${lastName.trim()}`.trim() || firstName.trim();
 
-    const professionalInfos: ProfessionalInfo[] = [
-      {
-        id: firstProf?.id || 'prof_1',
-        company: professionalCompany || 'Soneri Group',
-        emailAddress: professionalEmail || email,
-        mobileNumber: professionalMobile,
-        landlineNumber: professionalLandline,
-        emailSignature: professionalSignature,
-        extensionNumber: professionalExtension,
-      },
-    ];
-
     const updatedUser: User = {
       ...user,
       firstName,
@@ -267,10 +264,74 @@ export const ModifyUserScreen: React.FC<ModifyUserScreenProps> = ({
 
       professionalInfos,
       bankAccounts,
-      documents: uploadedDocs,
+      documents: canvasDocs.reduce<Record<string, string>>((acc, doc) => {
+        acc[doc.docType] = doc.fileName;
+        return acc;
+      }, {}),
     };
 
     onUpdateUser(updatedUser);
+  };
+
+  const updateProfessionalInfo = (index: number, field: keyof ProfessionalInfo, value: string) => {
+    setProfessionalInfos((prev) => {
+      const copy = [...prev];
+      copy[index] = { ...copy[index], [field]: value };
+      return copy;
+    });
+  };
+
+  const addProfessionalInfo = () => {
+    setProfessionalInfos((prev) => [
+      ...prev,
+      {
+        id: `prof_${Date.now()}`,
+        company: '',
+        emailAddress: '',
+        mobileNumber: '',
+        landlineNumber: '',
+        emailSignature: '',
+        extensionNumber: '',
+      },
+    ]);
+  };
+
+  const activeCanvasDoc =
+    canvasDocs.find((d) => d.id === activeCanvasDocId) ?? canvasDocs[0] ?? null;
+
+  const handleDocUpload = (file: File) => {
+    const id = `doc_${Date.now()}`;
+    const previewUrl = file.type.startsWith('image/') ? URL.createObjectURL(file) : null;
+    const newDoc = {
+      id,
+      docType: selectedDocType,
+      fileName: file.name,
+      previewUrl,
+      expiryDate: '',
+    };
+    setCanvasDocs((prev) => [...prev, newDoc]);
+    setActiveCanvasDocId(id);
+  };
+
+  const removeCanvasDoc = (id: string) => {
+    setCanvasDocs((prev) => {
+      const target = prev.find((d) => d.id === id);
+      if (target?.previewUrl?.startsWith('blob:')) {
+        URL.revokeObjectURL(target.previewUrl);
+      }
+      const next = prev.filter((d) => d.id !== id);
+      setActiveCanvasDocId((current) => {
+        if (current !== id) return current;
+        return next[0]?.id ?? null;
+      });
+      return next;
+    });
+  };
+
+  const updateCanvasDocExpiry = (id: string, expiryDate: string) => {
+    setCanvasDocs((prev) =>
+      prev.map((d) => (d.id === id ? { ...d, expiryDate } : d))
+    );
   };
 
   const updateBankAccount = (index: number, field: keyof BankAccount, value: any) => {
@@ -377,7 +438,7 @@ export const ModifyUserScreen: React.FC<ModifyUserScreenProps> = ({
                     }`}
                   />
                   {errors.firstName && (
-                    <span className="text-[11px] text-rose-500 mt-1 block">
+                    <span className="text-body-sm text-rose-500 mt-1 block">
                       {errors.firstName}
                     </span>
                   )}
@@ -412,7 +473,7 @@ export const ModifyUserScreen: React.FC<ModifyUserScreenProps> = ({
                     }`}
                   />
                   {errors.username && (
-                    <span className="text-[11px] text-rose-500 mt-1 block">
+                    <span className="text-body-sm text-rose-500 mt-1 block">
                       {errors.username}
                     </span>
                   )}
@@ -433,7 +494,7 @@ export const ModifyUserScreen: React.FC<ModifyUserScreenProps> = ({
                     }`}
                   />
                   {errors.email && (
-                    <span className="text-[11px] text-rose-500 mt-1 block">
+                    <span className="text-body-sm text-rose-500 mt-1 block">
                       {errors.email}
                     </span>
                   )}
@@ -602,85 +663,13 @@ export const ModifyUserScreen: React.FC<ModifyUserScreenProps> = ({
                     <option value="Sales">Sales</option>
                   </select>
                   {errors.role && (
-                    <span className="text-[11px] text-rose-500 mt-1 block">
+                    <span className="text-body-sm text-rose-500 mt-1 block">
                       {errors.role}
                     </span>
                   )}
                 </div>
 
-                {/* Password * */}
-                <div>
-                  <label className="text-xs font-semibold text-slate-700 block mb-1">
-                    Password <span className="text-rose-500">*</span>
-                  </label>
-                  <div className="relative">
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="••••••••••••"
-                      className="w-full pl-3 pr-8 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1e293b]"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700"
-                    >
-                      {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-                    </button>
-                  </div>
-                </div>
-
-                {/* Confirm Password */}
-                <div>
-                  <label className="text-xs font-semibold text-slate-700 block mb-1">
-                    Confirm Password
-                  </label>
-                  <div className="relative">
-                    <input
-                      type={showConfirmPassword ? 'text' : 'password'}
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      placeholder="Enter Confirm Password"
-                      className="w-full pl-3 pr-8 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1e293b]"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700"
-                    >
-                      {showConfirmPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-                    </button>
-                  </div>
-                </div>
-
-                {/* Password Expiry (Toggle NO/YES + Input) */}
-                <div>
-                  <label className="text-xs font-semibold text-slate-700 block mb-1">
-                    Password Expiry
-                  </label>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setPasswordExpiryEnabled(!passwordExpiryEnabled)}
-                      className={`px-3 py-1.5 text-xs font-bold rounded-lg border transition-colors ${
-                        passwordExpiryEnabled
-                          ? 'bg-[#1e293b] text-white border-[#1e293b]'
-                          : 'bg-slate-100 text-slate-600 border-slate-200'
-                      }`}
-                    >
-                      {passwordExpiryEnabled ? 'YES' : 'NO'}
-                    </button>
-                    <input
-                      type="number"
-                      disabled={!passwordExpiryEnabled}
-                      value={passwordExpiryDays}
-                      onChange={(e) => setPasswordExpiryDays(e.target.value)}
-                      placeholder="Enter No. of Days"
-                      className="flex-1 px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1e293b] disabled:bg-slate-50 disabled:text-slate-400"
-                    />
-                  </div>
-                </div>
+                {/* Password fields hidden on Edit User — only shown on Create New User */}
 
                 {/* Chart of Account * */}
                 <div>
@@ -862,161 +851,160 @@ export const ModifyUserScreen: React.FC<ModifyUserScreenProps> = ({
               </div>
             </div>
 
-            {/* Section 3: Professional Information #1 */}
-            <div className="bg-white rounded-2xl border border-slate-200/90 p-5 sm:p-6 shadow-xs space-y-5">
-              <h2 className="text-sm font-bold text-[#1e293b] uppercase tracking-wider pb-2 border-b border-slate-100">
-                Professional Information #1
-              </h2>
+            {/* Section 3: Professional Information (repeatable) */}
+            {professionalInfos.map((info, index) => (
+              <div
+                key={info.id}
+                className="bg-white rounded-2xl border border-slate-200/90 p-5 sm:p-6 shadow-xs space-y-5"
+              >
+                <h2 className="text-sm font-bold text-[#1e293b] uppercase tracking-wider pb-2 border-b border-slate-100">
+                  Professional Information #{index + 1}
+                </h2>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {/* Company */}
-                <div>
-                  <label className="text-xs font-semibold text-slate-700 block mb-1">
-                    Company
-                  </label>
-                  <select
-                    value={professionalCompany}
-                    onChange={(e) => setProfessionalCompany(e.target.value)}
-                    className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1e293b]"
-                  >
-                    <option value="">Select Company</option>
-                    <option value="Soneri Group">Soneri Group</option>
-                    <option value="Soneri International">Soneri International</option>
-                    <option value="Soneri Fabrics">Soneri Fabrics</option>
-                    <option value="Soneri Logistics">Soneri Logistics</option>
-                  </select>
-                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div>
+                    <label className="text-xs font-semibold text-slate-700 block mb-1">
+                      Company
+                    </label>
+                    <select
+                      value={info.company}
+                      onChange={(e) => updateProfessionalInfo(index, 'company', e.target.value)}
+                      className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1e293b]"
+                    >
+                      <option value="">Select Company</option>
+                      <option value="Soneri Group">Soneri Group</option>
+                      <option value="Soneri International">Soneri International</option>
+                      <option value="Soneri Fabrics">Soneri Fabrics</option>
+                      <option value="Soneri Logistics">Soneri Logistics</option>
+                    </select>
+                  </div>
 
-                {/* Email Address */}
-                <div>
-                  <label className="text-xs font-semibold text-slate-700 block mb-1">
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    value={professionalEmail}
-                    onChange={(e) => setProfessionalEmail(e.target.value)}
-                    placeholder="Enter Email Address"
-                    className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1e293b]"
-                  />
-                </div>
-
-                {/* Mobile Number with country prefix +92 */}
-                <div>
-                  <label className="text-xs font-semibold text-slate-700 block mb-1">
-                    Mobile Number
-                  </label>
-                  <div className="flex rounded-xl border border-slate-200 overflow-hidden focus-within:ring-2 focus-within:ring-[#1e293b]">
-                    <span className="px-2.5 py-2 bg-slate-100 text-xs font-semibold text-slate-600 border-r border-slate-200 flex items-center gap-1">
-                      🇵🇰 +92
-                    </span>
+                  <div>
+                    <label className="text-xs font-semibold text-slate-700 block mb-1">
+                      Email Address
+                    </label>
                     <input
-                      type="tel"
-                      value={professionalMobile}
-                      onChange={(e) => setProfessionalMobile(e.target.value)}
-                      placeholder="Mobile Number"
-                      className="w-full px-3 py-2 text-xs bg-white focus:outline-none"
+                      type="email"
+                      value={info.emailAddress}
+                      onChange={(e) => updateProfessionalInfo(index, 'emailAddress', e.target.value)}
+                      placeholder="Enter Email Address"
+                      className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1e293b]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-semibold text-slate-700 block mb-1">
+                      Mobile Number
+                    </label>
+                    <div className="flex rounded-xl border border-slate-200 overflow-hidden focus-within:ring-2 focus-within:ring-[#1e293b]">
+                      <span className="px-2.5 py-2 bg-slate-100 text-xs font-semibold text-slate-600 border-r border-slate-200 flex items-center gap-1">
+                        🇵🇰 +92
+                      </span>
+                      <input
+                        type="tel"
+                        value={info.mobileNumber}
+                        onChange={(e) => updateProfessionalInfo(index, 'mobileNumber', e.target.value)}
+                        placeholder="Mobile Number"
+                        className="w-full px-3 py-2 text-xs bg-white focus:outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-semibold text-slate-700 block mb-1">
+                      Landline Number
+                    </label>
+                    <input
+                      type="text"
+                      value={info.landlineNumber}
+                      onChange={(e) => updateProfessionalInfo(index, 'landlineNumber', e.target.value)}
+                      placeholder="(000)0000000"
+                      className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1e293b]"
+                    />
+                  </div>
+
+                  <div className="sm:col-span-2 lg:col-span-3">
+                    <label className="text-xs font-semibold text-slate-700 block mb-1">
+                      Email Signature
+                    </label>
+                    <div className="border border-slate-200 rounded-2xl overflow-hidden focus-within:ring-2 focus-within:ring-[#1e293b]">
+                      <div className="bg-slate-50 border-b border-slate-200 p-2 flex flex-wrap items-center gap-1 text-slate-600 text-xs">
+                        <button type="button" className="p-1 hover:bg-slate-200 rounded" title="Undo">
+                          <RotateCcw className="w-3.5 h-3.5" />
+                        </button>
+                        <button type="button" className="p-1 hover:bg-slate-200 rounded" title="Redo">
+                          <RotateCw className="w-3.5 h-3.5" />
+                        </button>
+                        <span className="w-px h-4 bg-slate-300 mx-1"></span>
+                        <button type="button" className="p-1 hover:bg-slate-200 rounded font-bold" title="Bold">
+                          <Bold className="w-3.5 h-3.5" />
+                        </button>
+                        <button type="button" className="p-1 hover:bg-slate-200 rounded italic" title="Italic">
+                          <Italic className="w-3.5 h-3.5" />
+                        </button>
+                        <button type="button" className="p-1 hover:bg-slate-200 rounded underline" title="Underline">
+                          <Underline className="w-3.5 h-3.5" />
+                        </button>
+                        <span className="w-px h-4 bg-slate-300 mx-1"></span>
+                        <button type="button" className="p-1 hover:bg-slate-200 rounded" title="Align Left">
+                          <AlignLeft className="w-3.5 h-3.5" />
+                        </button>
+                        <button type="button" className="p-1 hover:bg-slate-200 rounded" title="Align Center">
+                          <AlignCenter className="w-3.5 h-3.5" />
+                        </button>
+                        <button type="button" className="p-1 hover:bg-slate-200 rounded" title="Align Right">
+                          <AlignRight className="w-3.5 h-3.5" />
+                        </button>
+                        <span className="w-px h-4 bg-slate-300 mx-1"></span>
+                        <button type="button" className="p-1 hover:bg-slate-200 rounded" title="List">
+                          <List className="w-3.5 h-3.5" />
+                        </button>
+                        <button type="button" className="p-1 hover:bg-slate-200 rounded" title="Insert Link">
+                          <Link className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+
+                      <textarea
+                        rows={3}
+                        value={info.emailSignature}
+                        onChange={(e) => updateProfessionalInfo(index, 'emailSignature', e.target.value)}
+                        placeholder="Type or paste your content here!"
+                        className="w-full p-3 text-xs bg-white focus:outline-none resize-none"
+                      ></textarea>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-semibold text-slate-700 block mb-1">
+                      Extension Number
+                    </label>
+                    <input
+                      type="text"
+                      value={info.extensionNumber}
+                      onChange={(e) => updateProfessionalInfo(index, 'extensionNumber', e.target.value)}
+                      placeholder="Enter Extension Number"
+                      className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1e293b]"
                     />
                   </div>
                 </div>
 
-                {/* Landline Number */}
-                <div>
-                  <label className="text-xs font-semibold text-slate-700 block mb-1">
-                    Landline Number
-                  </label>
-                  <input
-                    type="text"
-                    value={professionalLandline}
-                    onChange={(e) => setProfessionalLandline(e.target.value)}
-                    placeholder="(000)0000000"
-                    className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1e293b]"
-                  />
-                </div>
-
-                {/* Email Signature (Rich Formatting Bar) */}
-                <div className="sm:col-span-2 lg:col-span-3">
-                  <label className="text-xs font-semibold text-slate-700 block mb-1">
-                    Email Signature
-                  </label>
-                  <div className="border border-slate-200 rounded-2xl overflow-hidden focus-within:ring-2 focus-within:ring-[#1e293b]">
-                    <div className="bg-slate-50 border-b border-slate-200 p-2 flex flex-wrap items-center gap-1 text-slate-600 text-xs">
-                      <button type="button" className="p-1 hover:bg-slate-200 rounded" title="Undo">
-                        <RotateCcw className="w-3.5 h-3.5" />
-                      </button>
-                      <button type="button" className="p-1 hover:bg-slate-200 rounded" title="Redo">
-                        <RotateCw className="w-3.5 h-3.5" />
-                      </button>
-                      <span className="w-px h-4 bg-slate-300 mx-1"></span>
-                      <button type="button" className="p-1 hover:bg-slate-200 rounded font-bold" title="Bold">
-                        <Bold className="w-3.5 h-3.5" />
-                      </button>
-                      <button type="button" className="p-1 hover:bg-slate-200 rounded italic" title="Italic">
-                        <Italic className="w-3.5 h-3.5" />
-                      </button>
-                      <button type="button" className="p-1 hover:bg-slate-200 rounded underline" title="Underline">
-                        <Underline className="w-3.5 h-3.5" />
-                      </button>
-                      <span className="w-px h-4 bg-slate-300 mx-1"></span>
-                      <button type="button" className="p-1 hover:bg-slate-200 rounded" title="Align Left">
-                        <AlignLeft className="w-3.5 h-3.5" />
-                      </button>
-                      <button type="button" className="p-1 hover:bg-slate-200 rounded" title="Align Center">
-                        <AlignCenter className="w-3.5 h-3.5" />
-                      </button>
-                      <button type="button" className="p-1 hover:bg-slate-200 rounded" title="Align Right">
-                        <AlignRight className="w-3.5 h-3.5" />
-                      </button>
-                      <span className="w-px h-4 bg-slate-300 mx-1"></span>
-                      <button type="button" className="p-1 hover:bg-slate-200 rounded" title="List">
-                        <List className="w-3.5 h-3.5" />
-                      </button>
-                      <button type="button" className="p-1 hover:bg-slate-200 rounded" title="Insert Link">
-                        <Link className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-
-                    <textarea
-                      rows={3}
-                      value={professionalSignature}
-                      onChange={(e) => setProfessionalSignature(e.target.value)}
-                      placeholder="Type or paste your content here!"
-                      className="w-full p-3 text-xs bg-white focus:outline-none resize-none"
-                    ></textarea>
+                {index === professionalInfos.length - 1 && (
+                  <div className="pt-2">
+                    <button
+                      type="button"
+                      onClick={addProfessionalInfo}
+                      className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold bg-[#1e293b] text-white rounded-xl hover:bg-[#0f172a] active:scale-95 transition-all cursor-pointer"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Add Another Professional Information</span>
+                    </button>
                   </div>
-                </div>
-
-                {/* Extension Number */}
-                <div>
-                  <label className="text-xs font-semibold text-slate-700 block mb-1">
-                    Extension Number
-                  </label>
-                  <input
-                    type="text"
-                    value={professionalExtension}
-                    onChange={(e) => setProfessionalExtension(e.target.value)}
-                    placeholder="Enter Extension Number"
-                    className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1e293b]"
-                  />
-                </div>
+                )}
               </div>
-
-              {/* Add Another Professional Information Button */}
-              <div className="pt-2">
-                <button
-                  type="button"
-                  onClick={() => setAdditionalProfCount((c) => c + 1)}
-                  className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold bg-[#1e293b] text-white rounded-xl hover:bg-[#0f172a] active:scale-95 transition-all cursor-pointer"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>Add Another Professional Information</span>
-                </button>
-              </div>
-            </div>
+            ))}
 
             {/* Section 4: Split Panels: Documents (Left) and Canvas (Right) */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Left Panel: Documents */}
               <div className="bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-xs">
                 <div className="bg-[#1e293b] px-4 py-3 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-between">
                   <span>Documents</span>
@@ -1025,7 +1013,6 @@ export const ModifyUserScreen: React.FC<ModifyUserScreenProps> = ({
 
                 <div className="p-4 space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {/* Document Categories List */}
                     <div className="space-y-1 bg-slate-50 p-2 rounded-xl border border-slate-200/80">
                       {[
                         'CNIC',
@@ -1040,50 +1027,40 @@ export const ModifyUserScreen: React.FC<ModifyUserScreenProps> = ({
                           onClick={() => setSelectedDocType(doc)}
                           className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer ${
                             selectedDocType === doc
-                              ? 'bg-[#1e293b] text-white shadow-xs'
+                              ? 'bg-slate-200/80 text-slate-900'
                               : 'text-slate-700 hover:bg-slate-200/60'
                           }`}
                         >
                           <span className="truncate">{doc}</span>
-                          {uploadedDocs[doc] && (
-                            <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0 ml-1" />
+                          {canvasDocs.some((d) => d.docType === doc) && (
+                            <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0 ml-1" />
                           )}
                         </button>
                       ))}
                     </div>
 
-                    {/* Upload Box for currently selected document */}
                     <div className="space-y-2 flex flex-col justify-center">
                       <span className="text-xs font-bold text-slate-800">
                         Upload {selectedDocType}
                       </span>
-                      <label className="border-2 border-dashed border-slate-200 hover:border-slate-400 bg-slate-50/50 hover:bg-slate-50 rounded-2xl p-5 flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors text-center">
+                      <label className="border-2 border-dashed border-slate-200 hover:border-slate-400 bg-slate-50/50 hover:bg-slate-50 rounded-2xl p-5 flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors text-center min-h-[140px]">
                         <input
                           type="file"
+                          accept="image/*,.pdf"
                           className="hidden"
                           onChange={(e) => {
                             if (e.target.files?.[0]) {
-                              setUploadedDocs((prev) => ({
-                                ...prev,
-                                [selectedDocType]: e.target.files![0].name,
-                              }));
+                              handleDocUpload(e.target.files[0]);
+                              e.target.value = '';
                             }
                           }}
                         />
-                        <UploadCloud className="w-7 h-7 text-slate-400" />
+                        <UploadCloud className="w-7 h-7 text-blue-500" />
                         <span className="text-xs font-medium text-slate-600">
-                          {uploadedDocs[selectedDocType] ? (
-                            <span className="text-emerald-600 font-semibold block break-all">
-                              {uploadedDocs[selectedDocType]}
-                            </span>
-                          ) : (
-                            <>
-                              <span className="text-slate-900 font-semibold block">
-                                Drop files to upload
-                              </span>
-                              or <span className="text-blue-600 underline">Click here</span>
-                            </>
-                          )}
+                          <span className="text-slate-900 font-semibold block">
+                            Drop files to upload
+                          </span>
+                          or <span className="text-blue-600 underline">Click here</span>
                         </span>
                       </label>
                     </div>
@@ -1091,23 +1068,110 @@ export const ModifyUserScreen: React.FC<ModifyUserScreenProps> = ({
                 </div>
               </div>
 
-              {/* Right Panel: Canvas */}
               <div className="bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-xs">
                 <div className="bg-[#1e293b] px-4 py-3 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-between">
                   <span>Canvas</span>
                   <HelpCircle className="w-4 h-4 text-slate-300" />
                 </div>
 
-                <div className="p-8 flex flex-col items-center justify-center min-h-[220px] text-center bg-slate-50/40">
-                  <div className="w-14 h-14 rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-slate-400 shadow-2xs mb-3">
-                    <FileText className="w-7 h-7 text-slate-400" />
-                  </div>
-                  <h4 className="text-xs font-bold text-slate-700">Documents Preview</h4>
-                  <p className="text-[11px] text-slate-400 mt-1 max-w-xs">
-                    {uploadedDocs[selectedDocType]
-                      ? `Viewing ${selectedDocType} file: ${uploadedDocs[selectedDocType]}`
-                      : 'No document loaded in preview canvas.'}
-                  </p>
+                <div className="p-4 min-h-[260px] bg-white space-y-3">
+                  {canvasDocs.length > 0 ? (
+                    <>
+                      <div className="flex gap-2 overflow-x-auto pb-1">
+                        {canvasDocs.map((doc) => (
+                          <button
+                            key={doc.id}
+                            type="button"
+                            onClick={() => setActiveCanvasDocId(doc.id)}
+                            className={`shrink-0 w-16 h-16 rounded-md overflow-hidden border-2 bg-slate-50 cursor-pointer ${
+                              activeCanvasDoc?.id === doc.id
+                                ? 'border-[#1e293b]'
+                                : 'border-slate-200 hover:border-slate-400'
+                            }`}
+                            title={doc.docType}
+                          >
+                            {doc.previewUrl ? (
+                              <img
+                                src={doc.previewUrl}
+                                alt={doc.fileName}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center">
+                                <FileText className="w-6 h-6 text-slate-400" />
+                              </div>
+                            )}
+                          </button>
+                        ))}
+                      </div>
+
+                      {activeCanvasDoc && (
+                        <div className="rounded-lg border border-slate-200 bg-slate-100/80 p-3 space-y-3">
+                          <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+                            <div>
+                              <p className="text-body-sm font-semibold text-slate-600">
+                                Document Type
+                              </p>
+                              <p className="text-xs font-bold text-slate-800 mt-0.5">
+                                {activeCanvasDoc.docType}
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <label className="text-body-sm font-semibold text-slate-600 whitespace-nowrap">
+                                Expiry Date
+                              </label>
+                              <input
+                                type="date"
+                                value={activeCanvasDoc.expiryDate}
+                                onChange={(e) =>
+                                  updateCanvasDocExpiry(activeCanvasDoc.id, e.target.value)
+                                }
+                                className="px-2 py-1 text-xs bg-white border border-slate-300 rounded focus:outline-none focus:ring-2 focus:ring-[#1e293b]"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="relative inline-block">
+                            {activeCanvasDoc.previewUrl ? (
+                              <img
+                                src={activeCanvasDoc.previewUrl}
+                                alt={activeCanvasDoc.fileName}
+                                className="max-h-44 max-w-full rounded border border-slate-300 object-contain bg-white"
+                              />
+                            ) : (
+                              <div className="flex items-center gap-3 px-4 py-8 rounded border border-slate-300 bg-white min-w-[180px]">
+                                <FileText className="w-8 h-8 text-slate-400 shrink-0" />
+                                <div className="min-w-0">
+                                  <p className="text-xs font-bold text-slate-700 truncate">
+                                    {activeCanvasDoc.fileName}
+                                  </p>
+                                  <p className="text-body-sm text-slate-400">Document attached</p>
+                                </div>
+                              </div>
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => removeCanvasDoc(activeCanvasDoc.id)}
+                              className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-rose-500 text-white flex items-center justify-center shadow-sm hover:bg-rose-600 cursor-pointer"
+                              title="Remove document"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center py-12 text-center">
+                      <div className="w-14 h-14 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-400 mb-3">
+                        <FileText className="w-7 h-7" />
+                      </div>
+                      <h4 className="text-xs font-bold text-slate-700">Documents Preview</h4>
+                      <p className="text-body-sm text-slate-400 mt-1 max-w-xs">
+                        Upload a file to preview it here.
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -1139,7 +1203,7 @@ export const ModifyUserScreen: React.FC<ModifyUserScreenProps> = ({
                     Bank Account #{index + 1}
                   </h2>
                   {account.isPrimary && (
-                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-bold border border-emerald-200">
+                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-label font-bold border border-emerald-200">
                       Primary Account
                     </span>
                   )}
@@ -1166,7 +1230,7 @@ export const ModifyUserScreen: React.FC<ModifyUserScreenProps> = ({
                       <option value="GBP">GBP</option>
                     </select>
                     {errors.bankCurrency && (
-                      <span className="text-[11px] text-rose-500 mt-1 block">
+                      <span className="text-body-sm text-rose-500 mt-1 block">
                         {errors.bankCurrency}
                       </span>
                     )}
@@ -1187,7 +1251,7 @@ export const ModifyUserScreen: React.FC<ModifyUserScreenProps> = ({
                       }`}
                     />
                     {errors.bankName && (
-                      <span className="text-[11px] text-rose-500 mt-1 block">
+                      <span className="text-body-sm text-rose-500 mt-1 block">
                         {errors.bankName}
                       </span>
                     )}
@@ -1226,7 +1290,7 @@ export const ModifyUserScreen: React.FC<ModifyUserScreenProps> = ({
                       <option value="Salary">Salary</option>
                     </select>
                     {errors.accountType && (
-                      <span className="text-[11px] text-rose-500 mt-1 block">
+                      <span className="text-body-sm text-rose-500 mt-1 block">
                         {errors.accountType}
                       </span>
                     )}
@@ -1247,7 +1311,7 @@ export const ModifyUserScreen: React.FC<ModifyUserScreenProps> = ({
                       }`}
                     />
                     {errors.accountTitle && (
-                      <span className="text-[11px] text-rose-500 mt-1 block">
+                      <span className="text-body-sm text-rose-500 mt-1 block">
                         {errors.accountTitle}
                       </span>
                     )}
@@ -1268,7 +1332,7 @@ export const ModifyUserScreen: React.FC<ModifyUserScreenProps> = ({
                       }`}
                     />
                     {errors.accountNumber && (
-                      <span className="text-[11px] text-rose-500 mt-1 block">
+                      <span className="text-body-sm text-rose-500 mt-1 block">
                         {errors.accountNumber}
                       </span>
                     )}

@@ -3,13 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  Edit3,
   ChevronDown,
   ChevronUp,
-  MoreVertical,
   Eye,
+  X,
 } from 'lucide-react';
 import {
   MOCK_PURCHASE_REQUISITIONS,
@@ -45,64 +44,186 @@ interface PurchaseModuleScreenProps {
   onShowSnackBar?: (msg: string, type?: 'success' | 'info' | 'warning' | 'error') => void;
 }
 
+type PurchaseFilterState = {
+  customer: string;
+  supplier: string;
+  company: string;
+  product: string;
+  status: string;
+};
+
+const EMPTY_FILTERS: PurchaseFilterState = {
+  customer: 'All',
+  supplier: 'All',
+  company: 'All',
+  product: 'All',
+  status: 'All',
+};
+
+const FILTER_FIELDS = [
+  ['customer', 'Customer'],
+  ['supplier', 'Supplier'],
+  ['company', 'Company'],
+  ['product', 'Product'],
+  ['status', 'Status'],
+] as const;
+
+function uniqOptions(values: string[]) {
+  return ['All', ...Array.from(new Set(values.filter((v) => v && v !== '-'))).sort()];
+}
+
+function prCustomer(r: PurchaseRequisitionItem): string {
+  const parts = r.proformaCode.split('>').map((s) => s.trim());
+  if (parts.length >= 3) return `${parts[1]} - ${parts[2]}`;
+  if (parts.length === 2) return parts[1];
+  return '';
+}
+
+function prProducts(r: PurchaseRequisitionItem): string[] {
+  const fromProducts = (r.products || []).map((p) => p.productName);
+  const fromMap = (r.containerMapping?.items || []).map((i) => i.productName);
+  return [...fromProducts, ...fromMap];
+}
+
+function poProducts(o: PurchaseOrderItem): string[] {
+  return (o.products || []).map((p) => p.productName);
+}
+
 export const PurchaseModuleScreen: React.FC<PurchaseModuleScreenProps> = ({
   workstream,
   onBack,
   onShowSnackBar,
 }) => {
   const [viewMode, setViewMode] = useState<ListViewMode>('card');
-  const [activeTab, setActiveTab] = useState<'ALL' | 'PENDING'>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [containerMappingOpen, setContainerMappingOpen] = useState(true);
+  const [showFilters, setShowFilters] = useState(false);
+  const [draftFilters, setDraftFilters] = useState<PurchaseFilterState>(EMPTY_FILTERS);
+  const [appliedFilters, setAppliedFilters] = useState<PurchaseFilterState>(EMPTY_FILTERS);
+  const filterRef = useRef<HTMLDivElement>(null);
 
   // Selected item for View Page
   const [selectedPR, setSelectedPR] = useState<PurchaseRequisitionItem | null>(null);
   const [selectedPO, setSelectedPO] = useState<PurchaseOrderItem | null>(null);
   const [selectedPINV, setSelectedPINV] = useState<PurchaseInvoiceItem | null>(null);
 
-  // Dropdown actions tracking
-  const [openActionId, setOpenActionId] = useState<string | null>(null);
-
   const q = searchQuery.toLowerCase();
+
+  const prFilterOptions = useMemo(() => {
+    const customers = MOCK_PURCHASE_REQUISITIONS.map(prCustomer);
+    const suppliers = MOCK_PURCHASE_REQUISITIONS.map((r) => r.supplier);
+    const companies = MOCK_PURCHASE_REQUISITIONS.map((r) => r.company);
+    const products = MOCK_PURCHASE_REQUISITIONS.flatMap(prProducts);
+    const statuses = MOCK_PURCHASE_REQUISITIONS.map((r) => r.status);
+    return {
+      customer: uniqOptions(customers),
+      supplier: uniqOptions(suppliers),
+      company: uniqOptions(companies),
+      product: uniqOptions(products),
+      status: uniqOptions(statuses),
+    };
+  }, []);
+
+  const poFilterOptions = useMemo(() => {
+    return {
+      customer: uniqOptions(MOCK_PURCHASE_ORDERS.map((o) => o.customer)),
+      supplier: uniqOptions(MOCK_PURCHASE_ORDERS.map((o) => o.supplier)),
+      company: uniqOptions(MOCK_PURCHASE_ORDERS.map((o) => o.company)),
+      product: uniqOptions(MOCK_PURCHASE_ORDERS.flatMap(poProducts)),
+      status: uniqOptions(MOCK_PURCHASE_ORDERS.map((o) => o.status)),
+    };
+  }, []);
+
+  const pinvFilterOptions = useMemo(() => {
+    return {
+      customer: uniqOptions(MOCK_PURCHASE_INVOICES.map((i) => i.customer)),
+      supplier: uniqOptions(MOCK_PURCHASE_INVOICES.map((i) => i.supplier)),
+      company: uniqOptions(MOCK_PURCHASE_INVOICES.map((i) => i.companyName)),
+      product: uniqOptions(
+        MOCK_PURCHASE_INVOICES.flatMap((i) => (i.products || []).map((p) => p.productName))
+      ),
+      status: uniqOptions(MOCK_PURCHASE_INVOICES.map((i) => i.status)),
+    };
+  }, []);
+
+  const filterOptions =
+    workstream === 'order'
+      ? poFilterOptions
+      : workstream === 'invoice'
+      ? pinvFilterOptions
+      : prFilterOptions;
 
   const filteredPRs = useMemo(
     () =>
-      MOCK_PURCHASE_REQUISITIONS.filter((r) =>
-        activeTab === 'PENDING' ? r.status.toLowerCase().includes('pending') : true
-      ).filter(
-        (r) =>
+      MOCK_PURCHASE_REQUISITIONS.filter((r) => {
+        const matchesSearch =
+          !q ||
           r.requisitionCode.toLowerCase().includes(q) ||
           r.supplier.toLowerCase().includes(q) ||
           r.marketingPersonal.toLowerCase().includes(q) ||
-          r.company.toLowerCase().includes(q)
-      ),
-    [activeTab, q]
+          r.company.toLowerCase().includes(q) ||
+          r.proformaCode.toLowerCase().includes(q);
+
+        const customer = prCustomer(r);
+        const products = prProducts(r);
+        const matchesFilters =
+          (appliedFilters.customer === 'All' || customer === appliedFilters.customer) &&
+          (appliedFilters.supplier === 'All' || r.supplier === appliedFilters.supplier) &&
+          (appliedFilters.company === 'All' || r.company === appliedFilters.company) &&
+          (appliedFilters.product === 'All' || products.includes(appliedFilters.product)) &&
+          (appliedFilters.status === 'All' || r.status === appliedFilters.status);
+
+        return matchesSearch && matchesFilters;
+      }),
+    [q, appliedFilters]
   );
 
   const filteredPOs = useMemo(
     () =>
-      MOCK_PURCHASE_ORDERS.filter((o) =>
-        activeTab === 'PENDING' ? o.status.toLowerCase().includes('draft') : true
-      ).filter(
-        (o) =>
+      MOCK_PURCHASE_ORDERS.filter((o) => {
+        const matchesSearch =
+          !q ||
           o.code.toLowerCase().includes(q) ||
           o.supplier.toLowerCase().includes(q) ||
           o.marketingPersonal.toLowerCase().includes(q) ||
-          o.customer.toLowerCase().includes(q)
-      ),
-    [activeTab, q]
+          o.customer.toLowerCase().includes(q) ||
+          o.company.toLowerCase().includes(q);
+
+        const products = poProducts(o);
+        const matchesFilters =
+          (appliedFilters.customer === 'All' || o.customer === appliedFilters.customer) &&
+          (appliedFilters.supplier === 'All' || o.supplier === appliedFilters.supplier) &&
+          (appliedFilters.company === 'All' || o.company === appliedFilters.company) &&
+          (appliedFilters.product === 'All' || products.includes(appliedFilters.product)) &&
+          (appliedFilters.status === 'All' || o.status === appliedFilters.status);
+
+        return matchesSearch && matchesFilters;
+      }),
+    [q, appliedFilters]
   );
 
   const filteredPINVs = useMemo(
     () =>
-      MOCK_PURCHASE_INVOICES.filter(
-        (i) =>
+      MOCK_PURCHASE_INVOICES.filter((i) => {
+        const matchesSearch =
+          !q ||
           i.code.toLowerCase().includes(q) ||
           i.supplier.toLowerCase().includes(q) ||
           i.customer.toLowerCase().includes(q) ||
-          i.companyName.toLowerCase().includes(q)
-      ),
-    [q]
+          i.companyName.toLowerCase().includes(q) ||
+          i.ciNumber.toLowerCase().includes(q);
+
+        const products = (i.products || []).map((p) => p.productName);
+        const matchesFilters =
+          (appliedFilters.customer === 'All' || i.customer === appliedFilters.customer) &&
+          (appliedFilters.supplier === 'All' || i.supplier === appliedFilters.supplier) &&
+          (appliedFilters.company === 'All' || i.companyName === appliedFilters.company) &&
+          (appliedFilters.product === 'All' || products.includes(appliedFilters.product)) &&
+          (appliedFilters.status === 'All' || i.status === appliedFilters.status);
+
+        return matchesSearch && matchesFilters;
+      }),
+    [q, appliedFilters]
   );
 
   const prPaging = usePagedList(filteredPRs);
@@ -116,10 +237,60 @@ export const PurchaseModuleScreen: React.FC<PurchaseModuleScreenProps> = ({
     pinvPaging.resetPage();
   };
 
-  const handleTabChange = (tab: 'ALL' | 'PENDING') => {
-    setActiveTab(tab);
+  const activeFilterCount = useMemo(
+    () => FILTER_FIELDS.filter(([key]) => appliedFilters[key] !== 'All').length,
+    [appliedFilters]
+  );
+
+  useEffect(() => {
+    setDraftFilters(EMPTY_FILTERS);
+    setAppliedFilters(EMPTY_FILTERS);
+    setShowFilters(false);
     prPaging.resetPage();
     poPaging.resetPage();
+    pinvPaging.resetPage();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [workstream]);
+
+  useEffect(() => {
+    prPaging.resetPage();
+    poPaging.resetPage();
+    pinvPaging.resetPage();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [appliedFilters]);
+
+  useEffect(() => {
+    const onDoc = (e: MouseEvent) => {
+      if (showFilters && filterRef.current && !filterRef.current.contains(e.target as Node)) {
+        setShowFilters(false);
+      }
+    };
+    document.addEventListener('mousedown', onDoc);
+    return () => document.removeEventListener('mousedown', onDoc);
+  }, [showFilters]);
+
+  const openFilterPanel = () => {
+    setDraftFilters(appliedFilters);
+    setShowFilters((v) => !v);
+  };
+
+  const applyFilters = () => {
+    setAppliedFilters({ ...draftFilters });
+    setShowFilters(false);
+    onShowSnackBar?.('Filters applied', 'success');
+  };
+
+  const clearFilters = () => {
+    setDraftFilters(EMPTY_FILTERS);
+    setAppliedFilters(EMPTY_FILTERS);
+    setShowFilters(false);
+    onShowSnackBar?.('Filters cleared', 'info');
+  };
+
+  const removeFilter = (key: keyof PurchaseFilterState) => {
+    const next = { ...appliedFilters, [key]: 'All' };
+    setAppliedFilters(next);
+    setDraftFilters(next);
   };
 
   // ============================================================================
@@ -180,19 +351,11 @@ export const PurchaseModuleScreen: React.FC<PurchaseModuleScreenProps> = ({
           status={pr.status}
           onBack={() => setSelectedPR(null)}
           actions={
-            <>
-              <HeaderIconBtn
-                label="Edit"
-                icon="edit"
-                variant="soft"
-                onClick={() => onShowSnackBar?.(`Editing Requisition ${pr.requisitionCode}`, 'info')}
-              />
-              <HeaderIconBtn
-                label="Print"
-                icon="print"
-                onClick={() => { window.print(); onShowSnackBar?.(`Preparing ${pr.requisitionCode} for printing...`, 'info'); }}
-              />
-            </>
+            <HeaderIconBtn
+              label="Print"
+              icon="print"
+              onClick={() => { window.print(); onShowSnackBar?.(`Preparing ${pr.requisitionCode} for printing...`, 'info'); }}
+            />
           }
         />
         <MobileContent>
@@ -275,7 +438,7 @@ export const PurchaseModuleScreen: React.FC<PurchaseModuleScreenProps> = ({
                     </div>
                     <div className="overflow-x-auto">
                       <table className="w-full text-xs text-left">
-                        <thead className="bg-slate-50 text-slate-600 uppercase text-[11px] font-semibold border-y border-slate-200">
+                        <thead className="bg-slate-50 text-slate-600 uppercase text-body-sm font-semibold border-y border-slate-200">
                           <tr>
                             <th className="py-2.5 px-3">Thumbnail</th>
                             <th className="py-2.5 px-3">Product Name</th>
@@ -322,15 +485,15 @@ export const PurchaseModuleScreen: React.FC<PurchaseModuleScreenProps> = ({
                       className="w-12 h-12 object-cover rounded-xl border border-slate-200 shrink-0"
                     />
                     <div className="min-w-0 flex-1">
-                      <p className="text-[11px] font-extrabold text-[#0f2b3c] leading-snug break-words">
+                      <p className="text-body-sm font-extrabold text-[#0f2b3c] leading-snug break-words">
                         {prod.productName}
                       </p>
                       <div className="flex items-center gap-2 flex-wrap mt-1.5">
-                        <span className="inline-flex px-2 py-0.5 rounded-lg bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-bold">
+                        <span className="inline-flex px-2 py-0.5 rounded-lg bg-teal-50 text-teal-800 border border-teal-200 text-label font-bold">
                           {prod.variations}
                         </span>
                         <span
-                          className={`inline-flex px-2 py-0.5 rounded-lg text-[10px] font-bold border ${
+                          className={`inline-flex px-2 py-0.5 rounded-lg text-label font-bold border ${
                             prod.artworkNeeded === 'Yes'
                               ? 'bg-amber-50 text-amber-700 border-amber-200'
                               : 'bg-slate-100 text-slate-600 border-slate-200'
@@ -342,32 +505,32 @@ export const PurchaseModuleScreen: React.FC<PurchaseModuleScreenProps> = ({
 
                       <div className="grid grid-cols-2 gap-2 mt-3">
                         <div>
-                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Qty</p>
-                          <p className="text-[11px] font-bold text-slate-900 font-mono">{prod.quantity}</p>
+                          <p className="text-caption font-bold uppercase tracking-wider text-slate-400">Qty</p>
+                          <p className="text-body-sm font-bold text-slate-900 font-mono">{prod.quantity}</p>
                         </div>
                         <div>
-                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Shelf Life</p>
-                          <p className="text-[11px] font-semibold text-slate-700">{prod.shelfLifeDuration}</p>
+                          <p className="text-caption font-bold uppercase tracking-wider text-slate-400">Shelf Life</p>
+                          <p className="text-body-sm font-semibold text-slate-700">{prod.shelfLifeDuration}</p>
                         </div>
                         <div>
-                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">CBM</p>
-                          <p className="text-[11px] font-semibold text-slate-700 tabular-nums">{prod.cbm}</p>
+                          <p className="text-caption font-bold uppercase tracking-wider text-slate-400">CBM</p>
+                          <p className="text-body-sm font-semibold text-slate-700 tabular-nums">{prod.cbm}</p>
                         </div>
                         <div>
-                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Weight</p>
-                          <p className="text-[11px] font-semibold text-slate-700 tabular-nums">{prod.weight}</p>
+                          <p className="text-caption font-bold uppercase tracking-wider text-slate-400">Weight</p>
+                          <p className="text-body-sm font-semibold text-slate-700 tabular-nums">{prod.weight}</p>
                         </div>
                         <div className="col-span-2">
-                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Supplier Price</p>
-                          <p className="text-[11px] font-bold text-slate-900 font-mono">{prod.supplierPrice}</p>
+                          <p className="text-caption font-bold uppercase tracking-wider text-slate-400">Supplier Price</p>
+                          <p className="text-body-sm font-bold text-slate-900 font-mono">{prod.supplierPrice}</p>
                         </div>
                         <div className="col-span-2">
-                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Supplier Remarks</p>
-                          <p className="text-[11px] font-medium text-slate-600 break-words">{prod.supplierRemarks || '-'}</p>
+                          <p className="text-caption font-bold uppercase tracking-wider text-slate-400">Supplier Remarks</p>
+                          <p className="text-body-sm font-medium text-slate-600 break-words">{prod.supplierRemarks || '-'}</p>
                         </div>
                         <div className="col-span-2">
-                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Notes</p>
-                          <p className="text-[11px] font-medium text-slate-600 break-words">{prod.notes || '-'}</p>
+                          <p className="text-caption font-bold uppercase tracking-wider text-slate-400">Notes</p>
+                          <p className="text-body-sm font-medium text-slate-600 break-words">{prod.notes || '-'}</p>
                         </div>
                       </div>
                     </div>
@@ -377,17 +540,17 @@ export const PurchaseModuleScreen: React.FC<PurchaseModuleScreenProps> = ({
 
               <div className="rounded-2xl border border-slate-200 bg-slate-50/60 p-3.5">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Total Qty</span>
-                  <span className="text-[12px] font-black font-mono text-slate-900">2,075</span>
+                  <span className="text-label font-bold uppercase tracking-wider text-slate-500">Total Qty</span>
+                  <span className="text-body font-black font-mono text-slate-900">2,075</span>
                 </div>
                 <div className="grid grid-cols-2 gap-2 mt-2">
                   <div>
-                    <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">CBM</p>
-                    <p className="text-[11px] font-bold font-mono text-slate-900">47.31</p>
+                    <p className="text-caption font-bold uppercase tracking-wider text-slate-400">CBM</p>
+                    <p className="text-body-sm font-bold font-mono text-slate-900">47.31</p>
                   </div>
                   <div>
-                    <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Weight</p>
-                    <p className="text-[11px] font-bold font-mono text-slate-900">7,760.5 KG</p>
+                    <p className="text-caption font-bold uppercase tracking-wider text-slate-400">Weight</p>
+                    <p className="text-body-sm font-bold font-mono text-slate-900">7,760.5 KG</p>
                   </div>
                 </div>
               </div>
@@ -413,7 +576,7 @@ export const PurchaseModuleScreen: React.FC<PurchaseModuleScreenProps> = ({
               {reqInstructions.map((instruction, idx) => (
                 <span
                   key={idx}
-                  className="px-3 py-1 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-800 border border-emerald-200"
+                  className="px-3 py-1 rounded-full text-body-sm font-medium bg-emerald-50 text-emerald-800 border border-emerald-200"
                 >
                   {instruction}
                 </span>
@@ -515,19 +678,11 @@ export const PurchaseModuleScreen: React.FC<PurchaseModuleScreenProps> = ({
           status={po.status}
           onBack={() => setSelectedPO(null)}
           actions={
-            <>
-              <HeaderIconBtn
-                label="Edit"
-                icon="edit"
-                variant="soft"
-                onClick={() => onShowSnackBar?.(`Editing Purchase Order ${po.code}`, 'info')}
-              />
-              <HeaderIconBtn
-                label="Print"
-                icon="print"
-                onClick={() => { window.print(); onShowSnackBar?.(`Preparing ${po.code} for printing...`, 'info'); }}
-              />
-            </>
+            <HeaderIconBtn
+              label="Print"
+              icon="print"
+              onClick={() => { window.print(); onShowSnackBar?.(`Preparing ${po.code} for printing...`, 'info'); }}
+            />
           }
         />
         <MobileContent>
@@ -590,43 +745,43 @@ export const PurchaseModuleScreen: React.FC<PurchaseModuleScreenProps> = ({
                       className="w-12 h-12 object-cover rounded-xl border border-slate-200 shrink-0"
                     />
                     <div className="min-w-0 flex-1">
-                      <p className="text-[11px] font-extrabold text-[#0f2b3c] leading-snug break-words">
+                      <p className="text-body-sm font-extrabold text-[#0f2b3c] leading-snug break-words">
                         {prod.productName}
                       </p>
                       <div className="flex items-center gap-2 flex-wrap mt-1.5">
-                        <span className="inline-flex px-2 py-0.5 rounded-lg bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-bold">
+                        <span className="inline-flex px-2 py-0.5 rounded-lg bg-teal-50 text-teal-800 border border-teal-200 text-label font-bold">
                           {prod.variations}
                         </span>
                       </div>
 
                       <div className="grid grid-cols-2 gap-2 mt-3">
                         <div>
-                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Qty</p>
-                          <p className="text-[11px] font-bold text-slate-900 font-mono">{prod.quantity}</p>
+                          <p className="text-caption font-bold uppercase tracking-wider text-slate-400">Qty</p>
+                          <p className="text-body-sm font-bold text-slate-900 font-mono">{prod.quantity}</p>
                         </div>
                         <div>
-                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">PO Price</p>
-                          <p className="text-[11px] font-semibold text-slate-900 font-mono">{prod.poPrice}</p>
+                          <p className="text-caption font-bold uppercase tracking-wider text-slate-400">PO Price</p>
+                          <p className="text-body-sm font-semibold text-slate-900 font-mono">{prod.poPrice}</p>
                         </div>
                         <div>
-                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Total</p>
-                          <p className="text-[11px] font-black text-slate-900 font-mono tabular-nums">{prod.total}</p>
+                          <p className="text-caption font-bold uppercase tracking-wider text-slate-400">Total</p>
+                          <p className="text-body-sm font-black text-slate-900 font-mono tabular-nums">{prod.total}</p>
                         </div>
                         <div>
-                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Shelf Life</p>
-                          <p className="text-[11px] font-semibold text-slate-700">{prod.shelfLifeDuration}</p>
+                          <p className="text-caption font-bold uppercase tracking-wider text-slate-400">Shelf Life</p>
+                          <p className="text-body-sm font-semibold text-slate-700">{prod.shelfLifeDuration}</p>
                         </div>
                         <div>
-                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">CBM</p>
-                          <p className="text-[11px] font-semibold text-slate-700 tabular-nums">{prod.cbm}</p>
+                          <p className="text-caption font-bold uppercase tracking-wider text-slate-400">CBM</p>
+                          <p className="text-body-sm font-semibold text-slate-700 tabular-nums">{prod.cbm}</p>
                         </div>
                         <div>
-                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Weight</p>
-                          <p className="text-[11px] font-semibold text-slate-700 tabular-nums">{prod.weight}</p>
+                          <p className="text-caption font-bold uppercase tracking-wider text-slate-400">Weight</p>
+                          <p className="text-body-sm font-semibold text-slate-700 tabular-nums">{prod.weight}</p>
                         </div>
                         <div className="col-span-2">
-                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Notes</p>
-                          <p className="text-[11px] font-medium text-slate-600 break-words">{prod.notes || '-'}</p>
+                          <p className="text-caption font-bold uppercase tracking-wider text-slate-400">Notes</p>
+                          <p className="text-body-sm font-medium text-slate-600 break-words">{prod.notes || '-'}</p>
                         </div>
                       </div>
                     </div>
@@ -636,21 +791,21 @@ export const PurchaseModuleScreen: React.FC<PurchaseModuleScreenProps> = ({
 
               <div className="rounded-2xl border border-slate-200 bg-slate-50/60 p-3.5 space-y-2">
                 <div className="flex items-center justify-between gap-3">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Total Qty</span>
-                  <span className="text-[12px] font-black font-mono text-slate-900">2,075</span>
+                  <span className="text-label font-bold uppercase tracking-wider text-slate-500">Total Qty</span>
+                  <span className="text-body font-black font-mono text-slate-900">2,075</span>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Total Amount</p>
-                    <p className="text-[11px] font-black font-mono text-slate-900">$ 18,156.2500</p>
+                    <p className="text-caption font-bold uppercase tracking-wider text-slate-400">Total Amount</p>
+                    <p className="text-body-sm font-black font-mono text-slate-900">$ 18,156.2500</p>
                   </div>
                   <div>
-                    <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">CBM</p>
-                    <p className="text-[11px] font-semibold font-mono text-slate-700">47.31</p>
+                    <p className="text-caption font-bold uppercase tracking-wider text-slate-400">CBM</p>
+                    <p className="text-body-sm font-semibold font-mono text-slate-700">47.31</p>
                   </div>
                   <div className="col-span-2">
-                    <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Weight</p>
-                    <p className="text-[11px] font-semibold font-mono text-slate-700">7,760.5 KG</p>
+                    <p className="text-caption font-bold uppercase tracking-wider text-slate-400">Weight</p>
+                    <p className="text-body-sm font-semibold font-mono text-slate-700">7,760.5 KG</p>
                   </div>
                 </div>
               </div>
@@ -729,7 +884,7 @@ export const PurchaseModuleScreen: React.FC<PurchaseModuleScreenProps> = ({
               {reqInstructions.map((instruction, idx) => (
                 <span
                   key={idx}
-                  className="px-3 py-1 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-800 border border-emerald-200"
+                  className="px-3 py-1 rounded-full text-body-sm font-medium bg-emerald-50 text-emerald-800 border border-emerald-200"
                 >
                   {instruction}
                 </span>
@@ -820,19 +975,11 @@ export const PurchaseModuleScreen: React.FC<PurchaseModuleScreenProps> = ({
           status={pinv.status}
           onBack={() => setSelectedPINV(null)}
           actions={
-            <>
-              <HeaderIconBtn
-                label="Edit"
-                icon="edit"
-                variant="soft"
-                onClick={() => onShowSnackBar?.(`Editing Purchase Invoice ${pinv.code}`, 'info')}
-              />
-              <HeaderIconBtn
-                label="Print"
-                icon="print"
-                onClick={() => { window.print(); onShowSnackBar?.(`Preparing ${pinv.code} for printing...`, 'info'); }}
-              />
-            </>
+            <HeaderIconBtn
+              label="Print"
+              icon="print"
+              onClick={() => { window.print(); onShowSnackBar?.(`Preparing ${pinv.code} for printing...`, 'info'); }}
+            />
           }
         />
         <MobileContent>
@@ -909,51 +1056,51 @@ export const PurchaseModuleScreen: React.FC<PurchaseModuleScreenProps> = ({
                       className="w-12 h-12 object-cover rounded-xl border border-slate-200 shrink-0"
                     />
                     <div className="min-w-0 flex-1">
-                      <p className="text-[11px] font-extrabold text-[#0f2b3c] leading-snug break-words">
+                      <p className="text-body-sm font-extrabold text-[#0f2b3c] leading-snug break-words">
                         {prod.productName}
                       </p>
                       <div className="flex items-center gap-2 flex-wrap mt-1.5">
-                        <span className="inline-flex px-2 py-0.5 rounded-lg bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-bold">
+                        <span className="inline-flex px-2 py-0.5 rounded-lg bg-teal-50 text-teal-800 border border-teal-200 text-label font-bold">
                           {prod.variation}
                         </span>
                       </div>
 
                       <div className="grid grid-cols-2 gap-2 mt-3">
                         <div>
-                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Qty</p>
-                          <p className="text-[11px] font-bold text-slate-900 font-mono">{prod.quantity}</p>
+                          <p className="text-caption font-bold uppercase tracking-wider text-slate-400">Qty</p>
+                          <p className="text-body-sm font-bold text-slate-900 font-mono">{prod.quantity}</p>
                         </div>
                         <div>
-                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Total</p>
-                          <p className="text-[11px] font-black text-slate-900 font-mono tabular-nums">{prod.total}</p>
+                          <p className="text-caption font-bold uppercase tracking-wider text-slate-400">Total</p>
+                          <p className="text-body-sm font-black text-slate-900 font-mono tabular-nums">{prod.total}</p>
                         </div>
                         <div>
-                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Price</p>
-                          <p className="text-[11px] font-semibold text-slate-900 font-mono">{prod.price}</p>
+                          <p className="text-caption font-bold uppercase tracking-wider text-slate-400">Price</p>
+                          <p className="text-body-sm font-semibold text-slate-900 font-mono">{prod.price}</p>
                         </div>
                         <div>
-                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">CBM</p>
-                          <p className="text-[11px] font-semibold text-slate-700 tabular-nums">{prod.cbm}</p>
+                          <p className="text-caption font-bold uppercase tracking-wider text-slate-400">CBM</p>
+                          <p className="text-body-sm font-semibold text-slate-700 tabular-nums">{prod.cbm}</p>
                         </div>
                         <div>
-                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Weight</p>
-                          <p className="text-[11px] font-semibold text-slate-700 tabular-nums">{prod.weight}</p>
+                          <p className="text-caption font-bold uppercase tracking-wider text-slate-400">Weight</p>
+                          <p className="text-body-sm font-semibold text-slate-700 tabular-nums">{prod.weight}</p>
                         </div>
                         <div>
-                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Batch</p>
-                          <p className="text-[11px] font-medium text-slate-700">{prod.batchNo}</p>
+                          <p className="text-caption font-bold uppercase tracking-wider text-slate-400">Batch</p>
+                          <p className="text-body-sm font-medium text-slate-700">{prod.batchNo}</p>
                         </div>
                         <div>
-                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">MFG</p>
-                          <p className="text-[11px] font-semibold text-slate-700">{prod.mfgDate}</p>
+                          <p className="text-caption font-bold uppercase tracking-wider text-slate-400">MFG</p>
+                          <p className="text-body-sm font-semibold text-slate-700">{prod.mfgDate}</p>
                         </div>
                         <div>
-                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Expiry</p>
-                          <p className="text-[11px] font-semibold text-slate-700">{prod.expiryDate}</p>
+                          <p className="text-caption font-bold uppercase tracking-wider text-slate-400">Expiry</p>
+                          <p className="text-body-sm font-semibold text-slate-700">{prod.expiryDate}</p>
                         </div>
                         <div className="col-span-2">
-                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Notes</p>
-                          <p className="text-[11px] font-medium text-slate-600 break-words">{prod.notes || '-'}</p>
+                          <p className="text-caption font-bold uppercase tracking-wider text-slate-400">Notes</p>
+                          <p className="text-body-sm font-medium text-slate-600 break-words">{prod.notes || '-'}</p>
                         </div>
                       </div>
                     </div>
@@ -964,22 +1111,22 @@ export const PurchaseModuleScreen: React.FC<PurchaseModuleScreenProps> = ({
               <div className="rounded-2xl border border-slate-200 bg-slate-50/60 p-3.5">
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Total Qty</p>
-                    <p className="text-[12px] font-black font-mono text-slate-900">2,080</p>
+                    <p className="text-label font-bold uppercase tracking-wider text-slate-500">Total Qty</p>
+                    <p className="text-body font-black font-mono text-slate-900">2,080</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Total Amount</p>
-                    <p className="text-[12px] font-black font-mono text-slate-900">$ 25,584.0000</p>
+                    <p className="text-label font-bold uppercase tracking-wider text-slate-500">Total Amount</p>
+                    <p className="text-body font-black font-mono text-slate-900">$ 25,584.0000</p>
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-2 mt-2">
                   <div>
-                    <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">CBM</p>
-                    <p className="text-[11px] font-semibold font-mono text-slate-700">67.2880</p>
+                    <p className="text-caption font-bold uppercase tracking-wider text-slate-400">CBM</p>
+                    <p className="text-body-sm font-semibold font-mono text-slate-700">67.2880</p>
                   </div>
                   <div>
-                    <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Weight</p>
-                    <p className="text-[11px] font-semibold font-mono text-slate-700">9,672.0000 KG</p>
+                    <p className="text-caption font-bold uppercase tracking-wider text-slate-400">Weight</p>
+                    <p className="text-body-sm font-semibold font-mono text-slate-700">9,672.0000 KG</p>
                   </div>
                 </div>
               </div>
@@ -993,7 +1140,7 @@ export const PurchaseModuleScreen: React.FC<PurchaseModuleScreenProps> = ({
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-xs text-left">
-                <thead className="bg-slate-50 text-slate-600 uppercase text-[10.5px] font-semibold border-b border-slate-200">
+                <thead className="bg-slate-50 text-slate-600 uppercase text-body-sm font-semibold border-b border-slate-200">
                   <tr>
                     <th className="py-2.5 px-4">Account Name</th>
                     <th className="py-2.5 px-4 text-right">Debit</th>
@@ -1097,53 +1244,114 @@ export const PurchaseModuleScreen: React.FC<PurchaseModuleScreenProps> = ({
       />
 
       <MobileContent>
-        <SoftCard>
-          <ListToolbar
-            viewMode={viewMode}
-            onViewModeChange={setViewMode}
-            searchQuery={searchQuery}
-            onSearchChange={handleSearchChange}
-            searchPlaceholder={
-              workstream === 'requisition'
-                ? 'Search requisitions…'
-                : workstream === 'order'
-                ? 'Search purchase orders…'
-                : 'Search purchase invoices…'
-            }
-            onFilterClick={() => onShowSnackBar?.('Filter panel opened', 'info')}
-            onColumnsClick={() => onShowSnackBar?.('Column selection opened', 'info')}
-          />
-        </SoftCard>
+        <div className="relative z-20" ref={filterRef}>
+          <SoftCard>
+            <ListToolbar
+              viewMode={viewMode}
+              onViewModeChange={setViewMode}
+              searchQuery={searchQuery}
+              onSearchChange={handleSearchChange}
+              searchPlaceholder={
+                workstream === 'requisition'
+                  ? 'Search requisitions…'
+                  : workstream === 'order'
+                  ? 'Search purchase orders…'
+                  : 'Search purchase invoices…'
+              }
+              onFilterClick={openFilterPanel}
+              onColumnsClick={() => onShowSnackBar?.('Column selection opened', 'info')}
+              trailing={
+                activeFilterCount > 0 ? (
+                  <span className="inline-flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full bg-teal-600 text-white text-[10px] font-bold">
+                    {activeFilterCount}
+                  </span>
+                ) : undefined
+              }
+            />
+          </SoftCard>
 
-        {(workstream === 'requisition' || workstream === 'order') && (
-          <SoftCard padding={false}>
-            <div className="px-4 sm:px-5 flex gap-6 text-xs font-semibold">
+          {showFilters && (
+            <div className="mt-2 rounded-2xl border border-slate-200 bg-white shadow-xl p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-bold text-slate-900">Filters</p>
+                <button
+                  type="button"
+                  onClick={() => setShowFilters(false)}
+                  className="p-1 rounded-lg text-slate-400 hover:bg-slate-100 cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {FILTER_FIELDS.map(([key, label]) => (
+                  <div
+                    key={key}
+                    className={`space-y-1 ${key === 'product' ? 'sm:col-span-2' : ''}`}
+                  >
+                    <label className="text-xs font-bold text-slate-700">{label}</label>
+                    <select
+                      value={draftFilters[key]}
+                      onChange={(e) =>
+                        setDraftFilters((prev) => ({ ...prev, [key]: e.target.value }))
+                      }
+                      className="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm bg-white outline-hidden focus:ring-2 focus:ring-[#0f2b3c]/30 cursor-pointer"
+                    >
+                      {filterOptions[key].map((opt) => (
+                        <option key={opt} value={opt}>
+                          {opt.length > 80 ? `${opt.slice(0, 80)}…` : opt}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                ))}
+              </div>
+              <div className="flex justify-end gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={clearFilters}
+                  className="px-4 py-2 rounded-xl text-sm font-bold text-white bg-rose-500 hover:bg-rose-600 cursor-pointer"
+                >
+                  Clear
+                </button>
+                <button
+                  type="button"
+                  onClick={applyFilters}
+                  className="px-4 py-2 rounded-xl text-sm font-bold text-white bg-[#0f2b3c] hover:bg-[#1a3d52] cursor-pointer"
+                >
+                  Apply
+                </button>
+              </div>
+            </div>
+          )}
+
+          {activeFilterCount > 0 && (
+            <div className="flex flex-wrap items-center gap-2 mt-2">
+              {FILTER_FIELDS.filter(([key]) => appliedFilters[key] !== 'All').map(([key, label]) => (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => removeFilter(key)}
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-[11px] font-semibold text-slate-700 hover:bg-slate-200 cursor-pointer max-w-full"
+                >
+                  <span className="truncate">
+                    {label}:{' '}
+                    {appliedFilters[key].length > 40
+                      ? `${appliedFilters[key].slice(0, 40)}…`
+                      : appliedFilters[key]}
+                  </span>
+                  <X className="w-3 h-3 text-slate-400 shrink-0" />
+                </button>
+              ))}
               <button
                 type="button"
-                onClick={() => handleTabChange('ALL')}
-                className={`py-3 border-b-2 transition-colors cursor-pointer ${
-                  activeTab === 'ALL'
-                    ? 'border-[#0f2b3c] text-[#0f2b3c]'
-                    : 'border-transparent text-slate-600 hover:text-slate-900'
-                }`}
+                onClick={clearFilters}
+                className="text-[11px] font-bold text-rose-600 hover:underline cursor-pointer"
               >
-                {workstream === 'requisition' ? 'All Requisition' : 'All Purchase Orders'}
-              </button>
-              <button
-                type="button"
-                onClick={() => handleTabChange('PENDING')}
-                className={`py-3 border-b-2 transition-colors cursor-pointer ${
-                  activeTab === 'PENDING'
-                    ? 'border-[#0f2b3c] text-[#0f2b3c]'
-                    : 'border-transparent text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                {workstream === 'requisition' ? 'Pending Requisition' : 'Pending Purchase Orders'}
+                Clear all
               </button>
             </div>
-          </SoftCard>
-        )}
-
+          )}
+        </div>
 
         {/* ---- Requisition ---- */}
         {workstream === 'requisition' &&
@@ -1175,43 +1383,17 @@ export const PurchaseModuleScreen: React.FC<PurchaseModuleScreenProps> = ({
                     <StatusPill status={item.proformaStatus} />
                   </Td>
                   <Td className="whitespace-nowrap">{item.created}</Td>
-                  <Td className="relative">
+                  <Td>
                     <button
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
-                        setOpenActionId(openActionId === item.id ? null : item.id);
+                        setSelectedPR(item);
                       }}
-                      className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold cursor-pointer"
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-body-sm font-semibold cursor-pointer"
                     >
-                      Actions <MoreVertical className="w-3.5 h-3.5" />
+                      <Eye className="w-3.5 h-3.5 text-teal-600" /> View
                     </button>
-                    {openActionId === item.id && (
-                      <div className="absolute right-2 mt-1 w-32 bg-white border border-slate-200 rounded-xl shadow-lg z-20 py-1 text-left text-xs">
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedPR(item);
-                            setOpenActionId(null);
-                          }}
-                          className="w-full px-3 py-1.5 hover:bg-slate-50 flex items-center gap-1.5 text-slate-700 cursor-pointer"
-                        >
-                          <Eye className="w-3.5 h-3.5 text-teal-600" /> View
-                        </button>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onShowSnackBar?.(`Editing ${item.requisitionCode}`, 'info');
-                            setOpenActionId(null);
-                          }}
-                          className="w-full px-3 py-1.5 hover:bg-slate-50 flex items-center gap-1.5 text-slate-700 cursor-pointer"
-                        >
-                          <Edit3 className="w-3.5 h-3.5 text-slate-500" /> Edit
-                        </button>
-                      </div>
-                    )}
                   </Td>
                 </DataRow>
               ))}
@@ -1235,11 +1417,6 @@ export const PurchaseModuleScreen: React.FC<PurchaseModuleScreenProps> = ({
                   onClick={() => setSelectedPR(item)}
                   actions={[
                     { label: 'View', icon: 'view', onClick: () => setSelectedPR(item) },
-                    {
-                      label: 'Edit',
-                      icon: 'edit',
-                      onClick: () => onShowSnackBar?.(`Editing ${item.requisitionCode}`, 'info'),
-                    },
                   ]}
                 />
               ))}
@@ -1257,7 +1434,6 @@ export const PurchaseModuleScreen: React.FC<PurchaseModuleScreenProps> = ({
                 'Company',
                 'Status',
                 'Proforma Status',
-                'Finance Status',
                 'Created',
                 'Actions',
               ]}
@@ -1276,47 +1452,18 @@ export const PurchaseModuleScreen: React.FC<PurchaseModuleScreenProps> = ({
                   <Td>
                     <StatusPill status={item.proformaStatus} />
                   </Td>
-                  <Td>
-                    <StatusPill status={item.financeStatus || '—'} />
-                  </Td>
                   <Td className="whitespace-nowrap">{item.created}</Td>
-                  <Td className="relative">
+                  <Td>
                     <button
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
-                        setOpenActionId(openActionId === item.id ? null : item.id);
+                        setSelectedPO(item);
                       }}
-                      className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold cursor-pointer"
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-body-sm font-semibold cursor-pointer"
                     >
-                      Actions <MoreVertical className="w-3.5 h-3.5" />
+                      <Eye className="w-3.5 h-3.5 text-teal-600" /> View
                     </button>
-                    {openActionId === item.id && (
-                      <div className="absolute right-2 mt-1 w-32 bg-white border border-slate-200 rounded-xl shadow-lg z-20 py-1 text-left text-xs">
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedPO(item);
-                            setOpenActionId(null);
-                          }}
-                          className="w-full px-3 py-1.5 hover:bg-slate-50 flex items-center gap-1.5 text-slate-700 cursor-pointer"
-                        >
-                          <Eye className="w-3.5 h-3.5 text-teal-600" /> View
-                        </button>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onShowSnackBar?.(`Editing ${item.code}`, 'info');
-                            setOpenActionId(null);
-                          }}
-                          className="w-full px-3 py-1.5 hover:bg-slate-50 flex items-center gap-1.5 text-slate-700 cursor-pointer"
-                        >
-                          <Edit3 className="w-3.5 h-3.5 text-slate-500" /> Edit
-                        </button>
-                      </div>
-                    )}
                   </Td>
                 </DataRow>
               ))}
@@ -1330,12 +1477,7 @@ export const PurchaseModuleScreen: React.FC<PurchaseModuleScreenProps> = ({
                   title={item.supplier}
                   subtitle={item.customer}
                   status={item.status}
-                  badges={
-                    <>
-                      <StatusPill status={item.proformaStatus} />
-                      <StatusPill status={item.financeStatus || '—'} />
-                    </>
-                  }
+                  badges={<StatusPill status={item.proformaStatus} />}
                   fields={[
                     { label: 'Company', value: item.company },
                     { label: 'Marketing', value: item.marketingPersonal },
@@ -1345,11 +1487,6 @@ export const PurchaseModuleScreen: React.FC<PurchaseModuleScreenProps> = ({
                   onClick={() => setSelectedPO(item)}
                   actions={[
                     { label: 'View', icon: 'view', onClick: () => setSelectedPO(item) },
-                    {
-                      label: 'Edit',
-                      icon: 'edit',
-                      onClick: () => onShowSnackBar?.(`Editing ${item.code}`, 'info'),
-                    },
                   ]}
                 />
               ))}
@@ -1384,43 +1521,17 @@ export const PurchaseModuleScreen: React.FC<PurchaseModuleScreenProps> = ({
                   <Td>
                     <StatusPill status={item.status} />
                   </Td>
-                  <Td className="relative">
+                  <Td>
                     <button
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
-                        setOpenActionId(openActionId === item.id ? null : item.id);
+                        setSelectedPINV(item);
                       }}
-                      className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold cursor-pointer"
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-body-sm font-semibold cursor-pointer"
                     >
-                      Actions <MoreVertical className="w-3.5 h-3.5" />
+                      <Eye className="w-3.5 h-3.5 text-teal-600" /> View
                     </button>
-                    {openActionId === item.id && (
-                      <div className="absolute right-2 mt-1 w-32 bg-white border border-slate-200 rounded-xl shadow-lg z-20 py-1 text-left text-xs">
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedPINV(item);
-                            setOpenActionId(null);
-                          }}
-                          className="w-full px-3 py-1.5 hover:bg-slate-50 flex items-center gap-1.5 text-slate-700 cursor-pointer"
-                        >
-                          <Eye className="w-3.5 h-3.5 text-teal-600" /> View
-                        </button>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onShowSnackBar?.(`Editing ${item.code}`, 'info');
-                            setOpenActionId(null);
-                          }}
-                          className="w-full px-3 py-1.5 hover:bg-slate-50 flex items-center gap-1.5 text-slate-700 cursor-pointer"
-                        >
-                          <Edit3 className="w-3.5 h-3.5 text-slate-500" /> Edit
-                        </button>
-                      </div>
-                    )}
                   </Td>
                 </DataRow>
               ))}
@@ -1443,11 +1554,6 @@ export const PurchaseModuleScreen: React.FC<PurchaseModuleScreenProps> = ({
                   onClick={() => setSelectedPINV(item)}
                   actions={[
                     { label: 'View', icon: 'view', onClick: () => setSelectedPINV(item) },
-                    {
-                      label: 'Edit',
-                      icon: 'edit',
-                      onClick: () => onShowSnackBar?.(`Editing ${item.code}`, 'info'),
-                    },
                   ]}
                 />
               ))}

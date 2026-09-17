@@ -20,7 +20,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, size = 'md' })
     <span
       id={`badge-status-${status.toLowerCase()}`}
       className={`inline-flex items-center gap-1.5 font-bold rounded-full tracking-wide uppercase transition-colors select-none ${
-        size === 'sm' ? 'text-[9px] px-2 py-0.5' : 'text-[11px] px-2.5 py-0.5'
+        size === 'sm' ? 'text-caption px-2 py-0.5' : 'text-body-sm px-2.5 py-0.5'
       } ${
         isActive
           ? isDark

@@ -4,6 +4,39 @@
  */
 
 /**
+ * Font size class helpers — pixel values live only in src/index.css (:root --app-fs-*).
+ * Prefer these (or matching text-* utilities) over hardcoded text-[Npx].
+ */
+export const fontSize = {
+  /** 8px — tiny captions / chips */
+  micro: 'text-micro',
+  /** 9px — secondary labels */
+  caption: 'text-caption',
+  /** 10px — section / KPI labels */
+  label: 'text-label',
+  /** 11px — compact body */
+  bodySm: 'text-body-sm',
+  /** 12px — default body */
+  body: 'text-body',
+  /** 14px — comfortable body */
+  md: 'text-md',
+  /** also text-sm → same token */
+  sm: 'text-sm',
+  /** 16px — titles */
+  lg: 'text-base',
+  /** 18px — all dashboard KPI / count numbers */
+  metric: 'text-metric',
+  /** 18px — metrics / emphasis */
+  xl: 'text-lg',
+  /** 20px — page titles */
+  '2xl': 'text-xl',
+  /** 24px — large headings */
+  '3xl': 'text-2xl',
+  /** 30px — display */
+  display: 'text-3xl',
+} as const;
+
+/**
  * Mobile Design System Theme Tokens
  * Defines consistent visual styling for Light and Dark modes across all mobile components.
  */

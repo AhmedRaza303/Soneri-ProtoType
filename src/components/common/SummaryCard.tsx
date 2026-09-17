@@ -39,7 +39,7 @@ export const SummaryCard: React.FC<SummaryCardProps> = ({
     >
       <div className="flex items-center justify-between gap-2">
         <span
-          className={`text-[11px] font-bold uppercase tracking-wider truncate ${
+          className={`text-body-sm font-bold uppercase tracking-wider truncate ${
             isDark ? 'text-slate-400' : 'text-slate-500'
           }`}
         >
@@ -68,7 +68,7 @@ export const SummaryCard: React.FC<SummaryCardProps> = ({
         </div>
 
         {(change || subtext) && (
-          <div className="mt-1 flex items-center justify-between text-[11px]">
+          <div className="mt-1 flex items-center justify-between text-body-sm">
             {subtext && (
               <span
                 className={`truncate ${isDark ? 'text-slate-500' : 'text-slate-400'}`}
@@ -78,7 +78,7 @@ export const SummaryCard: React.FC<SummaryCardProps> = ({
             )}
             {change && (
               <span
-                className={`inline-flex items-center text-[10px] sm:text-[11px] font-bold shrink-0 ml-1.5 ${
+                className={`inline-flex items-center text-label sm:text-body-sm font-bold shrink-0 ml-1.5 ${
                   isPositive === true
                     ? isDark
                       ? 'text-emerald-400'

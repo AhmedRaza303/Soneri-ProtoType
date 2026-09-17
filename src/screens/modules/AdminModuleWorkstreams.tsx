@@ -97,7 +97,7 @@ const ActiveToggle: React.FC<{
   const { isDark } = useTheme();
   return (
     <label className="flex items-center justify-between gap-3 min-h-[42px]">
-      <span className={`text-[11px] font-bold ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
+      <span className={`text-body-sm font-bold ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
         {label}
       </span>
       <button
@@ -127,7 +127,7 @@ const SuggestRow: React.FC<{ label: string; value: string }> = ({ label, value }
         isDark ? 'border-slate-800' : 'border-slate-100'
       }`}
     >
-      <span className={`text-[11px] font-semibold ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+      <span className={`text-body-sm font-semibold ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
         {label}
       </span>
       <span className={`text-xs font-mono font-bold ${isDark ? 'text-teal-300' : 'text-teal-700'}`}>
@@ -160,7 +160,7 @@ const NetProfitCard: React.FC<{
         }`}
       >
         <h3
-          className={`text-[11px] font-extrabold uppercase tracking-[0.14em] ${
+          className={`text-body-sm font-extrabold uppercase tracking-[0.14em] ${
             isDark ? 'text-teal-200' : 'text-[#0f2b3c]'
           }`}
         >
@@ -175,7 +175,7 @@ const NetProfitCard: React.FC<{
               isDark ? 'border-slate-800 bg-[#0b1320]/60' : 'border-slate-100 bg-slate-50/80'
             }`}
           >
-            <p className={`text-[11px] font-extrabold ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
+            <p className={`text-body-sm font-extrabold ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
               {row.label}
             </p>
             <FormInput
@@ -187,7 +187,7 @@ const NetProfitCard: React.FC<{
             />
             <div className="grid grid-cols-3 gap-2">
               <div>
-                <p className={`text-[9px] font-bold uppercase tracking-wider ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
+                <p className={`text-caption font-bold uppercase tracking-wider ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
                   Net Margin
                 </p>
                 <p className={`text-xs font-mono font-bold ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>
@@ -195,7 +195,7 @@ const NetProfitCard: React.FC<{
                 </p>
               </div>
               <div>
-                <p className={`text-[9px] font-bold uppercase tracking-wider ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
+                <p className={`text-caption font-bold uppercase tracking-wider ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
                   GP
                 </p>
                 <p className={`text-xs font-mono font-bold ${isDark ? 'text-emerald-300' : 'text-emerald-700'}`}>
@@ -203,7 +203,7 @@ const NetProfitCard: React.FC<{
                 </p>
               </div>
               <div>
-                <p className={`text-[9px] font-bold uppercase tracking-wider ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
+                <p className={`text-caption font-bold uppercase tracking-wider ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
                   NP
                 </p>
                 <p className={`text-xs font-mono font-bold ${isDark ? 'text-teal-300' : 'text-teal-700'}`}>
@@ -468,13 +468,13 @@ export const AdminModuleWorkstreams: React.FC<AdminModuleWorkstreamsProps> = ({
                       {p.module}
                     </span>
                     {p.canApprove && (
-                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">
+                      <span className="text-caption font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">
                         Sign-Off
                       </span>
                     )}
                   </div>
                   <div
-                    className={`flex items-center gap-1.5 text-[10px] flex-wrap ${
+                    className={`flex items-center gap-1.5 text-label flex-wrap ${
                       isDark ? 'text-slate-400' : 'text-slate-500'
                     }`}
                   >
@@ -586,7 +586,7 @@ export const AdminModuleWorkstreams: React.FC<AdminModuleWorkstreamsProps> = ({
         <MobileContent>
           <SoftCard>
             <h3
-              className={`text-[11px] font-extrabold uppercase tracking-[0.14em] mb-3.5 ${
+              className={`text-body-sm font-extrabold uppercase tracking-[0.14em] mb-3.5 ${
                 isDark ? 'text-teal-200' : 'text-[#0f2b3c]'
               }`}
             >
@@ -749,7 +749,7 @@ export const AdminModuleWorkstreams: React.FC<AdminModuleWorkstreamsProps> = ({
           {showIpForm && (
             <SoftCard>
               <h3
-                className={`text-[11px] font-extrabold uppercase tracking-[0.14em] mb-3.5 ${
+                className={`text-body-sm font-extrabold uppercase tracking-[0.14em] mb-3.5 ${
                   isDark ? 'text-teal-200' : 'text-[#0f2b3c]'
                 }`}
               >
@@ -808,7 +808,7 @@ export const AdminModuleWorkstreams: React.FC<AdminModuleWorkstreamsProps> = ({
                   <button
                     type="button"
                     onClick={() => setShowIpForm(true)}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-bold rounded-xl bg-[#0f2b3c] text-white hover:bg-[#163a50] transition-colors cursor-pointer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-body-sm font-bold rounded-xl bg-[#0f2b3c] text-white hover:bg-[#163a50] transition-colors cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     Add IP
@@ -842,7 +842,7 @@ export const AdminModuleWorkstreams: React.FC<AdminModuleWorkstreamsProps> = ({
                           e.stopPropagation();
                           handleToggleIpStatus(ip.id);
                         }}
-                        className="text-[11px] font-bold text-teal-700 hover:underline cursor-pointer"
+                        className="text-body-sm font-bold text-teal-700 hover:underline cursor-pointer"
                       >
                         {ip.status === 'Active' ? 'Disable' : 'Enable'}
                       </button>

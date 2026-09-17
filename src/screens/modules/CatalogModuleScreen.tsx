@@ -131,7 +131,7 @@ const ActionCell: React.FC<{ onView: () => void }> = ({ onView }) => {
         e.stopPropagation();
         onView();
       }}
-      className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold border cursor-pointer transition-colors ${
+      className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-body-sm font-bold border cursor-pointer transition-colors ${
         isDark
           ? 'border-slate-700 text-slate-200 hover:bg-slate-800'
           : 'border-slate-200 text-slate-700 hover:bg-slate-50'
@@ -147,7 +147,7 @@ const LogoField: React.FC<{ label: string; value?: string }> = ({ label, value }
   const { isDark } = useTheme();
   return (
     <div className="min-w-0 space-y-1.5">
-      <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">{label}</p>
+      <p className="text-label font-bold uppercase tracking-wider text-slate-400">{label}</p>
       {value ? (
         <div
           className={`rounded-2xl border px-3 py-4 text-center ${
@@ -155,7 +155,7 @@ const LogoField: React.FC<{ label: string; value?: string }> = ({ label, value }
           }`}
         >
           <p
-            className={`text-[11px] font-mono font-semibold break-all ${
+            className={`text-body-sm font-mono font-semibold break-all ${
               isDark ? 'text-teal-300' : 'text-teal-700'
             }`}
           >
@@ -360,7 +360,7 @@ export const CatalogModuleScreen: React.FC<CatalogModuleScreenProps> = ({
               <InfoField label="Collection Name" value={c.collectionName} />
               <InfoField label="Collection Detail" value={c.collectionDetail || '—'} />
               <div className="min-w-0 space-y-1.5 xs:col-span-2 sm:col-span-2 lg:col-span-1">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                <p className="text-label font-bold uppercase tracking-wider text-slate-400">
                   Collection Thumbnail
                 </p>
                 {c.thumbnail ? (
@@ -370,7 +370,7 @@ export const CatalogModuleScreen: React.FC<CatalogModuleScreenProps> = ({
                     }`}
                   >
                     <p
-                      className={`text-[11px] font-mono font-semibold break-all ${
+                      className={`text-body-sm font-mono font-semibold break-all ${
                         isDark ? 'text-teal-300' : 'text-teal-700'
                       }`}
                     >
@@ -389,7 +389,7 @@ export const CatalogModuleScreen: React.FC<CatalogModuleScreenProps> = ({
             emptyText={!hasProducts ? 'No Products added' : undefined}
             action={
               hasProducts ? (
-                <span className={`text-[10px] font-bold ${mutedText}`}>
+                <span className={`text-label font-bold ${mutedText}`}>
                   {c.products.length} item{c.products.length === 1 ? '' : 's'}
                 </span>
               ) : undefined
@@ -407,7 +407,7 @@ export const CatalogModuleScreen: React.FC<CatalogModuleScreenProps> = ({
                 >
                   <div className="min-w-0 space-y-1">
                     <p
-                      className={`text-[10px] font-mono font-bold ${
+                      className={`text-label font-mono font-bold ${
                         isDark ? 'text-teal-300' : 'text-teal-800'
                       }`}
                     >
@@ -422,7 +422,7 @@ export const CatalogModuleScreen: React.FC<CatalogModuleScreenProps> = ({
                     </p>
                   </div>
                   <div className="shrink-0 text-right space-y-1">
-                    <p className={`text-[9px] font-bold uppercase tracking-wider ${mutedText}`}>
+                    <p className={`text-caption font-bold uppercase tracking-wider ${mutedText}`}>
                       Primary
                     </p>
                     <StatusPill status={p.primary} />
@@ -450,7 +450,7 @@ export const CatalogModuleScreen: React.FC<CatalogModuleScreenProps> = ({
                       : 'border-slate-100 bg-slate-50 text-slate-800'
                   }`}
                 >
-                  <span className={`mr-2 text-[10px] font-mono font-bold ${mutedText}`}>
+                  <span className={`mr-2 text-label font-mono font-bold ${mutedText}`}>
                     #{ins.sort || idx + 1}
                   </span>
                   {ins.text}
@@ -495,7 +495,7 @@ export const CatalogModuleScreen: React.FC<CatalogModuleScreenProps> = ({
             </MobileFieldGrid>
 
             <div className="mt-4 space-y-1.5">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+              <p className="text-label font-bold uppercase tracking-wider text-slate-400">
                 Description
               </p>
               <p className={`text-xs leading-relaxed ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>
@@ -562,7 +562,7 @@ export const CatalogModuleScreen: React.FC<CatalogModuleScreenProps> = ({
                   <span>
                     {p.created}
                     {p.createdBy ? (
-                      <span className={`block text-[11px] mt-0.5 ${mutedText}`}>
+                      <span className={`block text-body-sm mt-0.5 ${mutedText}`}>
                         by {p.createdBy}
                       </span>
                     ) : null}
@@ -577,7 +577,7 @@ export const CatalogModuleScreen: React.FC<CatalogModuleScreenProps> = ({
               }`}
             >
               <div>
-                <p className={`text-[10px] font-bold uppercase tracking-wider ${mutedText}`}>
+                <p className={`text-label font-bold uppercase tracking-wider ${mutedText}`}>
                   Price
                 </p>
                 <p
@@ -587,10 +587,10 @@ export const CatalogModuleScreen: React.FC<CatalogModuleScreenProps> = ({
                 >
                   {p.currency} {p.pricePerUnit.toFixed(4)}
                 </p>
-                <p className={`text-[10px] mt-0.5 ${mutedText}`}>/ {p.unit}</p>
+                <p className={`text-label mt-0.5 ${mutedText}`}>/ {p.unit}</p>
               </div>
               <div>
-                <p className={`text-[10px] font-bold uppercase tracking-wider ${mutedText}`}>
+                <p className={`text-label font-bold uppercase tracking-wider ${mutedText}`}>
                   Stock
                 </p>
                 <p
@@ -600,7 +600,7 @@ export const CatalogModuleScreen: React.FC<CatalogModuleScreenProps> = ({
                 >
                   {p.stockAvailable.toLocaleString()}
                 </p>
-                <p className={`text-[10px] mt-0.5 ${mutedText}`}>{p.unit} available</p>
+                <p className={`text-label mt-0.5 ${mutedText}`}>{p.unit} available</p>
               </div>
             </div>
           </SoftCard>

@@ -87,8 +87,8 @@ function agingTone(days: number) {
 
 const MiniField: React.FC<{ label: string; value: React.ReactNode }> = ({ label, value }) => (
   <div className="min-w-0">
-    <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">{label}</p>
-    <p className="text-[11px] font-semibold text-slate-800 break-words mt-0.5">{value}</p>
+    <p className="text-caption font-bold uppercase tracking-wider text-slate-400">{label}</p>
+    <p className="text-body-sm font-semibold text-slate-800 break-words mt-0.5">{value}</p>
   </div>
 );
 
@@ -157,19 +157,19 @@ export const SupplierTrackingScreen: React.FC<Props> = ({ onBack, onShowSnackBar
               <Radar className="w-4 h-4 text-teal-600" />
               <h1 className="text-base font-extrabold text-[#0f2b3c] truncate">Supplier Tracking</h1>
             </div>
-            <p className="text-[10px] font-semibold text-slate-400">Live fulfillment journey · not a grid</p>
+            <p className="text-label font-semibold text-slate-400">Live fulfillment journey · not a grid</p>
           </div>
           <button
             type="button"
             onClick={() => snack('View saved')}
-            className="px-2.5 py-1.5 rounded-xl text-[10px] font-bold bg-teal-50 text-teal-800 border border-teal-200 cursor-pointer"
+            className="px-2.5 py-1.5 rounded-xl text-label font-bold bg-teal-50 text-teal-800 border border-teal-200 cursor-pointer"
           >
             Save View
           </button>
           <button
             type="button"
             onClick={() => setDrawerOpen(true)}
-            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-[10px] font-bold bg-[#0f2b3c] text-white cursor-pointer"
+            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-label font-bold bg-[#0f2b3c] text-white cursor-pointer"
           >
             <Filter className="w-3.5 h-3.5" />
             Filters
@@ -200,7 +200,7 @@ export const SupplierTrackingScreen: React.FC<Props> = ({ onBack, onShowSnackBar
               key={id}
               type="button"
               onClick={() => setUrgency(id)}
-              className={`shrink-0 px-3 py-1.5 rounded-full text-[10px] font-bold cursor-pointer ${
+              className={`shrink-0 px-3 py-1.5 rounded-full text-label font-bold cursor-pointer ${
                 urgency === id ? 'bg-[#0f2b3c] text-white' : 'bg-white text-slate-600 border border-slate-200'
               }`}
             >
@@ -216,19 +216,19 @@ export const SupplierTrackingScreen: React.FC<Props> = ({ onBack, onShowSnackBar
           <div className="absolute -right-6 -top-6 w-28 h-28 rounded-full bg-teal-400/10 blur-2xl" />
           <div className="flex items-center gap-2 mb-3">
             <Sparkles className="w-4 h-4 text-teal-300" />
-            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-teal-200/90">Mission Control</p>
+            <p className="text-label font-bold uppercase tracking-[0.16em] text-teal-200/90">Mission Control</p>
           </div>
           <div className="grid grid-cols-3 gap-2">
             <div className="rounded-xl bg-white/10 border border-white/10 p-2.5">
-              <p className="text-[9px] font-bold uppercase text-white/50">Orders</p>
+              <p className="text-caption font-bold uppercase text-white/50">Orders</p>
               <p className="text-lg font-black tabular-nums">{totals.orders}</p>
             </div>
             <div className="rounded-xl bg-white/10 border border-white/10 p-2.5">
-              <p className="text-[9px] font-bold uppercase text-white/50">Product Qty</p>
+              <p className="text-caption font-bold uppercase text-white/50">Product Qty</p>
               <p className="text-lg font-black tabular-nums">{totals.productQty.toLocaleString()}</p>
             </div>
             <div className="rounded-xl bg-white/10 border border-white/10 p-2.5">
-              <p className="text-[9px] font-bold uppercase text-white/50">Containers</p>
+              <p className="text-caption font-bold uppercase text-white/50">Containers</p>
               <p className="text-lg font-black tabular-nums">{totals.containerQty}</p>
             </div>
           </div>
@@ -254,23 +254,23 @@ export const SupplierTrackingScreen: React.FC<Props> = ({ onBack, onShowSnackBar
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className="text-sm font-black text-[#0f2b3c] font-mono">{order.po}</p>
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold bg-slate-100 text-slate-600">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-caption font-bold bg-slate-100 text-slate-600">
                         <Ship className="w-3 h-3" />
                         {order.shipmentType}
                       </span>
                       {order.readiness && (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold bg-sky-50 text-sky-700 border border-sky-200">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-caption font-bold bg-sky-50 text-sky-700 border border-sky-200">
                           <CalendarDays className="w-3 h-3" />
                           Ready
                         </span>
                       )}
                     </div>
-                    <p className="text-[11px] font-semibold text-slate-600 mt-1 truncate">{order.customer}</p>
-                    <p className="text-[10px] text-slate-400 mt-0.5 truncate">{order.supplier}</p>
+                    <p className="text-body-sm font-semibold text-slate-600 mt-1 truncate">{order.customer}</p>
+                    <p className="text-label text-slate-400 mt-0.5 truncate">{order.supplier}</p>
                   </div>
                   <div className="text-right shrink-0">
                     <div
-                      className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-[10px] font-extrabold text-white bg-gradient-to-r ${agingTone(order.agingDays)}`}
+                      className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-label font-extrabold text-white bg-gradient-to-r ${agingTone(order.agingDays)}`}
                     >
                       <Timer className="w-3 h-3" />
                       {order.agingLabel}
@@ -282,19 +282,19 @@ export const SupplierTrackingScreen: React.FC<Props> = ({ onBack, onShowSnackBar
                 {/* Journey pipeline */}
                 <div className="mt-3.5 px-0.5">
                   <div className="flex items-center justify-between mb-1.5">
-                    <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Fulfillment journey</p>
-                    <p className="text-[9px] font-bold text-slate-400">{order.deliveryMonth}</p>
+                    <p className="text-caption font-bold uppercase tracking-wider text-slate-400">Fulfillment journey</p>
+                    <p className="text-caption font-bold text-slate-400">{order.deliveryMonth}</p>
                   </div>
                   <div className="flex items-center gap-0.5">
                     {TRACK_STAGES.map((s, i) => (
                       <React.Fragment key={s.key}>
                         <div className="flex flex-col items-center gap-1 min-w-0 flex-1">
                           <div
-                            className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-black text-white shadow-sm ${toneBg[pipe[i]]}`}
+                            className={`w-6 h-6 rounded-full flex items-center justify-center text-caption font-black text-white shadow-sm ${toneBg[pipe[i]]}`}
                           >
                             {i + 1}
                           </div>
-                          <span className="text-[8px] font-bold text-slate-500 truncate w-full text-center">{s.label}</span>
+                          <span className="text-micro font-bold text-slate-500 truncate w-full text-center">{s.label}</span>
                         </div>
                         {i < TRACK_STAGES.length - 1 && (
                           <div className={`h-0.5 flex-1 mb-4 rounded-full ${pipe[i] === 'done' ? 'bg-emerald-400' : 'bg-slate-200'}`} />
@@ -310,7 +310,7 @@ export const SupplierTrackingScreen: React.FC<Props> = ({ onBack, onShowSnackBar
                   <MiniField
                     label="CRO"
                     value={
-                      <span className={`inline-flex px-1.5 py-0.5 rounded-md text-[10px] font-bold border ${toneText[order.croTone]}`}>
+                      <span className={`inline-flex px-1.5 py-0.5 rounded-md text-label font-bold border ${toneText[order.croTone]}`}>
                         {order.croStatus}
                       </span>
                     }
@@ -326,10 +326,10 @@ export const SupplierTrackingScreen: React.FC<Props> = ({ onBack, onShowSnackBar
                     <MiniField label="Company" value={order.company} />
                     <MiniField label="Marketing" value={order.marketing} />
                     <MiniField label="EP#" value={order.epNumber} />
-                    <MiniField label="Last Update" value={<span className="text-[10px]">{order.lastUpdate}</span>} />
+                    <MiniField label="Last Update" value={<span className="text-label">{order.lastUpdate}</span>} />
                   </div>
 
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-teal-700 px-0.5">
+                  <p className="text-label font-bold uppercase tracking-wider text-teal-700 px-0.5">
                     Products · {order.products.length}
                   </p>
 
@@ -345,12 +345,12 @@ export const SupplierTrackingScreen: React.FC<Props> = ({ onBack, onShowSnackBar
                         >
                           <div className="flex items-start justify-between gap-2">
                             <div className="min-w-0">
-                              <p className="text-[11px] font-extrabold text-[#0f2b3c] leading-snug">{p.name}</p>
+                              <p className="text-body-sm font-extrabold text-[#0f2b3c] leading-snug">{p.name}</p>
                               <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
-                                <span className="px-2 py-0.5 rounded-lg bg-teal-50 text-teal-800 border border-teal-200 text-[9px] font-bold">
+                                <span className="px-2 py-0.5 rounded-lg bg-teal-50 text-teal-800 border border-teal-200 text-caption font-bold">
                                   {p.variation}
                                 </span>
-                                <span className="text-[10px] font-bold text-slate-600 font-mono">{p.qty}</span>
+                                <span className="text-label font-bold text-slate-600 font-mono">{p.qty}</span>
                               </div>
                             </div>
                             <ChevronDown className={`w-3.5 h-3.5 text-slate-400 shrink-0 ${popen ? 'rotate-180' : ''}`} />
@@ -363,7 +363,7 @@ export const SupplierTrackingScreen: React.FC<Props> = ({ onBack, onShowSnackBar
                               <MiniField
                                 label="Packaging Status"
                                 value={
-                                  <span className={`inline-flex px-1.5 py-0.5 rounded-md text-[10px] font-bold border ${toneText[p.packagingTone]}`}>
+                                  <span className={`inline-flex px-1.5 py-0.5 rounded-md text-label font-bold border ${toneText[p.packagingTone]}`}>
                                     {p.packaging}
                                   </span>
                                 }
@@ -371,7 +371,7 @@ export const SupplierTrackingScreen: React.FC<Props> = ({ onBack, onShowSnackBar
                               <MiniField
                                 label="Design Status"
                                 value={
-                                  <span className={`inline-flex px-1.5 py-0.5 rounded-md text-[10px] font-bold border ${toneText[p.designTone]}`}>
+                                  <span className={`inline-flex px-1.5 py-0.5 rounded-md text-label font-bold border ${toneText[p.designTone]}`}>
                                     {p.design}
                                   </span>
                                 }
@@ -380,7 +380,7 @@ export const SupplierTrackingScreen: React.FC<Props> = ({ onBack, onShowSnackBar
                               <MiniField
                                 label="Production"
                                 value={
-                                  <span className={`inline-flex px-1.5 py-0.5 rounded-md text-[10px] font-bold border ${toneText[p.productionTone]}`}>
+                                  <span className={`inline-flex px-1.5 py-0.5 rounded-md text-label font-bold border ${toneText[p.productionTone]}`}>
                                     {p.production}
                                   </span>
                                 }
@@ -390,7 +390,7 @@ export const SupplierTrackingScreen: React.FC<Props> = ({ onBack, onShowSnackBar
                               <MiniField
                                 label="QA Approval"
                                 value={
-                                  <span className={`inline-flex px-1.5 py-0.5 rounded-md text-[10px] font-bold border ${toneText[p.qaTone]}`}>
+                                  <span className={`inline-flex px-1.5 py-0.5 rounded-md text-label font-bold border ${toneText[p.qaTone]}`}>
                                     {p.qa}
                                   </span>
                                 }
@@ -399,12 +399,12 @@ export const SupplierTrackingScreen: React.FC<Props> = ({ onBack, onShowSnackBar
 
                             {/* Material status chips */}
                             <div>
-                              <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Material Status</p>
+                              <p className="text-caption font-bold uppercase tracking-wider text-slate-400 mb-1.5">Material Status</p>
                               <div className="flex flex-wrap gap-1.5">
                                 {p.materials.map((m) => (
                                   <span
                                     key={m.label}
-                                    className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-bold border ${toneText[m.tone]}`}
+                                    className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg text-label font-bold border ${toneText[m.tone]}`}
                                   >
                                     <span className={`w-1.5 h-1.5 rounded-full ${toneBg[m.tone]}`} />
                                     {m.label}: {m.status}
@@ -426,8 +426,8 @@ export const SupplierTrackingScreen: React.FC<Props> = ({ onBack, onShowSnackBar
         {/* Sticky totals footer */}
         <div className="sticky bottom-3 rounded-2xl bg-[#0f2b3c] text-white px-4 py-3 flex items-center justify-between shadow-xl">
           <div>
-            <p className="text-[9px] font-bold uppercase tracking-wider text-white/50">Grand Total</p>
-            <p className="text-[11px] font-bold text-teal-200">
+            <p className="text-caption font-bold uppercase tracking-wider text-white/50">Grand Total</p>
+            <p className="text-body-sm font-bold text-teal-200">
               Qty {totals.productQty.toLocaleString()} · Ctr {totals.containerQty}
             </p>
           </div>
@@ -450,7 +450,7 @@ export const SupplierTrackingScreen: React.FC<Props> = ({ onBack, onShowSnackBar
         >
           <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Filters</p>
+              <p className="text-label font-bold uppercase tracking-wider text-slate-400">Filters</p>
               <p className="text-sm font-extrabold text-[#0f2b3c]">Supplier Tracking</p>
             </div>
             <button type="button" onClick={() => setDrawerOpen(false)} className="p-2 rounded-xl bg-slate-100 cursor-pointer">
@@ -467,7 +467,7 @@ export const SupplierTrackingScreen: React.FC<Props> = ({ onBack, onShowSnackBar
               ] as const
             ).map(([key, label, options]) => (
               <label key={key} className="block space-y-1">
-                <span className="text-[11px] font-bold text-slate-600">{label}</span>
+                <span className="text-body-sm font-bold text-slate-600">{label}</span>
                 <select
                   value={filters[key]}
                   onChange={(e) => setFilters({ ...filters, [key]: e.target.value })}

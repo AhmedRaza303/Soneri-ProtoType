@@ -1,5 +1,26 @@
 @import "tailwindcss";
 
+/*
+  ═══════════════════════════════════════════════════════════
+  App Font Scale — SINGLE SOURCE OF TRUTH
+  Change a value here → updates everywhere (via text-* utilities)
+  ═══════════════════════════════════════════════════════════
+*/
+:root {
+  --app-fs-micro: 8px; /* tiny captions / chips */
+  --app-fs-caption: 9px; /* secondary labels */
+  --app-fs-label: 10px; /* section / KPI labels */
+  --app-fs-body-sm: 11px; /* compact body */
+  --app-fs-body: 12px; /* default body */
+  --app-fs-md: 14px; /* comfortable body */
+  --app-fs-lg: 16px; /* titles */
+  --app-fs-metric: 11px; /* dashboard numbers / KPI values — ONE size for all counts */
+  --app-fs-xl: 18px; /* metrics / emphasis */
+  --app-fs-2xl: 20px; /* page titles */
+  --app-fs-3xl: 24px; /* large headings */
+  --app-fs-display: 30px; /* hero / display */
+}
+
 @theme {
   --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
@@ -8,6 +29,38 @@
   --color-soneri-mist: #e8f4f7;
   --color-soneri-canvas: #f3f6f8;
   --breakpoint-xs: 420px;
+
+  /* Custom semantic sizes → className="text-micro" etc. */
+  --text-micro: var(--app-fs-micro);
+  --text-micro--line-height: 1.25;
+  --text-caption: var(--app-fs-caption);
+  --text-caption--line-height: 1.3;
+  --text-label: var(--app-fs-label);
+  --text-label--line-height: 1.35;
+  --text-body-sm: var(--app-fs-body-sm);
+  --text-body-sm--line-height: 1.4;
+  --text-body: var(--app-fs-body);
+  --text-body--line-height: 1.45;
+  --text-md: var(--app-fs-md);
+  --text-md--line-height: 1.5;
+  --text-metric: var(--app-fs-metric);
+  --text-metric--line-height: 1.2;
+
+  /* Remap Tailwind defaults to the same central tokens */
+  --text-xs: var(--app-fs-body);
+  --text-xs--line-height: 1.45;
+  --text-sm: var(--app-fs-md);
+  --text-sm--line-height: 1.5;
+  --text-base: var(--app-fs-lg);
+  --text-base--line-height: 1.5;
+  --text-lg: var(--app-fs-xl);
+  --text-lg--line-height: 1.4;
+  --text-xl: var(--app-fs-2xl);
+  --text-xl--line-height: 1.35;
+  --text-2xl: var(--app-fs-3xl);
+  --text-2xl--line-height: 1.3;
+  --text-3xl: var(--app-fs-display);
+  --text-3xl--line-height: 1.25;
 }
 
 @layer base {
@@ -37,5 +90,12 @@
 @layer utilities {
   .font-mono {
     font-family: var(--font-mono);
+  }
+
+  /* Dashboard surfaces — inherit central type scale from :root */
+  .dash-type {
+    font-family: var(--font-sans);
+    font-size: var(--app-fs-body);
+    line-height: 1.45;
   }
 }

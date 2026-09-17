@@ -137,7 +137,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
 
         {/* Quick Demo Assist */}
         <div className="mt-6 pt-5 border-t border-slate-200/80 text-center">
-          <p className="text-[11px] text-slate-500 mb-2">Prototype Quick Access:</p>
+          <p className="text-body-sm text-slate-500 mb-2">Prototype Quick Access:</p>
           <button
             type="button"
             onClick={handleQuickDemoLogin}
@@ -151,7 +151,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
 
       {/* Footer copyright */}
       <div className="text-center pt-6">
-        <p className="text-[10px] text-slate-400 font-medium">
+        <p className="text-label text-slate-400 font-medium">
           SONERI ERP © 2026 • Enterprise Business Management
         </p>
       </div>
@@ -173,7 +173,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
               <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-center space-y-2">
                 <CheckCircle2 className="w-8 h-8 text-emerald-600 mx-auto" />
                 <p className="text-xs font-bold text-emerald-900">Reset Link Dispatched</p>
-                <p className="text-[11px] text-emerald-700">
+                <p className="text-body-sm text-emerald-700">
                   Password instructions sent to {forgotEmail || 'your email'}.
                 </p>
                 <button

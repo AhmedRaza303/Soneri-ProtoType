@@ -55,7 +55,7 @@ export const NotificationCard: React.FC<NotificationCardProps> = ({
         <div className="min-w-0 flex-1">
           <div className="flex items-center justify-between gap-2 mb-1">
             <span
-              className={`text-[9px] sm:text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md ${
+              className={`text-caption sm:text-label font-bold uppercase tracking-wider px-2 py-0.5 rounded-md ${
                 isDark
                   ? 'bg-slate-800 text-indigo-300 border border-slate-700'
                   : 'bg-slate-200/70 text-slate-700'
@@ -63,7 +63,7 @@ export const NotificationCard: React.FC<NotificationCardProps> = ({
             >
               {notification.category}
             </span>
-            <div className="flex items-center gap-1 text-[10px] sm:text-[11px] text-slate-400">
+            <div className="flex items-center gap-1 text-label sm:text-body-sm text-slate-400">
               <Clock className="w-3 h-3" />
               <span>{notification.timeAgo}</span>
             </div>
@@ -84,7 +84,7 @@ export const NotificationCard: React.FC<NotificationCardProps> = ({
           </h4>
 
           <p
-            className={`text-[11px] sm:text-xs mt-1 line-clamp-2 leading-relaxed ${
+            className={`text-body-sm sm:text-xs mt-1 line-clamp-2 leading-relaxed ${
               isDark ? 'text-slate-400' : 'text-slate-500'
             }`}
           >
@@ -93,7 +93,7 @@ export const NotificationCard: React.FC<NotificationCardProps> = ({
 
           {!notification.isRead && (
             <div
-              className={`mt-2.5 flex items-center justify-between text-[10px] sm:text-[11px] font-semibold ${
+              className={`mt-2.5 flex items-center justify-between text-label sm:text-body-sm font-semibold ${
                 isDark ? 'text-slate-300' : 'text-slate-700'
               }`}
             >

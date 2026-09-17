@@ -160,6 +160,7 @@ export type ScreenId =
   | 'module_catalog'
   | 'finance_po_approval'
   | 'finance_proforma_supplier'
+  | 'finance_awaiting_confirmations'
   | 'export_container_tracking'
   | 'purchase_requisition'
   | 'purchase_order'

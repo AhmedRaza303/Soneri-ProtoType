@@ -35,7 +35,7 @@ export const FormField: React.FC<FormFieldProps> = ({
     <div className="w-full space-y-1">
       <label
         htmlFor={inputId}
-        className={`block text-[11px] font-bold tracking-wider uppercase ${
+        className={`block text-body-sm font-bold tracking-wider uppercase ${
           isDark ? 'text-slate-300' : 'text-slate-700'
         }`}
       >
@@ -83,9 +83,9 @@ export const FormField: React.FC<FormFieldProps> = ({
         )}
       </div>
       {error ? (
-        <p className="text-[11px] text-rose-500 font-medium pl-0.5">{error}</p>
+        <p className="text-body-sm text-rose-500 font-medium pl-0.5">{error}</p>
       ) : helperText ? (
-        <p className={`text-[11px] pl-0.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+        <p className={`text-body-sm pl-0.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
           {helperText}
         </p>
       ) : null}
@@ -123,7 +123,7 @@ export const DropdownField: React.FC<DropdownFieldProps> = ({
     <div className="w-full space-y-1">
       <label
         htmlFor={selectId}
-        className={`block text-[11px] font-bold tracking-wider uppercase ${
+        className={`block text-body-sm font-bold tracking-wider uppercase ${
           isDark ? 'text-slate-300' : 'text-slate-700'
         }`}
       >
@@ -181,9 +181,9 @@ export const DropdownField: React.FC<DropdownFieldProps> = ({
         </div>
       </div>
       {error ? (
-        <p className="text-[11px] text-rose-500 font-medium pl-0.5">{error}</p>
+        <p className="text-body-sm text-rose-500 font-medium pl-0.5">{error}</p>
       ) : helperText ? (
-        <p className={`text-[11px] pl-0.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+        <p className={`text-body-sm pl-0.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
           {helperText}
         </p>
       ) : null}

@@ -4,7 +4,7 @@
  * Mobile Readiness Calendar — matches ERP mobile UI
  */
 
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ChevronLeft,
   ChevronRight,
@@ -29,7 +29,33 @@ interface ReadyItem {
   shipType: ShipType;
   proforma: string;
   requisition: string;
+  company: string;
+  supplier: string;
+  isRequestCro: 'Yes' | 'No';
 }
+
+type PanelFilterState = {
+  company: string;
+  supplier: string;
+  isRequestCro: string;
+  type: string;
+  dateFilterType: string;
+};
+
+const EMPTY_PANEL_FILTERS: PanelFilterState = {
+  company: 'All',
+  supplier: 'All',
+  isRequestCro: 'All',
+  type: 'All',
+  dateFilterType: 'All',
+};
+
+const DATE_FILTER_TYPES = [
+  'All',
+  'Expected Readiness Date',
+  'CRO Request Date',
+  'Delivery Month',
+] as const;
 
 const MODULES: {
   key: ModuleKey;
@@ -46,27 +72,27 @@ const MODULES: {
 ];
 
 const ITEMS: ReadyItem[] = [
-  { id: '1', code: 'PI-898', title: 'SUNTRADE FOODS', day: 30, month: 7, year: 2026, module: 'cro_not', shipType: 'FCL', proforma: 'PI-898', requisition: 'RQ-901' },
-  { id: '2', code: 'PI-835', title: 'EUROPA INDUSTRIES', day: 31, month: 7, year: 2026, module: 'cro_not', shipType: 'Console', proforma: 'PI-835', requisition: 'RQ-991' },
-  { id: '3', code: 'PI-840', title: 'GATE FOODS LLC', day: 31, month: 7, year: 2026, module: 'cro_not', shipType: 'FCL', proforma: 'PI-840', requisition: 'RQ-980' },
-  { id: '4', code: 'PI-841', title: 'EURO MART', day: 31, month: 7, year: 2026, module: 'cro_applied', shipType: 'Console', proforma: 'PI-841', requisition: 'RQ-970' },
-  { id: '5', code: 'PI-852', title: 'SILVER GATE', day: 1, month: 8, year: 2026, module: 'cro_not', shipType: 'FCL', proforma: 'PI-852', requisition: 'RQ-960' },
-  { id: '6', code: 'PI-860', title: 'TURK FOOD', day: 5, month: 8, year: 2026, module: 'cro_received', shipType: 'Console', proforma: 'PI-860', requisition: 'RQ-955' },
-  { id: '7', code: 'PI-865', title: 'DSG GROUP', day: 5, month: 8, year: 2026, module: 'cro_not', shipType: 'FCL', proforma: 'PI-865', requisition: 'RQ-950' },
-  { id: '8', code: 'CRO-112', title: 'ADE KOMPANI', day: 8, month: 8, year: 2026, module: 'cro_received', shipType: 'Console', proforma: 'PI-870', requisition: 'RQ-940' },
-  { id: '9', code: 'PI-877', title: 'HIMPEX SARL', day: 9, month: 8, year: 2026, module: 'fcl', shipType: 'FCL', proforma: 'PI-877', requisition: 'RQ-930' },
-  { id: '10', code: 'PI-880', title: 'SUN FOODS', day: 9, month: 8, year: 2026, module: 'console', shipType: 'Console', proforma: 'PI-880', requisition: 'RQ-920' },
-  { id: '11', code: 'PI-888', title: 'AL MASRAF', day: 14, month: 8, year: 2026, module: 'cro_not', shipType: 'FCL', proforma: 'PI-888', requisition: 'RQ-910' },
-  { id: '12', code: 'PI-901', title: 'AL ABBAS', day: 15, month: 8, year: 2026, module: 'cro_applied', shipType: 'Console', proforma: 'PI-901', requisition: 'RQ-900' },
-  { id: '13', code: 'PI-905', title: 'ARIDIM', day: 15, month: 8, year: 2026, module: 'cro_not', shipType: 'FCL', proforma: 'PI-905', requisition: 'RQ-890' },
-  { id: '14', code: 'PI-910', title: 'GOLDEN GATE', day: 18, month: 8, year: 2026, module: 'fcl', shipType: 'FCL', proforma: 'PI-910', requisition: 'RQ-880' },
-  { id: '15', code: 'CRO-118', title: 'AHA TRADING', day: 19, month: 8, year: 2026, module: 'cro_applied', shipType: 'Console', proforma: 'PI-915', requisition: 'RQ-870' },
-  { id: '16', code: 'PI-920', title: 'ZARA TRADING', day: 22, month: 8, year: 2026, module: 'cro_not', shipType: 'FCL', proforma: 'PI-920', requisition: 'RQ-860' },
-  { id: '17', code: 'PI-925', title: 'THAER EST', day: 25, month: 8, year: 2026, module: 'console', shipType: 'Console', proforma: 'PI-925', requisition: 'RQ-850' },
-  { id: '18', code: 'CRO-125', title: 'AL-HASHIM', day: 28, month: 8, year: 2026, module: 'cro_not', shipType: 'FCL', proforma: 'PI-930', requisition: 'RQ-840' },
-  { id: '19', code: 'PI-935', title: 'AL-MOSHRAA', day: 29, month: 8, year: 2026, module: 'fcl', shipType: 'FCL', proforma: 'PI-935', requisition: 'RQ-830' },
-  { id: '20', code: 'PI-842', title: 'NILE TRADING', day: 31, month: 7, year: 2026, module: 'cro_not', shipType: 'Console', proforma: 'PI-842', requisition: 'RQ-992' },
-  { id: '21', code: 'PI-850', title: 'EURO SILVER', day: 6, month: 8, year: 2026, module: 'cro_not', shipType: 'FCL', proforma: 'PI-850', requisition: 'RQ-945' },
+  { id: '1', code: 'PI-898', title: 'SUNTRADE FOODS', day: 30, month: 7, year: 2026, module: 'cro_not', shipType: 'FCL', proforma: 'PI-898', requisition: 'RQ-901', company: 'CO-001 - Soneri International (SID)', supplier: 'SP-027 - EUROPA INDUSTRIES', isRequestCro: 'No' },
+  { id: '2', code: 'PI-835', title: 'EUROPA INDUSTRIES', day: 31, month: 7, year: 2026, module: 'cro_not', shipType: 'Console', proforma: 'PI-835', requisition: 'RQ-991', company: 'CO-001 - Soneri International (SID)', supplier: 'SP-027 - EUROPA INDUSTRIES', isRequestCro: 'No' },
+  { id: '3', code: 'PI-840', title: 'GATE FOODS LLC', day: 31, month: 7, year: 2026, module: 'cro_not', shipType: 'FCL', proforma: 'PI-840', requisition: 'RQ-980', company: 'CO-004 - Soneri Foods (S.F)', supplier: 'SP-041 - GATE FOODS', isRequestCro: 'No' },
+  { id: '4', code: 'PI-841', title: 'EURO MART', day: 31, month: 7, year: 2026, module: 'cro_applied', shipType: 'Console', proforma: 'PI-841', requisition: 'RQ-970', company: 'CO-001 - Soneri International (SID)', supplier: 'SP-033 - EURO MART', isRequestCro: 'Yes' },
+  { id: '5', code: 'PI-852', title: 'SILVER GATE', day: 1, month: 8, year: 2026, module: 'cro_not', shipType: 'FCL', proforma: 'PI-852', requisition: 'RQ-960', company: 'CO-001 - Soneri International (SID)', supplier: 'SP-050 - SILVER GATE', isRequestCro: 'No' },
+  { id: '6', code: 'PI-860', title: 'TURK FOOD', day: 5, month: 8, year: 2026, module: 'cro_received', shipType: 'Console', proforma: 'PI-860', requisition: 'RQ-955', company: 'CO-004 - Soneri Foods (S.F)', supplier: 'SP-060 - TURK FOOD', isRequestCro: 'Yes' },
+  { id: '7', code: 'PI-865', title: 'DSG GROUP', day: 5, month: 8, year: 2026, module: 'cro_not', shipType: 'FCL', proforma: 'PI-865', requisition: 'RQ-950', company: 'CO-001 - Soneri International (SID)', supplier: 'SP-070 - DSG GROUP', isRequestCro: 'No' },
+  { id: '8', code: 'CRO-112', title: 'ADE KOMPANI', day: 8, month: 8, year: 2026, module: 'cro_received', shipType: 'Console', proforma: 'PI-870', requisition: 'RQ-940', company: 'CO-001 - Soneri International (SID)', supplier: 'SP-080 - ADE KOMPANI', isRequestCro: 'Yes' },
+  { id: '9', code: 'PI-877', title: 'HIMPEX SARL', day: 9, month: 8, year: 2026, module: 'fcl', shipType: 'FCL', proforma: 'PI-877', requisition: 'RQ-930', company: 'CO-001 - Soneri International (SID)', supplier: 'SP-061 - HIMPEX SARL', isRequestCro: 'No' },
+  { id: '10', code: 'PI-880', title: 'SUN FOODS', day: 9, month: 8, year: 2026, module: 'console', shipType: 'Console', proforma: 'PI-880', requisition: 'RQ-920', company: 'CO-004 - Soneri Foods (S.F)', supplier: 'SP-090 - SUN FOODS', isRequestCro: 'No' },
+  { id: '11', code: 'PI-888', title: 'AL MASRAF', day: 14, month: 8, year: 2026, module: 'cro_not', shipType: 'FCL', proforma: 'PI-888', requisition: 'RQ-910', company: 'CO-001 - Soneri International (SID)', supplier: 'SP-100 - AL MASRAF', isRequestCro: 'No' },
+  { id: '12', code: 'PI-901', title: 'AL ABBAS', day: 15, month: 8, year: 2026, module: 'cro_applied', shipType: 'Console', proforma: 'PI-901', requisition: 'RQ-900', company: 'CO-001 - Soneri International (SID)', supplier: 'SP-110 - AL ABBAS', isRequestCro: 'Yes' },
+  { id: '13', code: 'PI-905', title: 'ARIDIM', day: 15, month: 8, year: 2026, module: 'cro_not', shipType: 'FCL', proforma: 'PI-905', requisition: 'RQ-890', company: 'CO-001 - Soneri International (SID)', supplier: 'SP-076 - ARIDIM', isRequestCro: 'No' },
+  { id: '14', code: 'PI-910', title: 'GOLDEN GATE', day: 18, month: 8, year: 2026, module: 'fcl', shipType: 'FCL', proforma: 'PI-910', requisition: 'RQ-880', company: 'CO-004 - Soneri Foods (S.F)', supplier: 'SP-120 - GOLDEN GATE', isRequestCro: 'No' },
+  { id: '15', code: 'CRO-118', title: 'AHA TRADING', day: 19, month: 8, year: 2026, module: 'cro_applied', shipType: 'Console', proforma: 'PI-915', requisition: 'RQ-870', company: 'CO-001 - Soneri International (SID)', supplier: 'SP-130 - AHA TRADING', isRequestCro: 'Yes' },
+  { id: '16', code: 'PI-920', title: 'ZARA TRADING', day: 22, month: 8, year: 2026, module: 'cro_not', shipType: 'FCL', proforma: 'PI-920', requisition: 'RQ-860', company: 'CO-001 - Soneri International (SID)', supplier: 'SP-140 - ZARA TRADING', isRequestCro: 'No' },
+  { id: '17', code: 'PI-925', title: 'THAER EST', day: 25, month: 8, year: 2026, module: 'console', shipType: 'Console', proforma: 'PI-925', requisition: 'RQ-850', company: 'CO-004 - Soneri Foods (S.F)', supplier: 'SP-150 - THAER EST', isRequestCro: 'No' },
+  { id: '18', code: 'CRO-125', title: 'AL-HASHIM', day: 28, month: 8, year: 2026, module: 'cro_not', shipType: 'FCL', proforma: 'PI-930', requisition: 'RQ-840', company: 'CO-001 - Soneri International (SID)', supplier: 'SP-160 - AL-HASHIM', isRequestCro: 'No' },
+  { id: '19', code: 'PI-935', title: 'AL-MOSHRAA', day: 29, month: 8, year: 2026, module: 'fcl', shipType: 'FCL', proforma: 'PI-935', requisition: 'RQ-830', company: 'CO-001 - Soneri International (SID)', supplier: 'SP-170 - AL-MOSHRAA', isRequestCro: 'No' },
+  { id: '20', code: 'PI-842', title: 'NILE TRADING', day: 31, month: 7, year: 2026, module: 'cro_not', shipType: 'Console', proforma: 'PI-842', requisition: 'RQ-992', company: 'CO-004 - Soneri Foods (S.F)', supplier: 'SP-180 - NILE TRADING', isRequestCro: 'No' },
+  { id: '21', code: 'PI-850', title: 'EURO SILVER', day: 6, month: 8, year: 2026, module: 'cro_not', shipType: 'FCL', proforma: 'PI-850', requisition: 'RQ-945', company: 'CO-001 - Soneri International (SID)', supplier: 'SP-190 - EURO SILVER', isRequestCro: 'No' },
 ];
 
 const WEEKDAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
@@ -119,12 +145,91 @@ export const ReadinessCalendarScreen: React.FC<Props> = ({ onBack, onShowSnackBa
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [daySheetOpen, setDaySheetOpen] = useState(false);
   const [sheetModule, setSheetModule] = useState<ModuleKey | 'all'>('all');
+  const [showFilterPanel, setShowFilterPanel] = useState(false);
+  const [draftPanelFilters, setDraftPanelFilters] = useState<PanelFilterState>(EMPTY_PANEL_FILTERS);
+  const [appliedPanelFilters, setAppliedPanelFilters] =
+    useState<PanelFilterState>(EMPTY_PANEL_FILTERS);
+  const filterPanelRef = useRef<HTMLDivElement>(null);
 
   const totalDays = daysInMonth(year, month);
   const offset = startWeekday(year, month);
   const prevDays = daysInMonth(year, month === 0 ? 11 : month - 1);
 
-  const visible = useMemo(() => ITEMS.filter((i) => filters[i.module]), [filters]);
+  const panelOptions = useMemo(() => {
+    const uniq = (vals: string[]) => ['All', ...Array.from(new Set(vals)).sort()];
+    return {
+      company: uniq(ITEMS.map((i) => i.company)),
+      supplier: uniq(ITEMS.map((i) => i.supplier)),
+      isRequestCro: ['All', 'Yes', 'No'],
+      type: ['All', 'FCL', 'Console'],
+      dateFilterType: [...DATE_FILTER_TYPES],
+    };
+  }, []);
+
+  const activePanelFilterCount = useMemo(
+    () =>
+      (['company', 'supplier', 'isRequestCro', 'type', 'dateFilterType'] as const).filter(
+        (k) => appliedPanelFilters[k] !== 'All'
+      ).length,
+    [appliedPanelFilters]
+  );
+
+  const visible = useMemo(
+    () =>
+      ITEMS.filter((i) => {
+        if (!filters[i.module]) return false;
+        if (appliedPanelFilters.company !== 'All' && i.company !== appliedPanelFilters.company) {
+          return false;
+        }
+        if (appliedPanelFilters.supplier !== 'All' && i.supplier !== appliedPanelFilters.supplier) {
+          return false;
+        }
+        if (
+          appliedPanelFilters.isRequestCro !== 'All' &&
+          i.isRequestCro !== appliedPanelFilters.isRequestCro
+        ) {
+          return false;
+        }
+        if (appliedPanelFilters.type !== 'All' && i.shipType !== appliedPanelFilters.type) {
+          return false;
+        }
+        // Date Filter Type is a mode selector for prototype — items stay in calendar date
+        return true;
+      }),
+    [filters, appliedPanelFilters]
+  );
+
+  useEffect(() => {
+    const onDoc = (e: MouseEvent) => {
+      if (
+        showFilterPanel &&
+        filterPanelRef.current &&
+        !filterPanelRef.current.contains(e.target as Node)
+      ) {
+        setShowFilterPanel(false);
+      }
+    };
+    document.addEventListener('mousedown', onDoc);
+    return () => document.removeEventListener('mousedown', onDoc);
+  }, [showFilterPanel]);
+
+  const openFilterPanel = () => {
+    setDraftPanelFilters(appliedPanelFilters);
+    setShowFilterPanel((v) => !v);
+  };
+
+  const applyPanelFilters = () => {
+    setAppliedPanelFilters({ ...draftPanelFilters });
+    setShowFilterPanel(false);
+    onShowSnackBar?.('Filters applied', 'success');
+  };
+
+  const clearPanelFilters = () => {
+    setDraftPanelFilters(EMPTY_PANEL_FILTERS);
+    setAppliedPanelFilters(EMPTY_PANEL_FILTERS);
+    setShowFilterPanel(false);
+    onShowSnackBar?.('Filters cleared', 'info');
+  };
 
   const monthItems = useMemo(
     () => visible.filter((i) => i.year === year && i.month === month),
@@ -187,7 +292,7 @@ export const ReadinessCalendarScreen: React.FC<Props> = ({ onBack, onShowSnackBa
         className={`flex items-center gap-1 rounded-md px-1 py-0.5 truncate ${s.pillBg} ${s.pillText}`}
       >
         <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${s.dot}`} />
-        <span className="text-[8px] sm:text-[9px] font-bold truncate">
+        <span className="text-micro sm:text-caption font-bold truncate">
           {item.code} - {item.title.slice(0, 6)}…
         </span>
       </div>
@@ -198,57 +303,178 @@ export const ReadinessCalendarScreen: React.FC<Props> = ({ onBack, onShowSnackBa
     <div className="min-h-full pb-24 bg-[#f4f6f8] text-slate-900">
       {/* Top bar — Filters + Day/Week/Month */}
       <div className="sticky top-0 z-20 bg-white/95 backdrop-blur border-b border-slate-200/80 px-3 py-2.5">
-        <div className="flex items-center gap-2 flex-wrap">
-          <button
-            type="button"
-            onClick={onBack}
-            className="p-2 rounded-xl hover:bg-slate-100 cursor-pointer text-slate-500"
-            aria-label="Back"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
+        <div className="relative" ref={filterPanelRef}>
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
+              type="button"
+              onClick={onBack}
+              className="p-2 rounded-xl hover:bg-slate-100 cursor-pointer text-slate-500"
+              aria-label="Back"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
 
-          <button
-            type="button"
-            onClick={() => setDrawerOpen(true)}
-            className="p-2 rounded-xl hover:bg-slate-100 cursor-pointer text-slate-600"
-            aria-label="Open quick dates and filters"
-          >
-            <Menu className="w-5 h-5" />
-          </button>
+            <button
+              type="button"
+              onClick={() => setDrawerOpen(true)}
+              className="p-2 rounded-xl hover:bg-slate-100 cursor-pointer text-slate-600"
+              aria-label="Open quick dates and filters"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
 
-          <button
-            type="button"
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11px] font-bold bg-[#0f2b3c] text-white cursor-default opacity-90"
-            aria-hidden
-            tabIndex={-1}
-          >
-            <Filter className="w-3.5 h-3.5" />
-            Filters
-          </button>
+            <button
+              type="button"
+              onClick={openFilterPanel}
+              className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-body-sm font-bold cursor-pointer ${
+                showFilterPanel || activePanelFilterCount > 0
+                  ? 'bg-[#0f2b3c] text-white'
+                  : 'bg-[#0f2b3c] text-white hover:bg-[#1a3d52]'
+              }`}
+            >
+              <Filter className="w-3.5 h-3.5" />
+              Filters
+              {activePanelFilterCount > 0 && (
+                <span className="ml-0.5 inline-flex items-center justify-center min-w-4 h-4 px-1 rounded-full bg-teal-500 text-[10px] font-bold">
+                  {activePanelFilterCount}
+                </span>
+              )}
+            </button>
 
-          <div className="ml-auto inline-flex rounded-xl bg-white border border-slate-200 p-0.5 shadow-sm">
-            {(['day', 'week', 'month'] as CalView[]).map((v) => (
-              <button
-                key={v}
-                type="button"
-                onClick={() => {
-                  setView(v);
-                  if (v === 'day') setDaySheetOpen(true);
-                }}
-                className={`px-3 py-1.5 text-[11px] font-bold rounded-lg capitalize cursor-pointer ${
-                  view === v
-                    ? 'bg-[#dbeaf2] text-[#0f2b3c]'
-                    : 'text-slate-400 hover:text-slate-600'
-                }`}
-              >
-                {v}
-              </button>
-            ))}
+            <div className="ml-auto inline-flex rounded-xl bg-white border border-slate-200 p-0.5 shadow-sm">
+              {(['day', 'week', 'month'] as CalView[]).map((v) => (
+                <button
+                  key={v}
+                  type="button"
+                  onClick={() => {
+                    setView(v);
+                    if (v === 'day') setDaySheetOpen(true);
+                  }}
+                  className={`px-3 py-1.5 text-body-sm font-bold rounded-lg capitalize cursor-pointer ${
+                    view === v
+                      ? 'bg-[#dbeaf2] text-[#0f2b3c]'
+                      : 'text-slate-400 hover:text-slate-600'
+                  }`}
+                >
+                  {v}
+                </button>
+              ))}
+            </div>
           </div>
+
+          {showFilterPanel && (
+            <div className="absolute left-0 right-0 sm:left-12 sm:right-auto sm:w-80 mt-2 z-30 rounded-2xl border border-slate-200 bg-white shadow-xl p-4 space-y-3">
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-700">Company</label>
+                <select
+                  value={draftPanelFilters.company}
+                  onChange={(e) =>
+                    setDraftPanelFilters((p) => ({ ...p, company: e.target.value }))
+                  }
+                  className="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm bg-white outline-hidden focus:ring-2 focus:ring-[#0f2b3c]/30 cursor-pointer"
+                >
+                  {panelOptions.company.map((opt) => (
+                    <option key={opt} value={opt}>
+                      {opt}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-700">Supplier</label>
+                <select
+                  value={draftPanelFilters.supplier}
+                  onChange={(e) =>
+                    setDraftPanelFilters((p) => ({ ...p, supplier: e.target.value }))
+                  }
+                  className="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm bg-white outline-hidden focus:ring-2 focus:ring-[#0f2b3c]/30 cursor-pointer"
+                >
+                  {panelOptions.supplier.map((opt) => (
+                    <option key={opt} value={opt}>
+                      {opt}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700">Is Request CRO</label>
+                  <select
+                    value={draftPanelFilters.isRequestCro}
+                    onChange={(e) =>
+                      setDraftPanelFilters((p) => ({ ...p, isRequestCro: e.target.value }))
+                    }
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm bg-white outline-hidden focus:ring-2 focus:ring-[#0f2b3c]/30 cursor-pointer"
+                  >
+                    {panelOptions.isRequestCro.map((opt) => (
+                      <option key={opt} value={opt}>
+                        {opt}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700">Type</label>
+                  <select
+                    value={draftPanelFilters.type}
+                    onChange={(e) =>
+                      setDraftPanelFilters((p) => ({ ...p, type: e.target.value }))
+                    }
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm bg-white outline-hidden focus:ring-2 focus:ring-[#0f2b3c]/30 cursor-pointer"
+                  >
+                    {panelOptions.type.map((opt) => (
+                      <option key={opt} value={opt}>
+                        {opt}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="space-y-1 max-w-[70%]">
+                <label className="text-xs font-bold text-slate-700">Date Filter Type</label>
+                <select
+                  value={draftPanelFilters.dateFilterType}
+                  onChange={(e) =>
+                    setDraftPanelFilters((p) => ({ ...p, dateFilterType: e.target.value }))
+                  }
+                  className="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm bg-white outline-hidden focus:ring-2 focus:ring-[#0f2b3c]/30 cursor-pointer"
+                >
+                  {panelOptions.dateFilterType.map((opt) => (
+                    <option key={opt} value={opt}>
+                      {opt}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={applyPanelFilters}
+                  className="px-4 py-2 rounded-xl text-sm font-bold text-white bg-[#0f2b3c] hover:bg-[#1a3d52] cursor-pointer"
+                >
+                  Apply
+                </button>
+                <button
+                  type="button"
+                  onClick={clearPanelFilters}
+                  className="px-4 py-2 rounded-xl text-sm font-bold text-white bg-rose-500 hover:bg-rose-600 cursor-pointer"
+                >
+                  Clear
+                </button>
+              </div>
+            </div>
+          )}
         </div>
-        <p className="mt-2 text-[11px] font-semibold text-slate-500 px-1">
+
+        <p className="mt-2 text-body-sm font-semibold text-slate-500 px-1">
           {monthItems.length} scheduled readiness items visible
+          {appliedPanelFilters.dateFilterType !== 'All' && (
+            <span className="text-slate-400"> · {appliedPanelFilters.dateFilterType}</span>
+          )}
         </p>
       </div>
 
@@ -260,7 +486,7 @@ export const ReadinessCalendarScreen: React.FC<Props> = ({ onBack, onShowSnackBa
               {WEEKDAYS.map((d) => (
                 <div
                   key={d}
-                  className="py-2 text-center text-[9px] font-bold tracking-wide text-slate-400"
+                  className="py-2 text-center text-caption font-bold tracking-wide text-slate-400"
                 >
                   {d}
                 </div>
@@ -275,7 +501,7 @@ export const ReadinessCalendarScreen: React.FC<Props> = ({ onBack, onShowSnackBa
                     key={`p-${i}`}
                     className="min-h-[78px] sm:min-h-[92px] p-1 border-b border-r border-slate-100 bg-slate-50/50"
                   >
-                    <div className="text-right text-[10px] font-semibold text-slate-300 pr-0.5">
+                    <div className="text-right text-label font-semibold text-slate-300 pr-0.5">
                       {String(d).padStart(2, '0')}
                     </div>
                   </div>
@@ -303,7 +529,7 @@ export const ReadinessCalendarScreen: React.FC<Props> = ({ onBack, onShowSnackBa
                         <span />
                       )}
                       <span
-                        className={`text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full ${
+                        className={`text-label font-bold w-5 h-5 flex items-center justify-center rounded-full ${
                           isSel ? 'bg-[#0f2b3c] text-white' : 'text-slate-500'
                         }`}
                       >
@@ -315,7 +541,7 @@ export const ReadinessCalendarScreen: React.FC<Props> = ({ onBack, onShowSnackBa
                         <EventPill key={it.id} item={it} />
                       ))}
                       {items.length > 2 && (
-                        <span className="text-[8px] font-bold text-slate-400 pl-0.5">
+                        <span className="text-micro font-bold text-slate-400 pl-0.5">
                           +{items.length - 2}
                         </span>
                       )}
@@ -346,14 +572,14 @@ export const ReadinessCalendarScreen: React.FC<Props> = ({ onBack, onShowSnackBa
                     <span className="text-xs font-extrabold text-[#0f2b3c]">
                       {String(d).padStart(2, '0')} {MONTH_NAMES[month].slice(0, 3)}
                     </span>
-                    <span className="text-[10px] font-bold text-slate-400">{items.length}</span>
+                    <span className="text-label font-bold text-slate-400">{items.length}</span>
                   </div>
                   <div className="space-y-1">
                     {items.slice(0, 3).map((it) => (
                       <EventPill key={it.id} item={it} />
                     ))}
                     {items.length === 0 && (
-                      <p className="text-[10px] text-slate-400">No items</p>
+                      <p className="text-label text-slate-400">No items</p>
                     )}
                   </div>
                 </button>
@@ -395,7 +621,7 @@ export const ReadinessCalendarScreen: React.FC<Props> = ({ onBack, onShowSnackBa
             {/* Quick Dates card */}
             <div className="bg-white rounded-2xl border border-slate-200 p-3.5 shadow-sm">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                <span className="text-label font-bold uppercase tracking-wider text-slate-400">
                   Quick Dates
                 </span>
                 <span className="text-xs font-bold text-[#3b6ea5]">
@@ -425,7 +651,7 @@ export const ReadinessCalendarScreen: React.FC<Props> = ({ onBack, onShowSnackBa
               </div>
               <div className="grid grid-cols-7 text-center mb-1">
                 {WEEKDAYS_S.map((d, i) => (
-                  <span key={`${d}-${i}`} className="text-[10px] font-bold text-slate-400 py-1">
+                  <span key={`${d}-${i}`} className="text-label font-bold text-slate-400 py-1">
                     {d}
                   </span>
                 ))}
@@ -436,7 +662,7 @@ export const ReadinessCalendarScreen: React.FC<Props> = ({ onBack, onShowSnackBa
                   return (
                     <span
                       key={`pd-${i}`}
-                      className="text-[11px] font-semibold text-slate-300 py-1.5 text-center"
+                      className="text-body-sm font-semibold text-slate-300 py-1.5 text-center"
                     >
                       {d}
                     </span>
@@ -455,7 +681,7 @@ export const ReadinessCalendarScreen: React.FC<Props> = ({ onBack, onShowSnackBa
                       className="relative flex flex-col items-center py-0.5 cursor-pointer"
                     >
                       <span
-                        className={`w-7 h-7 flex items-center justify-center text-[11px] font-bold rounded-lg ${
+                        className={`w-7 h-7 flex items-center justify-center text-body-sm font-bold rounded-lg ${
                           sel
                             ? 'border-2 border-[#0f2b3c] text-[#0f2b3c]'
                             : 'text-slate-700'
@@ -483,7 +709,7 @@ export const ReadinessCalendarScreen: React.FC<Props> = ({ onBack, onShowSnackBa
             <div className="bg-white rounded-2xl border border-slate-200 p-3.5 shadow-sm">
               <div className="flex items-start justify-between mb-3">
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  <p className="text-label font-bold uppercase tracking-wider text-slate-400">
                     Filters
                   </p>
                   <p className="text-sm font-extrabold text-[#0f2b3c]">Modules</p>
@@ -503,7 +729,7 @@ export const ReadinessCalendarScreen: React.FC<Props> = ({ onBack, onShowSnackBa
                         : ALL_ON
                     )
                   }
-                  className="text-[11px] font-semibold text-slate-600 cursor-pointer"
+                  className="text-body-sm font-semibold text-slate-600 cursor-pointer"
                 >
                   {allSelected ? 'Unselect all' : 'Select all'}
                 </button>
@@ -521,7 +747,7 @@ export const ReadinessCalendarScreen: React.FC<Props> = ({ onBack, onShowSnackBa
                       <span className="text-xs font-semibold text-slate-800 flex-1">
                         {m.label}
                       </span>
-                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-slate-200/70 text-slate-600">
+                      <span className="text-label font-bold px-1.5 py-0.5 rounded-md bg-slate-200/70 text-slate-600">
                         {count}
                       </span>
                       <input
@@ -586,7 +812,7 @@ export const ReadinessCalendarScreen: React.FC<Props> = ({ onBack, onShowSnackBa
               <X className="w-5 h-5" />
             </button>
             <div className="min-w-0">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+              <p className="text-label font-bold uppercase tracking-wider text-slate-400">
                 Readiness
               </p>
               <h2 className="text-base font-extrabold text-[#0f2b3c] leading-snug">
@@ -614,10 +840,10 @@ export const ReadinessCalendarScreen: React.FC<Props> = ({ onBack, onShowSnackBa
                     className="bg-white rounded-2xl border border-slate-200 p-3.5 shadow-sm"
                   >
                     <div className="flex items-center justify-between mb-3">
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                      <p className="text-label font-bold uppercase tracking-wider text-slate-400">
                         {g.label}
                       </p>
-                      <span className="w-5 h-5 rounded-full bg-sky-500 text-white text-[10px] font-bold flex items-center justify-center">
+                      <span className="w-5 h-5 rounded-full bg-sky-500 text-white text-label font-bold flex items-center justify-center">
                         {g.items.length}
                       </span>
                     </div>
@@ -649,17 +875,17 @@ export const ReadinessCalendarScreen: React.FC<Props> = ({ onBack, onShowSnackBa
                               {item.code} - {item.title}
                             </p>
                             <span
-                              className={`inline-flex mt-1.5 text-[10px] font-bold px-2 py-0.5 rounded-full ${g.pillBg} ${g.pillText}`}
+                              className={`inline-flex mt-1.5 text-label font-bold px-2 py-0.5 rounded-full ${g.pillBg} ${g.pillText}`}
                             >
                               {g.label}
                             </span>
-                            <p className="mt-2 text-[11px] text-slate-500">
+                            <p className="mt-2 text-body-sm text-slate-500">
                               Proforma: {item.proforma}
                             </p>
-                            <p className="text-[11px] text-slate-500">
+                            <p className="text-body-sm text-slate-500">
                               Requisition: {item.requisition}
                             </p>
-                            <span className="inline-flex items-center gap-1.5 mt-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">
+                            <span className="inline-flex items-center gap-1.5 mt-2 text-label font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">
                               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                               {item.shipType}
                             </span>
@@ -676,7 +902,7 @@ export const ReadinessCalendarScreen: React.FC<Props> = ({ onBack, onShowSnackBa
               <button
                 type="button"
                 onClick={() => onShowSnackBar?.('Showing all readiness items', 'info')}
-                className="mx-auto block px-3 py-1.5 rounded-lg bg-slate-900 text-white text-[10px] font-bold cursor-pointer"
+                className="mx-auto block px-3 py-1.5 rounded-lg bg-slate-900 text-white text-label font-bold cursor-pointer"
               >
                 Show all
               </button>

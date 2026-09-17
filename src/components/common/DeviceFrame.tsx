@@ -32,7 +32,7 @@ export const DeviceFrameToggle: React.FC<DeviceFrameToggleProps> = ({
         <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
         <span className={`font-semibold ${isDark ? 'text-slate-300' : 'text-slate-900'}`}>SONERI Mobile ERP</span>
         <span className={isDark ? 'hidden sm:inline text-slate-600' : 'hidden sm:inline text-slate-300'}>|</span>
-        <span className={`hidden sm:inline font-mono text-[11px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Modern Executive UI</span>
+        <span className={`hidden sm:inline font-mono text-body-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Modern Executive UI</span>
       </div>
 
       <div className="flex items-center gap-2">
@@ -41,7 +41,7 @@ export const DeviceFrameToggle: React.FC<DeviceFrameToggleProps> = ({
           type="button"
           onClick={toggleTheme}
           id="theme-mode-toggle-btn"
-          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border transition-all cursor-pointer text-[11px] font-semibold ${
+          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border transition-all cursor-pointer text-body-sm font-semibold ${
             isDark
               ? 'bg-slate-800/90 hover:bg-slate-750 text-slate-200 border-slate-700/70'
               : 'bg-slate-100 hover:bg-slate-200/80 text-slate-800 border-slate-200 shadow-2xs'
@@ -68,7 +68,7 @@ export const DeviceFrameToggle: React.FC<DeviceFrameToggleProps> = ({
           <button
             type="button"
             onClick={() => onModeChange('phone')}
-            className={`flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-medium transition-all cursor-pointer ${
+            className={`flex items-center gap-1 px-2 py-1 rounded-md text-body-sm font-medium transition-all cursor-pointer ${
               deviceMode === 'phone'
                 ? isDark
                   ? 'bg-slate-700 text-white shadow-xs'
@@ -86,7 +86,7 @@ export const DeviceFrameToggle: React.FC<DeviceFrameToggleProps> = ({
           <button
             type="button"
             onClick={() => onModeChange('tablet')}
-            className={`flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-medium transition-all cursor-pointer ${
+            className={`flex items-center gap-1 px-2 py-1 rounded-md text-body-sm font-medium transition-all cursor-pointer ${
               deviceMode === 'tablet'
                 ? isDark
                   ? 'bg-slate-700 text-white shadow-xs'
@@ -104,7 +104,7 @@ export const DeviceFrameToggle: React.FC<DeviceFrameToggleProps> = ({
           <button
             type="button"
             onClick={() => onModeChange('fluid')}
-            className={`flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-medium transition-all cursor-pointer ${
+            className={`flex items-center gap-1 px-2 py-1 rounded-md text-body-sm font-medium transition-all cursor-pointer ${
               deviceMode === 'fluid'
                 ? isDark
                   ? 'bg-slate-700 text-white shadow-xs'
@@ -129,7 +129,7 @@ export const MobileStatusBar: React.FC = () => {
 
   return (
     <div
-      className={`w-full px-5 pt-2 pb-1.5 flex items-center justify-between text-[11px] font-semibold tracking-wider select-none shrink-0 transition-colors ${
+      className={`w-full px-5 pt-2 pb-1.5 flex items-center justify-between text-body-sm font-semibold tracking-wider select-none shrink-0 transition-colors ${
         isDark
           ? 'bg-[#090d16] text-white border-b border-slate-800/60'
           : 'bg-white text-slate-800 border-b border-slate-200/60'
@@ -138,7 +138,7 @@ export const MobileStatusBar: React.FC = () => {
       <span className="font-bold">9:41</span>
       <div className="flex items-center gap-2">
         <Signal className={`w-3 h-3 ${isDark ? 'text-slate-300' : 'text-slate-600'}`} />
-        <span className={`text-[10px] font-mono font-bold ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
+        <span className={`text-label font-mono font-bold ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
           5G
         </span>
         <Wifi className={`w-3.5 h-3.5 ${isDark ? 'text-slate-300' : 'text-slate-600'}`} />

@@ -80,7 +80,7 @@ export const AdminModuleScreen: React.FC<AdminModuleScreenProps> = ({
                   <h4 className="text-base font-bold text-slate-900 leading-tight">
                     Users
                   </h4>
-                  <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+                  <span className="text-body-sm font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
                     {usersCount} Accounts
                   </span>
                 </div>
@@ -110,7 +110,7 @@ export const AdminModuleScreen: React.FC<AdminModuleScreenProps> = ({
                   <h4 className="text-base font-bold text-slate-900 leading-tight">
                     Manage Values
                   </h4>
-                  <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+                  <span className="text-body-sm font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
                     {valuesCount} Masters
                   </span>
                 </div>
@@ -140,7 +140,7 @@ export const AdminModuleScreen: React.FC<AdminModuleScreenProps> = ({
                   <h4 className="text-base font-bold text-slate-900 leading-tight">
                     User Authorization
                   </h4>
-                  <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                  <span className="text-body-sm font-semibold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
                     RBAC Matrix
                   </span>
                 </div>
@@ -170,7 +170,7 @@ export const AdminModuleScreen: React.FC<AdminModuleScreenProps> = ({
                   <h4 className="text-base font-bold text-slate-900 leading-tight">
                     Exchange Rate
                   </h4>
-                  <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  <span className="text-body-sm font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
                     SBP Live
                   </span>
                 </div>
@@ -200,7 +200,7 @@ export const AdminModuleScreen: React.FC<AdminModuleScreenProps> = ({
                   <h4 className="text-base font-bold text-slate-900 leading-tight">
                     IP Whitelist
                   </h4>
-                  <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+                  <span className="text-body-sm font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
                     Firewall Rules
                   </span>
                 </div>
@@ -230,7 +230,7 @@ export const AdminModuleScreen: React.FC<AdminModuleScreenProps> = ({
                   <h4 className="text-base font-bold text-slate-900 leading-tight">
                     Price Calculator
                   </h4>
-                  <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-purple-50 text-purple-700 border border-purple-200">
+                  <span className="text-body-sm font-semibold px-2 py-0.5 rounded-full bg-purple-50 text-purple-700 border border-purple-200">
                     Export Costing
                   </span>
                 </div>
@@ -249,7 +249,7 @@ export const AdminModuleScreen: React.FC<AdminModuleScreenProps> = ({
         {/* Security Info Card */}
         <div className="p-4 rounded-xl bg-slate-100/70 border border-slate-200/80 text-xs text-slate-600 flex items-center justify-between">
           <span className="font-medium">System Role Security: Strict RBAC</span>
-          <span className="font-mono text-[11px] text-slate-500">v2.4 Audit Logged</span>
+          <span className="font-mono text-body-sm text-slate-500">v2.4 Audit Logged</span>
         </div>
       </div>
     </div>

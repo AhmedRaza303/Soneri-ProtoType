@@ -28,6 +28,7 @@ import {
   List,
   RotateCcw,
   RotateCw,
+  X,
 } from 'lucide-react';
 import { AppBar } from '../components/common/AppBar';
 import { User, BankAccount, ProfessionalInfo } from '../types';
@@ -76,22 +77,31 @@ export const AddUserScreen: React.FC<AddUserScreenProps> = ({
   const [companyExitDateEnabled, setCompanyExitDateEnabled] = useState(false);
   const [companyExitDate, setCompanyExitDate] = useState('');
 
-  // Professional Information #1 State
-  const [professionalCompany, setProfessionalCompany] = useState('');
-  const [professionalEmail, setProfessionalEmail] = useState('');
-  const [professionalMobile, setProfessionalMobile] = useState('');
-  const [professionalLandline, setProfessionalLandline] = useState('');
-  const [professionalSignature, setProfessionalSignature] = useState('');
-  const [professionalExtension, setProfessionalExtension] = useState('');
-
-  // Additional professional sections count
-  const [additionalProfCount, setAdditionalProfCount] = useState(0);
+  // Professional Information (repeatable)
+  const [professionalInfos, setProfessionalInfos] = useState<ProfessionalInfo[]>([
+    {
+      id: 'prof_1',
+      company: '',
+      emailAddress: '',
+      mobileNumber: '',
+      landlineNumber: '',
+      emailSignature: '',
+      extensionNumber: '',
+    },
+  ]);
 
   // Documents & Canvas State
   const [selectedDocType, setSelectedDocType] = useState('CNIC');
-  const [uploadedDocs, setUploadedDocs] = useState<{ [key: string]: string }>({
-    CNIC: 'cnic_front_back_scanned.pdf',
-  });
+  const [canvasDocs, setCanvasDocs] = useState<
+    {
+      id: string;
+      docType: string;
+      fileName: string;
+      previewUrl: string | null;
+      expiryDate: string;
+    }[]
+  >([]);
+  const [activeCanvasDocId, setActiveCanvasDocId] = useState<string | null>(null);
 
   // Bank Details State (Bank Account #1)
   const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([
@@ -165,18 +175,6 @@ export const AddUserScreen: React.FC<AddUserScreenProps> = ({
 
     const fullName = `${firstName.trim()} ${lastName.trim()}`.trim() || firstName.trim();
 
-    const professionalInfos: ProfessionalInfo[] = [
-      {
-        id: 'prof_1',
-        company: professionalCompany || 'Soneri Group',
-        emailAddress: professionalEmail || email,
-        mobileNumber: professionalMobile,
-        landlineNumber: professionalLandline,
-        emailSignature: professionalSignature,
-        extensionNumber: professionalExtension,
-      },
-    ];
-
     const newUser: Omit<User, 'id'> = {
       firstName,
       lastName,
@@ -207,9 +205,16 @@ export const AddUserScreen: React.FC<AddUserScreenProps> = ({
       companyExitDateEnabled,
       companyExitDate,
 
-      professionalInfos,
+      professionalInfos: professionalInfos.map((info) => ({
+        ...info,
+        company: info.company || 'Soneri Group',
+        emailAddress: info.emailAddress || email,
+      })),
       bankAccounts,
-      documents: uploadedDocs,
+      documents: canvasDocs.reduce<Record<string, string>>((acc, doc) => {
+        acc[doc.docType] = doc.fileName;
+        return acc;
+      }, {}),
 
       status: 'Active',
       avatarColor: 'bg-[#1e293b]',
@@ -217,6 +222,67 @@ export const AddUserScreen: React.FC<AddUserScreenProps> = ({
     };
 
     onSaveUser(newUser);
+  };
+
+  const updateProfessionalInfo = (index: number, field: keyof ProfessionalInfo, value: string) => {
+    setProfessionalInfos((prev) => {
+      const copy = [...prev];
+      copy[index] = { ...copy[index], [field]: value };
+      return copy;
+    });
+  };
+
+  const addProfessionalInfo = () => {
+    setProfessionalInfos((prev) => [
+      ...prev,
+      {
+        id: `prof_${Date.now()}`,
+        company: '',
+        emailAddress: '',
+        mobileNumber: '',
+        landlineNumber: '',
+        emailSignature: '',
+        extensionNumber: '',
+      },
+    ]);
+  };
+
+  const activeCanvasDoc =
+    canvasDocs.find((d) => d.id === activeCanvasDocId) ?? canvasDocs[0] ?? null;
+
+  const handleDocUpload = (file: File) => {
+    const id = `doc_${Date.now()}`;
+    const previewUrl = file.type.startsWith('image/') ? URL.createObjectURL(file) : null;
+    const newDoc = {
+      id,
+      docType: selectedDocType,
+      fileName: file.name,
+      previewUrl,
+      expiryDate: '',
+    };
+    setCanvasDocs((prev) => [...prev, newDoc]);
+    setActiveCanvasDocId(id);
+  };
+
+  const removeCanvasDoc = (id: string) => {
+    setCanvasDocs((prev) => {
+      const target = prev.find((d) => d.id === id);
+      if (target?.previewUrl?.startsWith('blob:')) {
+        URL.revokeObjectURL(target.previewUrl);
+      }
+      const next = prev.filter((d) => d.id !== id);
+      setActiveCanvasDocId((current) => {
+        if (current !== id) return current;
+        return next[0]?.id ?? null;
+      });
+      return next;
+    });
+  };
+
+  const updateCanvasDocExpiry = (id: string, expiryDate: string) => {
+    setCanvasDocs((prev) =>
+      prev.map((d) => (d.id === id ? { ...d, expiryDate } : d))
+    );
   };
 
   const updateBankAccount = (index: number, field: keyof BankAccount, value: any) => {
@@ -323,7 +389,7 @@ export const AddUserScreen: React.FC<AddUserScreenProps> = ({
                     }`}
                   />
                   {errors.firstName && (
-                    <span className="text-[11px] text-rose-500 mt-1 block">
+                    <span className="text-body-sm text-rose-500 mt-1 block">
                       {errors.firstName}
                     </span>
                   )}
@@ -358,7 +424,7 @@ export const AddUserScreen: React.FC<AddUserScreenProps> = ({
                     }`}
                   />
                   {errors.username && (
-                    <span className="text-[11px] text-rose-500 mt-1 block">
+                    <span className="text-body-sm text-rose-500 mt-1 block">
                       {errors.username}
                     </span>
                   )}
@@ -379,7 +445,7 @@ export const AddUserScreen: React.FC<AddUserScreenProps> = ({
                     }`}
                   />
                   {errors.email && (
-                    <span className="text-[11px] text-rose-500 mt-1 block">
+                    <span className="text-body-sm text-rose-500 mt-1 block">
                       {errors.email}
                     </span>
                   )}
@@ -550,7 +616,7 @@ export const AddUserScreen: React.FC<AddUserScreenProps> = ({
                     <option value="Sales">Sales</option>
                   </select>
                   {errors.role && (
-                    <span className="text-[11px] text-rose-500 mt-1 block">
+                    <span className="text-body-sm text-rose-500 mt-1 block">
                       {errors.role}
                     </span>
                   )}
@@ -580,7 +646,7 @@ export const AddUserScreen: React.FC<AddUserScreenProps> = ({
                     </button>
                   </div>
                   {errors.password && (
-                    <span className="text-[11px] text-rose-500 mt-1 block">
+                    <span className="text-body-sm text-rose-500 mt-1 block">
                       {errors.password}
                     </span>
                   )}
@@ -610,7 +676,7 @@ export const AddUserScreen: React.FC<AddUserScreenProps> = ({
                     </button>
                   </div>
                   {errors.confirmPassword && (
-                    <span className="text-[11px] text-rose-500 mt-1 block">
+                    <span className="text-body-sm text-rose-500 mt-1 block">
                       {errors.confirmPassword}
                     </span>
                   )}
@@ -664,7 +730,7 @@ export const AddUserScreen: React.FC<AddUserScreenProps> = ({
                     <option value="Expenses">Expenses</option>
                   </select>
                   {errors.chartOfAccount && (
-                    <span className="text-[11px] text-rose-500 mt-1 block">
+                    <span className="text-body-sm text-rose-500 mt-1 block">
                       {errors.chartOfAccount}
                     </span>
                   )}
@@ -831,162 +897,160 @@ export const AddUserScreen: React.FC<AddUserScreenProps> = ({
               </div>
             </div>
 
-            {/* Section 3: Professional Information #1 */}
-            <div className="bg-white rounded-2xl border border-slate-200/90 p-5 sm:p-6 shadow-xs space-y-5">
-              <h2 className="text-sm font-bold text-[#1e293b] uppercase tracking-wider pb-2 border-b border-slate-100">
-                Professional Information #1
-              </h2>
+            {/* Section 3: Professional Information (repeatable) */}
+            {professionalInfos.map((info, index) => (
+              <div
+                key={info.id}
+                className="bg-white rounded-2xl border border-slate-200/90 p-5 sm:p-6 shadow-xs space-y-5"
+              >
+                <h2 className="text-sm font-bold text-[#1e293b] uppercase tracking-wider pb-2 border-b border-slate-100">
+                  Professional Information #{index + 1}
+                </h2>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {/* Company */}
-                <div>
-                  <label className="text-xs font-semibold text-slate-700 block mb-1">
-                    Company
-                  </label>
-                  <select
-                    value={professionalCompany}
-                    onChange={(e) => setProfessionalCompany(e.target.value)}
-                    className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1e293b]"
-                  >
-                    <option value="">Select Company</option>
-                    <option value="Soneri Group">Soneri Group</option>
-                    <option value="Soneri International">Soneri International</option>
-                    <option value="Soneri Fabrics">Soneri Fabrics</option>
-                    <option value="Soneri Logistics">Soneri Logistics</option>
-                  </select>
-                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div>
+                    <label className="text-xs font-semibold text-slate-700 block mb-1">
+                      Company
+                    </label>
+                    <select
+                      value={info.company}
+                      onChange={(e) => updateProfessionalInfo(index, 'company', e.target.value)}
+                      className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1e293b]"
+                    >
+                      <option value="">Select Company</option>
+                      <option value="Soneri Group">Soneri Group</option>
+                      <option value="Soneri International">Soneri International</option>
+                      <option value="Soneri Fabrics">Soneri Fabrics</option>
+                      <option value="Soneri Logistics">Soneri Logistics</option>
+                    </select>
+                  </div>
 
-                {/* Email Address */}
-                <div>
-                  <label className="text-xs font-semibold text-slate-700 block mb-1">
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    value={professionalEmail}
-                    onChange={(e) => setProfessionalEmail(e.target.value)}
-                    placeholder="Enter Email Address"
-                    className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1e293b]"
-                  />
-                </div>
-
-                {/* Mobile Number with country prefix +92 */}
-                <div>
-                  <label className="text-xs font-semibold text-slate-700 block mb-1">
-                    Mobile Number
-                  </label>
-                  <div className="flex rounded-xl border border-slate-200 overflow-hidden focus-within:ring-2 focus-within:ring-[#1e293b]">
-                    <span className="px-2.5 py-2 bg-slate-100 text-xs font-semibold text-slate-600 border-r border-slate-200 flex items-center gap-1">
-                      🇵🇰 +92
-                    </span>
+                  <div>
+                    <label className="text-xs font-semibold text-slate-700 block mb-1">
+                      Email Address
+                    </label>
                     <input
-                      type="tel"
-                      value={professionalMobile}
-                      onChange={(e) => setProfessionalMobile(e.target.value)}
-                      placeholder="Mobile Number"
-                      className="w-full px-3 py-2 text-xs bg-white focus:outline-none"
+                      type="email"
+                      value={info.emailAddress}
+                      onChange={(e) => updateProfessionalInfo(index, 'emailAddress', e.target.value)}
+                      placeholder="Enter Email Address"
+                      className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1e293b]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-semibold text-slate-700 block mb-1">
+                      Mobile Number
+                    </label>
+                    <div className="flex rounded-xl border border-slate-200 overflow-hidden focus-within:ring-2 focus-within:ring-[#1e293b]">
+                      <span className="px-2.5 py-2 bg-slate-100 text-xs font-semibold text-slate-600 border-r border-slate-200 flex items-center gap-1">
+                        🇵🇰 +92
+                      </span>
+                      <input
+                        type="tel"
+                        value={info.mobileNumber}
+                        onChange={(e) => updateProfessionalInfo(index, 'mobileNumber', e.target.value)}
+                        placeholder="Mobile Number"
+                        className="w-full px-3 py-2 text-xs bg-white focus:outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-semibold text-slate-700 block mb-1">
+                      Landline Number
+                    </label>
+                    <input
+                      type="text"
+                      value={info.landlineNumber}
+                      onChange={(e) => updateProfessionalInfo(index, 'landlineNumber', e.target.value)}
+                      placeholder="(000)0000000"
+                      className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1e293b]"
+                    />
+                  </div>
+
+                  <div className="sm:col-span-2 lg:col-span-3">
+                    <label className="text-xs font-semibold text-slate-700 block mb-1">
+                      Email Signature
+                    </label>
+                    <div className="border border-slate-200 rounded-2xl overflow-hidden focus-within:ring-2 focus-within:ring-[#1e293b]">
+                      <div className="bg-slate-50 border-b border-slate-200 p-2 flex flex-wrap items-center gap-1 text-slate-600 text-xs">
+                        <button type="button" className="p-1 hover:bg-slate-200 rounded" title="Undo">
+                          <RotateCcw className="w-3.5 h-3.5" />
+                        </button>
+                        <button type="button" className="p-1 hover:bg-slate-200 rounded" title="Redo">
+                          <RotateCw className="w-3.5 h-3.5" />
+                        </button>
+                        <span className="w-px h-4 bg-slate-300 mx-1"></span>
+                        <button type="button" className="p-1 hover:bg-slate-200 rounded font-bold" title="Bold">
+                          <Bold className="w-3.5 h-3.5" />
+                        </button>
+                        <button type="button" className="p-1 hover:bg-slate-200 rounded italic" title="Italic">
+                          <Italic className="w-3.5 h-3.5" />
+                        </button>
+                        <button type="button" className="p-1 hover:bg-slate-200 rounded underline" title="Underline">
+                          <Underline className="w-3.5 h-3.5" />
+                        </button>
+                        <span className="w-px h-4 bg-slate-300 mx-1"></span>
+                        <button type="button" className="p-1 hover:bg-slate-200 rounded" title="Align Left">
+                          <AlignLeft className="w-3.5 h-3.5" />
+                        </button>
+                        <button type="button" className="p-1 hover:bg-slate-200 rounded" title="Align Center">
+                          <AlignCenter className="w-3.5 h-3.5" />
+                        </button>
+                        <button type="button" className="p-1 hover:bg-slate-200 rounded" title="Align Right">
+                          <AlignRight className="w-3.5 h-3.5" />
+                        </button>
+                        <span className="w-px h-4 bg-slate-300 mx-1"></span>
+                        <button type="button" className="p-1 hover:bg-slate-200 rounded" title="List">
+                          <List className="w-3.5 h-3.5" />
+                        </button>
+                        <button type="button" className="p-1 hover:bg-slate-200 rounded" title="Insert Link">
+                          <Link className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+
+                      <textarea
+                        rows={3}
+                        value={info.emailSignature}
+                        onChange={(e) => updateProfessionalInfo(index, 'emailSignature', e.target.value)}
+                        placeholder="Type or paste your content here!"
+                        className="w-full p-3 text-xs bg-white focus:outline-none resize-none"
+                      ></textarea>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-semibold text-slate-700 block mb-1">
+                      Extension Number
+                    </label>
+                    <input
+                      type="text"
+                      value={info.extensionNumber}
+                      onChange={(e) => updateProfessionalInfo(index, 'extensionNumber', e.target.value)}
+                      placeholder="Enter Extension Number"
+                      className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1e293b]"
                     />
                   </div>
                 </div>
 
-                {/* Landline Number */}
-                <div>
-                  <label className="text-xs font-semibold text-slate-700 block mb-1">
-                    Landline Number
-                  </label>
-                  <input
-                    type="text"
-                    value={professionalLandline}
-                    onChange={(e) => setProfessionalLandline(e.target.value)}
-                    placeholder="(000)0000000"
-                    className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1e293b]"
-                  />
-                </div>
-
-                {/* Email Signature (Rich Formatting Bar) */}
-                <div className="sm:col-span-2 lg:col-span-3">
-                  <label className="text-xs font-semibold text-slate-700 block mb-1">
-                    Email Signature
-                  </label>
-                  <div className="border border-slate-200 rounded-2xl overflow-hidden focus-within:ring-2 focus-within:ring-[#1e293b]">
-                    {/* Rich text formatting controls matching Image 2 */}
-                    <div className="bg-slate-50 border-b border-slate-200 p-2 flex flex-wrap items-center gap-1 text-slate-600 text-xs">
-                      <button type="button" className="p-1 hover:bg-slate-200 rounded" title="Undo">
-                        <RotateCcw className="w-3.5 h-3.5" />
-                      </button>
-                      <button type="button" className="p-1 hover:bg-slate-200 rounded" title="Redo">
-                        <RotateCw className="w-3.5 h-3.5" />
-                      </button>
-                      <span className="w-px h-4 bg-slate-300 mx-1"></span>
-                      <button type="button" className="p-1 hover:bg-slate-200 rounded font-bold" title="Bold">
-                        <Bold className="w-3.5 h-3.5" />
-                      </button>
-                      <button type="button" className="p-1 hover:bg-slate-200 rounded italic" title="Italic">
-                        <Italic className="w-3.5 h-3.5" />
-                      </button>
-                      <button type="button" className="p-1 hover:bg-slate-200 rounded underline" title="Underline">
-                        <Underline className="w-3.5 h-3.5" />
-                      </button>
-                      <span className="w-px h-4 bg-slate-300 mx-1"></span>
-                      <button type="button" className="p-1 hover:bg-slate-200 rounded" title="Align Left">
-                        <AlignLeft className="w-3.5 h-3.5" />
-                      </button>
-                      <button type="button" className="p-1 hover:bg-slate-200 rounded" title="Align Center">
-                        <AlignCenter className="w-3.5 h-3.5" />
-                      </button>
-                      <button type="button" className="p-1 hover:bg-slate-200 rounded" title="Align Right">
-                        <AlignRight className="w-3.5 h-3.5" />
-                      </button>
-                      <span className="w-px h-4 bg-slate-300 mx-1"></span>
-                      <button type="button" className="p-1 hover:bg-slate-200 rounded" title="List">
-                        <List className="w-3.5 h-3.5" />
-                      </button>
-                      <button type="button" className="p-1 hover:bg-slate-200 rounded" title="Insert Link">
-                        <Link className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-
-                    <textarea
-                      rows={3}
-                      value={professionalSignature}
-                      onChange={(e) => setProfessionalSignature(e.target.value)}
-                      placeholder="Type or paste your content here!"
-                      className="w-full p-3 text-xs bg-white focus:outline-none resize-none"
-                    ></textarea>
+                {index === professionalInfos.length - 1 && (
+                  <div className="pt-2">
+                    <button
+                      type="button"
+                      onClick={addProfessionalInfo}
+                      className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold bg-[#1e293b] text-white rounded-xl hover:bg-[#0f172a] active:scale-95 transition-all cursor-pointer"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Add Another Professional Information</span>
+                    </button>
                   </div>
-                </div>
-
-                {/* Extension Number */}
-                <div>
-                  <label className="text-xs font-semibold text-slate-700 block mb-1">
-                    Extension Number
-                  </label>
-                  <input
-                    type="text"
-                    value={professionalExtension}
-                    onChange={(e) => setProfessionalExtension(e.target.value)}
-                    placeholder="Enter Extension Number"
-                    className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1e293b]"
-                  />
-                </div>
+                )}
               </div>
+            ))}
 
-              {/* Add Another Professional Information Button */}
-              <div className="pt-2">
-                <button
-                  type="button"
-                  onClick={() => setAdditionalProfCount((c) => c + 1)}
-                  className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold bg-[#1e293b] text-white rounded-xl hover:bg-[#0f172a] active:scale-95 transition-all cursor-pointer"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>Add Another Professional Information</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Section 4: Split Panels: Documents (Left) and Canvas (Right) matching Image 2 */}
+            {/* Section 4: Split Panels: Documents (Left) and Canvas (Right) */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Left Panel: Documents */}
               <div className="bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-xs">
                 <div className="bg-[#1e293b] px-4 py-3 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-between">
                   <span>Documents</span>
@@ -995,7 +1059,6 @@ export const AddUserScreen: React.FC<AddUserScreenProps> = ({
 
                 <div className="p-4 space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {/* Document Categories List */}
                     <div className="space-y-1 bg-slate-50 p-2 rounded-xl border border-slate-200/80">
                       {[
                         'CNIC',
@@ -1010,50 +1073,40 @@ export const AddUserScreen: React.FC<AddUserScreenProps> = ({
                           onClick={() => setSelectedDocType(doc)}
                           className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer ${
                             selectedDocType === doc
-                              ? 'bg-[#1e293b] text-white shadow-xs'
+                              ? 'bg-slate-200/80 text-slate-900'
                               : 'text-slate-700 hover:bg-slate-200/60'
                           }`}
                         >
                           <span className="truncate">{doc}</span>
-                          {uploadedDocs[doc] && (
-                            <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0 ml-1" />
+                          {canvasDocs.some((d) => d.docType === doc) && (
+                            <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0 ml-1" />
                           )}
                         </button>
                       ))}
                     </div>
 
-                    {/* Upload Box for currently selected document */}
                     <div className="space-y-2 flex flex-col justify-center">
                       <span className="text-xs font-bold text-slate-800">
                         Upload {selectedDocType}
                       </span>
-                      <label className="border-2 border-dashed border-slate-200 hover:border-slate-400 bg-slate-50/50 hover:bg-slate-50 rounded-2xl p-5 flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors text-center">
+                      <label className="border-2 border-dashed border-slate-200 hover:border-slate-400 bg-slate-50/50 hover:bg-slate-50 rounded-2xl p-5 flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors text-center min-h-[140px]">
                         <input
                           type="file"
+                          accept="image/*,.pdf"
                           className="hidden"
                           onChange={(e) => {
                             if (e.target.files?.[0]) {
-                              setUploadedDocs((prev) => ({
-                                ...prev,
-                                [selectedDocType]: e.target.files![0].name,
-                              }));
+                              handleDocUpload(e.target.files[0]);
+                              e.target.value = '';
                             }
                           }}
                         />
-                        <UploadCloud className="w-7 h-7 text-slate-400" />
+                        <UploadCloud className="w-7 h-7 text-blue-500" />
                         <span className="text-xs font-medium text-slate-600">
-                          {uploadedDocs[selectedDocType] ? (
-                            <span className="text-emerald-600 font-semibold block break-all">
-                              {uploadedDocs[selectedDocType]}
-                            </span>
-                          ) : (
-                            <>
-                              <span className="text-slate-900 font-semibold block">
-                                Drop files to upload
-                              </span>
-                              or <span className="text-blue-600 underline">Click here</span>
-                            </>
-                          )}
+                          <span className="text-slate-900 font-semibold block">
+                            Drop files to upload
+                          </span>
+                          or <span className="text-blue-600 underline">Click here</span>
                         </span>
                       </label>
                     </div>
@@ -1061,23 +1114,112 @@ export const AddUserScreen: React.FC<AddUserScreenProps> = ({
                 </div>
               </div>
 
-              {/* Right Panel: Canvas */}
               <div className="bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-xs">
                 <div className="bg-[#1e293b] px-4 py-3 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-between">
                   <span>Canvas</span>
                   <HelpCircle className="w-4 h-4 text-slate-300" />
                 </div>
 
-                <div className="p-8 flex flex-col items-center justify-center min-h-[220px] text-center bg-slate-50/40">
-                  <div className="w-14 h-14 rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-slate-400 shadow-2xs mb-3">
-                    <FileText className="w-7 h-7 text-slate-400" />
-                  </div>
-                  <h4 className="text-xs font-bold text-slate-700">Documents Preview</h4>
-                  <p className="text-[11px] text-slate-400 mt-1 max-w-xs">
-                    {uploadedDocs[selectedDocType]
-                      ? `Viewing ${selectedDocType} attached file (${uploadedDocs[selectedDocType]})`
-                      : 'No document loaded in preview canvas.'}
-                  </p>
+                <div className="p-4 min-h-[260px] bg-white space-y-3">
+                  {canvasDocs.length > 0 ? (
+                    <>
+                      {/* Thumbnail strip */}
+                      <div className="flex gap-2 overflow-x-auto pb-1">
+                        {canvasDocs.map((doc) => (
+                          <button
+                            key={doc.id}
+                            type="button"
+                            onClick={() => setActiveCanvasDocId(doc.id)}
+                            className={`shrink-0 w-16 h-16 rounded-md overflow-hidden border-2 bg-slate-50 cursor-pointer ${
+                              activeCanvasDoc?.id === doc.id
+                                ? 'border-[#1e293b]'
+                                : 'border-slate-200 hover:border-slate-400'
+                            }`}
+                            title={doc.docType}
+                          >
+                            {doc.previewUrl ? (
+                              <img
+                                src={doc.previewUrl}
+                                alt={doc.fileName}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center">
+                                <FileText className="w-6 h-6 text-slate-400" />
+                              </div>
+                            )}
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Detail card */}
+                      {activeCanvasDoc && (
+                        <div className="rounded-lg border border-slate-200 bg-slate-100/80 p-3 space-y-3">
+                          <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+                            <div>
+                              <p className="text-body-sm font-semibold text-slate-600">
+                                Document Type
+                              </p>
+                              <p className="text-xs font-bold text-slate-800 mt-0.5">
+                                {activeCanvasDoc.docType}
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <label className="text-body-sm font-semibold text-slate-600 whitespace-nowrap">
+                                Expiry Date
+                              </label>
+                              <input
+                                type="date"
+                                value={activeCanvasDoc.expiryDate}
+                                onChange={(e) =>
+                                  updateCanvasDocExpiry(activeCanvasDoc.id, e.target.value)
+                                }
+                                className="px-2 py-1 text-xs bg-white border border-slate-300 rounded focus:outline-none focus:ring-2 focus:ring-[#1e293b]"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="relative inline-block">
+                            {activeCanvasDoc.previewUrl ? (
+                              <img
+                                src={activeCanvasDoc.previewUrl}
+                                alt={activeCanvasDoc.fileName}
+                                className="max-h-44 max-w-full rounded border border-slate-300 object-contain bg-white"
+                              />
+                            ) : (
+                              <div className="flex items-center gap-3 px-4 py-8 rounded border border-slate-300 bg-white min-w-[180px]">
+                                <FileText className="w-8 h-8 text-slate-400 shrink-0" />
+                                <div className="min-w-0">
+                                  <p className="text-xs font-bold text-slate-700 truncate">
+                                    {activeCanvasDoc.fileName}
+                                  </p>
+                                  <p className="text-body-sm text-slate-400">Document attached</p>
+                                </div>
+                              </div>
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => removeCanvasDoc(activeCanvasDoc.id)}
+                              className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-rose-500 text-white flex items-center justify-center shadow-sm hover:bg-rose-600 cursor-pointer"
+                              title="Remove document"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center py-12 text-center">
+                      <div className="w-14 h-14 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-400 mb-3">
+                        <FileText className="w-7 h-7" />
+                      </div>
+                      <h4 className="text-xs font-bold text-slate-700">Documents Preview</h4>
+                      <p className="text-body-sm text-slate-400 mt-1 max-w-xs">
+                        Upload a file to preview it here.
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -1110,7 +1252,7 @@ export const AddUserScreen: React.FC<AddUserScreenProps> = ({
                     Bank Account #{index + 1}
                   </h2>
                   {account.isPrimary && (
-                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-bold border border-emerald-200">
+                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-label font-bold border border-emerald-200">
                       Primary Account
                     </span>
                   )}
@@ -1137,7 +1279,7 @@ export const AddUserScreen: React.FC<AddUserScreenProps> = ({
                       <option value="GBP">GBP</option>
                     </select>
                     {errors.bankCurrency && (
-                      <span className="text-[11px] text-rose-500 mt-1 block">
+                      <span className="text-body-sm text-rose-500 mt-1 block">
                         {errors.bankCurrency}
                       </span>
                     )}
@@ -1158,7 +1300,7 @@ export const AddUserScreen: React.FC<AddUserScreenProps> = ({
                       }`}
                     />
                     {errors.bankName && (
-                      <span className="text-[11px] text-rose-500 mt-1 block">
+                      <span className="text-body-sm text-rose-500 mt-1 block">
                         {errors.bankName}
                       </span>
                     )}
@@ -1197,7 +1339,7 @@ export const AddUserScreen: React.FC<AddUserScreenProps> = ({
                       <option value="Salary">Salary</option>
                     </select>
                     {errors.accountType && (
-                      <span className="text-[11px] text-rose-500 mt-1 block">
+                      <span className="text-body-sm text-rose-500 mt-1 block">
                         {errors.accountType}
                       </span>
                     )}
@@ -1218,7 +1360,7 @@ export const AddUserScreen: React.FC<AddUserScreenProps> = ({
                       }`}
                     />
                     {errors.accountTitle && (
-                      <span className="text-[11px] text-rose-500 mt-1 block">
+                      <span className="text-body-sm text-rose-500 mt-1 block">
                         {errors.accountTitle}
                       </span>
                     )}
@@ -1239,7 +1381,7 @@ export const AddUserScreen: React.FC<AddUserScreenProps> = ({
                       }`}
                     />
                     {errors.accountNumber && (
-                      <span className="text-[11px] text-rose-500 mt-1 block">
+                      <span className="text-body-sm text-rose-500 mt-1 block">
                         {errors.accountNumber}
                       </span>
                     )}

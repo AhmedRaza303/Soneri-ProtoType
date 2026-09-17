@@ -136,7 +136,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
                   <Bell className="w-4 h-4 text-slate-600" />
                   <div>
                     <p className="text-xs font-bold text-slate-900">Push Notifications</p>
-                    <p className="text-[11px] text-slate-500">Order approvals & status alerts</p>
+                    <p className="text-body-sm text-slate-500">Order approvals & status alerts</p>
                   </div>
                 </div>
                 <input
@@ -152,7 +152,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
                   <Lock className="w-4 h-4 text-slate-600" />
                   <div>
                     <p className="text-xs font-bold text-slate-900">Biometric Unlock</p>
-                    <p className="text-[11px] text-slate-500">FaceID / Fingerprint authorization</p>
+                    <p className="text-body-sm text-slate-500">FaceID / Fingerprint authorization</p>
                   </div>
                 </div>
                 <input
@@ -206,7 +206,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
               </div>
             </div>
 
-            <p className="text-[11px] text-slate-400">
+            <p className="text-body-sm text-slate-400">
               Designed as a mobile-first reference prototype for iOS, Android & tablet deployment.
             </p>
 

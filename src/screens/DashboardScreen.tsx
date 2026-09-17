@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { AppBar } from '../components/common/AppBar';
 import { ContainerDualAxisChart } from '../components/dashboard/ContainerDualAxisChart';
+import { DashScrollRow } from '../components/dashboard/DashboardChrome';
 import {
   DASHBOARD_METRIC_CARDS,
   CASH_FLOW_DATA,
@@ -94,7 +95,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
   };
 
   return (
-    <div className={`min-h-full pb-24 ${isDark ? 'bg-[#090d16] text-slate-100' : 'bg-[#f8fafc] text-slate-800'}`}>
+    <div className={`dash-type min-h-full pb-24 ${isDark ? 'bg-[#090d16] text-slate-100' : 'bg-[#f8fafc] text-slate-800'}`}>
       {/* Global Navigation Top Bar */}
       <AppBar
         title="SONERI ERP"
@@ -114,14 +115,18 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
           isDark
             ? 'bg-[#0b101e]/95 border-slate-800/90'
             : 'bg-white/95 border-slate-200/90 shadow-2xs'
-        } backdrop-blur-md border-b px-2.5 py-2 sticky top-14 z-30 overflow-x-auto transition-colors`}
+        } backdrop-blur-md border-b py-2 sticky top-14 z-30 transition-colors`}
       >
-        <div className="flex items-center gap-1.5 min-w-max">
+        <DashScrollRow
+          dark={isDark}
+          className="px-1"
+          contentClassName="min-w-0"
+        >
           <button
             type="button"
             id="mobile-nav-overview"
             onClick={() => setActiveDashboardTab('overview')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-body font-bold transition-all cursor-pointer shrink-0 ${
               activeDashboardTab === 'overview'
                 ? 'bg-[#0f2b3c] text-white shadow-xs'
                 : isDark
@@ -136,7 +141,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
             type="button"
             id="mobile-nav-export"
             onClick={() => setActiveDashboardTab('export')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-body font-bold transition-all cursor-pointer shrink-0 ${
               activeDashboardTab === 'export'
                 ? 'bg-[#0f2b3c] text-white shadow-xs'
                 : isDark
@@ -147,7 +152,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
             <Ship className="w-3.5 h-3.5" />
             <span>Export</span>
             <span
-              className={`px-1.5 py-0.2 rounded-full text-[10px] font-black ${
+              className={`px-1.5 py-0.2 rounded-full text-label font-black ${
                 activeDashboardTab === 'export'
                   ? 'bg-white text-blue-900'
                   : isDark
@@ -162,7 +167,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
             type="button"
             id="mobile-nav-purchase"
             onClick={() => setActiveDashboardTab('purchase')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-body font-bold transition-all cursor-pointer shrink-0 ${
               activeDashboardTab === 'purchase'
                 ? 'bg-[#0f2b3c] text-white shadow-xs'
                 : isDark
@@ -173,7 +178,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
             <ShoppingCart className="w-3.5 h-3.5" />
             <span>Purchase</span>
             <span
-              className={`px-1.5 py-0.2 rounded-full text-[10px] font-black ${
+              className={`px-1.5 py-0.2 rounded-full text-label font-black ${
                 activeDashboardTab === 'purchase'
                   ? 'bg-white text-blue-900'
                   : isDark
@@ -188,7 +193,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
             type="button"
             id="mobile-nav-marketing"
             onClick={() => setActiveDashboardTab('marketing')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-body font-bold transition-all cursor-pointer shrink-0 ${
               activeDashboardTab === 'marketing'
                 ? 'bg-[#0f2b3c] text-white shadow-xs'
                 : isDark
@@ -199,7 +204,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
             <TrendingUp className="w-3.5 h-3.5" />
             <span>Marketing</span>
             <span
-              className={`px-1.5 py-0.2 rounded-full text-[10px] font-black ${
+              className={`px-1.5 py-0.2 rounded-full text-label font-black ${
                 activeDashboardTab === 'marketing'
                   ? 'bg-white text-blue-900'
                   : isDark
@@ -214,7 +219,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
             type="button"
             id="mobile-nav-finance"
             onClick={() => setActiveDashboardTab('finance')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-body font-bold transition-all cursor-pointer shrink-0 ${
               activeDashboardTab === 'finance'
                 ? 'bg-[#0f2b3c] text-white shadow-xs'
                 : isDark
@@ -225,7 +230,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
             <Landmark className="w-3.5 h-3.5" />
             <span>Finance</span>
             <span
-              className={`px-1.5 py-0.2 rounded-full text-[10px] font-black ${
+              className={`px-1.5 py-0.2 rounded-full text-label font-black ${
                 activeDashboardTab === 'finance'
                   ? 'bg-white text-blue-900'
                   : isDark
@@ -236,7 +241,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
               39
             </span>
           </button>
-        </div>
+        </DashScrollRow>
       </nav>
 
       {/* ========================================================================= */}
@@ -253,7 +258,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
               type="button"
               id="dashboard-tab-overview"
               onClick={() => setActiveDashboardTab('overview')}
-              className={`px-5 py-2 rounded-lg text-sm font-bold transition-all cursor-pointer ${
+              className={`px-5 py-2 rounded-lg text-md font-bold transition-all cursor-pointer ${
                 activeDashboardTab === 'overview'
                   ? isDark
                     ? 'bg-slate-700 text-white shadow-xs border border-slate-600'
@@ -269,7 +274,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
               type="button"
               id="dashboard-tab-export"
               onClick={() => setActiveDashboardTab('export')}
-              className={`flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-bold transition-all cursor-pointer ${
+              className={`flex items-center gap-2 px-5 py-2 rounded-lg text-md font-bold transition-all cursor-pointer ${
                 activeDashboardTab === 'export'
                   ? isDark
                     ? 'bg-slate-700 text-white shadow-xs border border-slate-600'
@@ -280,7 +285,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
               }`}
             >
               <span>Export</span>
-              <span className={`px-2 py-0.5 rounded-full text-xs font-extrabold border ${
+              <span className={`px-2 py-0.5 rounded-full text-body font-extrabold border ${
                 isDark ? 'bg-blue-900/50 text-blue-300 border-blue-700/50' : 'bg-blue-50 text-blue-700 border-blue-200'
               }`}>
                 18
@@ -290,7 +295,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
               type="button"
               id="dashboard-tab-purchase"
               onClick={() => setActiveDashboardTab('purchase')}
-              className={`flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-bold transition-all cursor-pointer ${
+              className={`flex items-center gap-2 px-5 py-2 rounded-lg text-md font-bold transition-all cursor-pointer ${
                 activeDashboardTab === 'purchase'
                   ? isDark
                     ? 'bg-slate-700 text-white shadow-xs border border-slate-600'
@@ -301,7 +306,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
               }`}
             >
               <span>Purchase</span>
-              <span className={`px-2 py-0.5 rounded-full text-xs font-extrabold border ${
+              <span className={`px-2 py-0.5 rounded-full text-body font-extrabold border ${
                 isDark ? 'bg-blue-900/50 text-blue-300 border-blue-700/50' : 'bg-blue-50 text-blue-700 border-blue-200'
               }`}>
                 75
@@ -311,7 +316,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
               type="button"
               id="dashboard-tab-marketing"
               onClick={() => setActiveDashboardTab('marketing')}
-              className={`flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-bold transition-all cursor-pointer ${
+              className={`flex items-center gap-2 px-5 py-2 rounded-lg text-md font-bold transition-all cursor-pointer ${
                 activeDashboardTab === 'marketing'
                   ? isDark
                     ? 'bg-slate-700 text-white shadow-xs border border-slate-600'
@@ -322,7 +327,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
               }`}
             >
               <span>Marketing</span>
-              <span className={`px-2 py-0.5 rounded-full text-xs font-extrabold border ${
+              <span className={`px-2 py-0.5 rounded-full text-body font-extrabold border ${
                 isDark ? 'bg-blue-900/50 text-blue-300 border-blue-700/50' : 'bg-blue-50 text-blue-700 border-blue-200'
               }`}>
                 144
@@ -332,7 +337,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
               type="button"
               id="dashboard-tab-finance"
               onClick={() => setActiveDashboardTab('finance')}
-              className={`flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-bold transition-all cursor-pointer ${
+              className={`flex items-center gap-2 px-5 py-2 rounded-lg text-md font-bold transition-all cursor-pointer ${
                 activeDashboardTab === 'finance'
                   ? isDark
                     ? 'bg-slate-700 text-white shadow-xs border border-slate-600'
@@ -343,7 +348,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
               }`}
             >
               <span>Finance</span>
-              <span className={`px-2 py-0.5 rounded-full text-xs font-extrabold border ${
+              <span className={`px-2 py-0.5 rounded-full text-body font-extrabold border ${
                 isDark ? 'bg-blue-900/50 text-blue-300 border-blue-700/50' : 'bg-blue-50 text-blue-700 border-blue-200'
               }`}>
                 39
@@ -367,7 +372,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
             {/* Header & Duration Selector Bar */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
               <div>
-                <span className="text-[10px] sm:text-xs font-bold tracking-wider text-slate-400 uppercase block">
+                <span className="text-label sm:text-body font-bold tracking-wider text-slate-400 uppercase block">
                   OVERVIEW
                 </span>
                 <h1 className={`text-2xl sm:text-3xl font-black tracking-tight ${
@@ -381,13 +386,13 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
               <div className={`flex items-center gap-2 self-start sm:self-auto px-3.5 py-1.5 rounded-xl border shadow-2xs transition-colors ${
                 isDark ? 'bg-slate-900/90 border-slate-800' : 'bg-white border-slate-200/80'
               }`}>
-                <span className="text-xs font-semibold text-slate-400">Duration:</span>
+                <span className="text-body font-semibold text-slate-400">Duration:</span>
                 <div className="relative">
                   <select
                     id="dashboard-duration-select"
                     value={duration}
                     onChange={(e) => setDuration(e.target.value)}
-                    className={`appearance-none bg-transparent text-xs sm:text-sm font-bold pr-6 focus:outline-none cursor-pointer ${
+                    className={`appearance-none bg-transparent text-body sm:text-md font-bold pr-6 focus:outline-none cursor-pointer ${
                       isDark ? 'text-slate-100' : 'text-slate-800'
                     }`}
                   >
@@ -405,51 +410,39 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
             {/* EXECUTIVE METRICS & CASH FLOW HUB - Modern Cards */}
             <div className="space-y-3 sm:space-y-4">
               {/* Row 1: 4 Independent Operational Volume Cards */}
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                 {DASHBOARD_METRIC_CARDS.map((card) => (
                   <div
                     key={card.id}
                     id={`metric-${card.id}`}
-                    className={`rounded-2xl border shadow-xs p-3.5 sm:p-5 relative overflow-hidden transition-all flex flex-col justify-between ${
+                    className={`relative overflow-hidden rounded-2xl border px-3.5 py-3 shadow-sm transition-all ${
                       isDark
                         ? 'bg-slate-900/90 border-slate-800/80 hover:border-slate-700'
-                        : 'bg-white border-slate-200/80 hover:border-slate-300 hover:shadow-sm'
+                        : 'bg-white border-slate-200 hover:border-slate-300 hover:shadow-sm'
                     }`}
                   >
-                    {/* Top colored accent indicator */}
                     <div
-                      className="absolute top-0 left-0 right-0 h-1"
+                      className="absolute top-0 left-0 right-0 h-[3px]"
                       style={{ backgroundColor: card.accentColor }}
                     />
-
-                    <div className="flex items-start justify-between gap-1.5 mb-2 sm:mb-3">
-                      <span className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider line-clamp-1">
-                        {card.label}
-                      </span>
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-caption font-bold uppercase tracking-wide text-slate-400 truncate leading-tight">
+                          {card.label}
+                        </p>
+                        <p
+                          className={`text-metric sm:text-xl font-black tabular-nums mt-1.5 leading-none ${
+                            isDark ? 'text-white' : 'text-[#0f2b3c]'
+                          }`}
+                        >
+                          {card.value}
+                        </p>
+                      </div>
                       <div
-                        className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center shrink-0 shadow-2xs"
+                        className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-sm"
                         style={{ backgroundColor: card.color }}
                       >
                         {renderMetricIcon(card.iconName)}
-                      </div>
-                    </div>
-
-                    <div>
-                      <div className={`text-xl sm:text-3xl font-black tracking-tight ${
-                        isDark ? 'text-white' : 'text-slate-900'
-                      }`}>
-                        {card.value}
-                      </div>
-                      <div className={`flex items-center gap-1 mt-1.5 pt-1.5 border-t ${
-                        isDark ? 'border-slate-800' : 'border-slate-100'
-                      }`}>
-                        <span
-                          className="w-1.5 h-1.5 rounded-full shrink-0"
-                          style={{ backgroundColor: card.accentColor }}
-                        />
-                        <span className="text-[10px] sm:text-[11px] font-semibold text-slate-400 truncate">
-                          Live Active
-                        </span>
                       </div>
                     </div>
                   </div>
@@ -478,10 +471,10 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                        <span className="text-body-sm font-bold text-slate-400 uppercase tracking-wider">
                           {CASH_FLOW_DATA.label}
                         </span>
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${
+                        <span className={`px-2 py-0.5 rounded-full text-label font-extrabold ${
                           isDark
                             ? 'bg-emerald-950 text-emerald-300 border border-emerald-800/60'
                             : 'bg-emerald-100 text-emerald-800'
@@ -501,14 +494,14 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
                     isDark ? 'border-slate-800' : 'border-slate-100'
                   }`}>
                     <div className="text-left sm:text-right">
-                      <span className="text-[10px] font-semibold text-slate-400 block">Period</span>
-                      <span className={`text-xs font-bold ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>{duration}</span>
+                      <span className="text-label font-semibold text-slate-400 block">Period</span>
+                      <span className={`text-body font-bold ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>{duration}</span>
                     </div>
                     <button
                       type="button"
                       title={isCashFlowMasked ? 'Show cash flow' : 'Hide cash flow'}
                       onClick={() => setIsCashFlowMasked(!isCashFlowMasked)}
-                      className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold shadow-2xs transition-all cursor-pointer min-h-[40px] border ${
+                      className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-body font-bold shadow-2xs transition-all cursor-pointer min-h-[40px] border ${
                         isDark
                           ? 'bg-slate-800/90 border-slate-700 text-slate-200 hover:bg-slate-700'
                           : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
@@ -535,7 +528,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase block">
+                  <span className="text-label font-bold tracking-wider text-slate-400 uppercase block">
                     ANALYTICS SUITE
                   </span>
                   <h2 className={`text-lg font-black tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
@@ -620,7 +613,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
                     <h3 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">
                       Follow Up
                     </h3>
-                    <div className="flex items-center gap-1 px-2.5 py-1 bg-slate-50 border border-slate-200/80 rounded-xl text-xs font-semibold text-slate-700 shadow-2xs">
+                    <div className="flex items-center gap-1 px-2.5 py-1 bg-slate-50 border border-slate-200/80 rounded-xl text-body font-semibold text-slate-700 shadow-2xs">
                       <span>{followUpPeriod}</span>
                       <button
                         type="button"
@@ -640,8 +633,8 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
                       onClick={() => setIsProformaFinanceExpanded(!isProformaFinanceExpanded)}
                       className="w-full px-4 py-3 flex items-center justify-between bg-slate-50/70 hover:bg-slate-100/70 transition-colors text-left cursor-pointer"
                     >
-                      <span className="text-xs sm:text-sm font-bold text-slate-800">
-                        Proforma Finance<sup className="text-[10px] text-slate-400 ml-0.5">(0)</sup>
+                      <span className="text-body sm:text-md font-bold text-slate-800">
+                        Proforma Finance<sup className="text-label text-slate-400 ml-0.5">(0)</sup>
                       </span>
                       {isProformaFinanceExpanded ? (
                         <ChevronUp className="w-4 h-4 text-slate-500" />
@@ -650,7 +643,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
                       )}
                     </button>
                     {isProformaFinanceExpanded && (
-                      <div className="p-5 text-center text-xs text-slate-400 bg-white">
+                      <div className="p-5 text-center text-body text-slate-400 bg-white">
                         No follow-ups scheduled for this reference yet.
                       </div>
                     )}
@@ -663,8 +656,8 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
                       onClick={() => setIsExpenseVoucherExpanded(!isExpenseVoucherExpanded)}
                       className="w-full px-4 py-3 flex items-center justify-between bg-slate-50/70 hover:bg-slate-100/70 transition-colors text-left cursor-pointer"
                     >
-                      <span className="text-xs sm:text-sm font-bold text-slate-800">
-                        Expense Voucher<sup className="text-[10px] text-slate-400 ml-0.5">(0)</sup>
+                      <span className="text-body sm:text-md font-bold text-slate-800">
+                        Expense Voucher<sup className="text-label text-slate-400 ml-0.5">(0)</sup>
                       </span>
                       {isExpenseVoucherExpanded ? (
                         <ChevronUp className="w-4 h-4 text-slate-500" />
@@ -673,7 +666,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
                       )}
                     </button>
                     {isExpenseVoucherExpanded && (
-                      <div className="p-5 text-center text-xs text-slate-400 bg-white">
+                      <div className="p-5 text-center text-body text-slate-400 bg-white">
                         No follow-ups scheduled for this reference yet.
                       </div>
                     )}
@@ -684,7 +677,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
                 <div className="pt-4 text-center border-t border-slate-100 mt-4">
                   <button
                     type="button"
-                    className="text-xs font-bold text-blue-600 hover:text-blue-700 inline-flex items-center gap-1 cursor-pointer transition-colors"
+                    className="text-body font-bold text-blue-600 hover:text-blue-700 inline-flex items-center gap-1 cursor-pointer transition-colors"
                   >
                     <span>View All</span>
                     <ArrowRight className="w-3.5 h-3.5" />
@@ -707,7 +700,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
 
                   {/* Responsive Table */}
                   <div className="overflow-x-auto mt-3 -mx-2 sm:mx-0">
-                    <table className="w-full text-xs text-left border-collapse min-w-[480px]">
+                    <table className="w-full text-body text-left border-collapse min-w-[480px]">
                       <thead>
                         <tr className="border-b border-slate-200 bg-slate-50/80 text-slate-700">
                           <th className="py-2.5 px-3 font-bold">Shipment Months</th>
@@ -753,7 +746,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
                 <div className="pt-4 text-center border-t border-slate-100 mt-4">
                   <button
                     type="button"
-                    className="text-xs font-bold text-blue-600 hover:text-blue-700 inline-flex items-center gap-1 cursor-pointer transition-colors"
+                    className="text-body font-bold text-blue-600 hover:text-blue-700 inline-flex items-center gap-1 cursor-pointer transition-colors"
                   >
                     <span>View All</span>
                     <ArrowRight className="w-3.5 h-3.5" />

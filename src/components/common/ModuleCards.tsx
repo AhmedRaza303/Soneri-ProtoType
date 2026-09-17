@@ -73,7 +73,7 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({
           </div>
           {badge ? (
             <span
-              className={`text-[9px] sm:text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${
+              className={`text-caption sm:text-label font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${
                 isDark
                   ? 'bg-slate-800/80 text-indigo-300 border-slate-700'
                   : 'bg-slate-100 text-slate-700 border-slate-200'
@@ -100,7 +100,7 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({
           {name}
         </h3>
         <p
-          className={`text-[11px] sm:text-xs mt-1 line-clamp-2 leading-relaxed ${
+          className={`text-body-sm sm:text-xs mt-1 line-clamp-2 leading-relaxed ${
             isDark ? 'text-slate-400' : 'text-slate-500'
           }`}
         >
@@ -109,7 +109,7 @@ export const ModuleCard: React.FC<ModuleCardProps> = ({
       </div>
 
       <div
-        className={`mt-3 pt-2 border-t flex items-center justify-between text-[10px] sm:text-[11px] font-semibold transition-colors ${
+        className={`mt-3 pt-2 border-t flex items-center justify-between text-label sm:text-body-sm font-semibold transition-colors ${
           isDark
             ? 'border-slate-800/80 text-slate-400 group-hover:text-indigo-400'
             : 'border-slate-100 text-slate-500 group-hover:text-slate-900'
@@ -190,7 +190,7 @@ export const MenuTile: React.FC<MenuTileProps> = ({
           </p>
           {subtitle && (
             <p
-              className={`text-[11px] truncate mt-0.5 ${
+              className={`text-body-sm truncate mt-0.5 ${
                 isDark ? 'text-slate-400' : 'text-slate-500'
               }`}
             >
@@ -203,7 +203,7 @@ export const MenuTile: React.FC<MenuTileProps> = ({
       <div className="flex items-center gap-2 shrink-0">
         {badge && (
           <span
-            className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+            className={`text-label font-bold px-2 py-0.5 rounded-full border ${
               isDark
                 ? 'bg-slate-800 text-indigo-300 border-slate-700'
                 : 'bg-slate-100 text-slate-600 border-slate-200'

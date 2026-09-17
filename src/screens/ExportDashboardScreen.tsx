@@ -16,7 +16,6 @@ import {
   BellRing,
   Truck,
   MoreVertical,
-  Info,
   ChevronDown,
   Users,
 } from 'lucide-react';
@@ -27,6 +26,7 @@ import {
   ExportTaskItem,
 } from '../data/exportDashboardData';
 import { ExportDashboardJourney } from '../components/dashboard/DashboardJourneys';
+import { DashCriteriaTip } from '../components/dashboard/DashboardChrome';
 import { useTheme } from '../context/ThemeContext';
 
 interface ExportDashboardScreenProps {
@@ -38,7 +38,6 @@ export const ExportDashboardScreen: React.FC<ExportDashboardScreenProps> = () =>
   const [selectedPersonnel, setSelectedPersonnel] = useState(
     MARKETING_PERSONNEL_OPTIONS[0]
   );
-  const [activeTooltipId, setActiveTooltipId] = useState<string | null>(null);
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
 
   // Render task icons with modern styles
@@ -89,7 +88,7 @@ export const ExportDashboardScreen: React.FC<ExportDashboardScreenProps> = () =>
   };
 
   return (
-    <div>
+    <div className="dash-type">
       {/* Journey-style mobile dashboard */}
       <ExportDashboardJourney />
 
@@ -100,7 +99,7 @@ export const ExportDashboardScreen: React.FC<ExportDashboardScreenProps> = () =>
         {/* Header with Title and Marketing Personal Filter (matching Image 3) */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
           <div>
-            <span className="text-[10px] sm:text-xs font-bold tracking-wider text-slate-400 uppercase block">
+            <span className="text-label sm:text-body font-bold tracking-wider text-slate-400 uppercase block">
               OVERVIEW
             </span>
             <h1 className="text-2xl sm:text-3xl font-black text-[#1e293b] tracking-tight">
@@ -122,7 +121,7 @@ export const ExportDashboardScreen: React.FC<ExportDashboardScreenProps> = () =>
               id="export-marketing-personal-select"
               value={selectedPersonnel}
               onChange={(e) => setSelectedPersonnel(e.target.value)}
-              className="w-full appearance-none bg-white border border-slate-200 text-xs sm:text-sm font-semibold text-slate-800 py-2.5 pl-9 pr-8 rounded-xl shadow-xs focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer transition-all"
+              className="w-full appearance-none bg-white border border-slate-200 text-body sm:text-md font-semibold text-slate-800 py-2.5 pl-9 pr-8 rounded-xl shadow-xs focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer transition-all"
             >
               {MARKETING_PERSONNEL_OPTIONS.map((person) => (
                 <option key={person} value={person}>
@@ -135,97 +134,33 @@ export const ExportDashboardScreen: React.FC<ExportDashboardScreenProps> = () =>
         </div>
       </div>
 
-      {/* Section 1: Follow-ups Pipeline Hub */}
-      <section className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5 space-y-4">
-        <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-          <div className="flex items-center gap-2">
-            <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">
-              Follow-ups
-            </h2>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-blue-50 text-blue-700 border border-blue-200/80">
-              Total 18
-            </span>
-          </div>
-          <span className="text-[11px] font-semibold text-slate-400">Export Dispatch Pipeline</span>
-        </div>
-
-        {/* Cohesive Pipeline Progress Bar & Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-          {EXPORT_FOLLOW_UPS.map((item, idx) => {
-            const isEnquiry = item.icon === 'enquiry';
-            const accent = isEnquiry
-              ? { border: 'border-emerald-200/90', bg: 'bg-emerald-50/20', iconBg: 'bg-emerald-50 text-emerald-700 border-emerald-200', bar: 'bg-emerald-600', pill: 'bg-emerald-50 text-emerald-700' }
-              : { border: 'border-indigo-200/90', bg: 'bg-indigo-50/20', iconBg: 'bg-indigo-50 text-indigo-700 border-indigo-200', bar: 'bg-indigo-600', pill: 'bg-indigo-50 text-indigo-700' };
-
-            return (
-              <div
-                key={item.id}
-                id={`follow-up-${item.id}`}
-                className={`relative rounded-2xl border ${accent.border} ${accent.bg} bg-white p-4 sm:p-5 transition-all hover:shadow-xs flex items-center justify-between overflow-hidden`}
-              >
-                <div className={`absolute top-0 left-0 right-0 h-1 ${accent.bar}`} />
-
-                <div className="flex items-center gap-3.5 min-w-0 pr-2 pt-1">
-                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center border shrink-0 shadow-2xs ${accent.iconBg}`}>
-                    {isEnquiry ? (
-                      <FileSearch className="w-5 h-5" />
-                    ) : (
-                      <Send className="w-5 h-5" />
-                    )}
-                  </div>
-                  <div className="min-w-0 space-y-0.5">
-                    <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider ${accent.pill}`}>
-                      Stage {idx + 1}
-                    </span>
-                    <h3 className="text-sm sm:text-base font-bold text-slate-900 truncate">
-                      {item.title}
-                    </h3>
-                    <p className="text-xs text-slate-400 truncate">
-                      {item.subtitle}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="text-right shrink-0 pl-2 pt-1">
-                  <div className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-                    {item.value}
-                  </div>
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Pending</span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* Section 2: Tasks Matrix */}
+      {/* Section 1: Tasks Matrix */}
       <section className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-4 sm:p-5 space-y-4">
         <div className="flex items-center justify-between pb-3 border-b border-slate-100">
           <div className="flex items-center gap-2">
             <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">
               Tasks
             </h2>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-slate-100 text-slate-700 border border-slate-200">
+            <span className="px-2.5 py-0.5 rounded-full text-body font-extrabold bg-slate-100 text-slate-700 border border-slate-200">
               Total 0
             </span>
           </div>
-          <span className="text-[11px] font-semibold text-slate-400">Operational Monitor</span>
+          <span className="text-body-sm font-semibold text-slate-400">Operational Monitor</span>
         </div>
 
         {/* Structured Task Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {EXPORT_TASKS.map((task) => {
-            const hasTooltip = Boolean(task.infoTooltip);
-            const isTooltipActive = activeTooltipId === task.id;
+            const hasCriteria = Boolean(task.criteria);
             const isMenuActive = activeMenuId === task.id;
 
             return (
               <div
                 key={task.id}
                 id={`task-${task.id}`}
-                className="relative rounded-2xl border border-slate-200/80 bg-white p-4 flex flex-col justify-between transition-all hover:border-slate-300 hover:shadow-xs overflow-hidden"
+                className="relative rounded-2xl border border-slate-200/80 bg-white p-4 flex flex-col justify-between transition-all hover:border-slate-300 hover:shadow-xs overflow-visible"
               >
-                <div className="absolute top-0 left-0 right-0 h-1 bg-slate-300" />
+                <div className="absolute top-0 left-0 right-0 h-1 bg-slate-300 rounded-t-2xl" />
 
                 <div className="pt-1">
                   <div className="flex items-start justify-between gap-2 mb-2.5">
@@ -254,7 +189,7 @@ export const ExportDashboardScreen: React.FC<ExportDashboardScreenProps> = () =>
                       {/* Dropdown Menu */}
                       {isMenuActive && (
                         <div
-                          className="absolute right-0 top-full mt-1 w-32 bg-white rounded-xl shadow-lg border border-slate-200 py-1 z-20 text-xs font-medium text-slate-700"
+                          className="absolute right-0 top-full mt-1 w-32 bg-white rounded-xl shadow-lg border border-slate-200 py-1 z-20 text-body font-medium text-slate-700"
                           onMouseLeave={() => setActiveMenuId(null)}
                         >
                           <button
@@ -276,44 +211,103 @@ export const ExportDashboardScreen: React.FC<ExportDashboardScreenProps> = () =>
                     </div>
                   </div>
 
-                  {/* Title with Info Icon */}
+                  {/* Title with Criteria disclaimer */}
                   <div className="flex items-center gap-1.5 mb-1">
-                    <h3 className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight leading-snug">
+                    <h3 className="text-body sm:text-md font-bold text-slate-900 tracking-tight leading-snug">
                       {task.title}
                     </h3>
-                    {hasTooltip && (
-                      <div className="relative inline-flex items-center">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setActiveTooltipId(isTooltipActive ? null : task.id)
-                          }
-                          onMouseEnter={() => setActiveTooltipId(task.id)}
-                          onMouseLeave={() => setActiveTooltipId(null)}
-                          className="text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
-                        >
-                          <Info className="w-3.5 h-3.5" />
-                        </button>
-                        {isTooltipActive && (
-                          <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-1.5 z-30 px-2.5 py-1 text-[11px] font-medium text-white bg-slate-900 rounded-lg shadow-md whitespace-nowrap">
-                            {task.infoTooltip}
-                          </div>
-                        )}
-                      </div>
+                    {hasCriteria && task.criteria && (
+                      <DashCriteriaTip
+                        criteria={task.criteria}
+                        accentColor={
+                          task.icon === 'booking'
+                            ? '#0284c7'
+                            : task.icon === 'switch_bl'
+                            ? '#8b5cf6'
+                            : task.icon === 'purchase_invoice'
+                            ? '#f43f5e'
+                            : task.icon === 'uncouriered'
+                            ? '#0f2b3c'
+                            : '#0f2b3c'
+                        }
+                      />
                     )}
                   </div>
 
                   {/* Subtitle */}
-                  <p className="text-[11px] text-slate-500 line-clamp-2">
+                  <p className="text-body-sm text-slate-500 line-clamp-2">
                     {task.subtitle}
                   </p>
                 </div>
 
                 <div className="pt-2 mt-2 border-t border-slate-100 flex items-center justify-between">
-                  <span className="text-[10px] font-semibold text-slate-400">Queue</span>
-                  <span className="text-xs font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-full">
-                    0
+                  <span className="text-label font-semibold text-slate-400">Queue</span>
+                  <span className="text-body font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-full">
+                    {task.value}
                   </span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* Section 2: Follow-ups Pipeline Hub */}
+      <section className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5 space-y-4">
+        <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+          <div className="flex items-center gap-2">
+            <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">
+              Follow-ups
+            </h2>
+            <span className="px-2.5 py-0.5 rounded-full text-body font-extrabold bg-blue-50 text-blue-700 border border-blue-200/80">
+              Total 18
+            </span>
+          </div>
+          <span className="text-body-sm font-semibold text-slate-400">Export Dispatch Pipeline</span>
+        </div>
+
+        {/* Cohesive Pipeline Progress Bar & Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+          {EXPORT_FOLLOW_UPS.map((item, idx) => {
+            const isEnquiry = item.icon === 'enquiry';
+            const accent = isEnquiry
+              ? { border: 'border-emerald-200/90', bg: 'bg-emerald-50/20', iconBg: 'bg-emerald-50 text-emerald-700 border-emerald-200', bar: 'bg-emerald-600', pill: 'bg-emerald-50 text-emerald-700' }
+              : { border: 'border-indigo-200/90', bg: 'bg-indigo-50/20', iconBg: 'bg-indigo-50 text-indigo-700 border-indigo-200', bar: 'bg-indigo-600', pill: 'bg-indigo-50 text-indigo-700' };
+
+            return (
+              <div
+                key={item.id}
+                id={`follow-up-${item.id}`}
+                className={`relative rounded-2xl border ${accent.border} ${accent.bg} bg-white p-4 sm:p-5 transition-all hover:shadow-xs flex items-center justify-between overflow-hidden`}
+              >
+                <div className={`absolute top-0 left-0 right-0 h-1 ${accent.bar}`} />
+
+                <div className="flex items-center gap-3.5 min-w-0 pr-2 pt-1">
+                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center border shrink-0 shadow-2xs ${accent.iconBg}`}>
+                    {isEnquiry ? (
+                      <FileSearch className="w-5 h-5" />
+                    ) : (
+                      <Send className="w-5 h-5" />
+                    )}
+                  </div>
+                  <div className="min-w-0 space-y-0.5">
+                    <span className={`inline-block px-2 py-0.5 rounded-full text-label font-extrabold uppercase tracking-wider ${accent.pill}`}>
+                      Stage {idx + 1}
+                    </span>
+                    <h3 className="text-base sm:text-lg font-bold text-slate-900 truncate">
+                      {item.title}
+                    </h3>
+                    <p className="text-body text-slate-400 truncate">
+                      {item.subtitle}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="text-right shrink-0 pl-2 pt-1">
+                  <div className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                    {item.value}
+                  </div>
+                  <span className="text-label font-bold text-slate-400 uppercase tracking-wider">Pending</span>
                 </div>
               </div>
             );

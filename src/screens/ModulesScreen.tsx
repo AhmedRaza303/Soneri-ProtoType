@@ -98,7 +98,7 @@ export const ModulesScreen: React.FC<ModulesScreenProps> = ({
                         {module.name}
                       </h3>
                       {module.badge && (
-                        <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+                        <span className="text-label font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
                           {module.badge}
                         </span>
                       )}
@@ -107,7 +107,7 @@ export const ModulesScreen: React.FC<ModulesScreenProps> = ({
                       {module.description}
                     </p>
                     {module.items && (
-                      <p className="text-[11px] text-slate-400 mt-0.5 font-medium">
+                      <p className="text-body-sm text-slate-400 mt-0.5 font-medium">
                         {module.items.length} Workstreams
                       </p>
                     )}

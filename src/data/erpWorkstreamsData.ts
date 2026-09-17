@@ -7,6 +7,23 @@
 // 1. FINANCE WORKSTREAMS
 // ==========================================
 
+export interface POApprovalProduct {
+  thumbnail: string;
+  productName: string;
+  variations: string;
+  salePrice: string;
+  supplierPrice: string;
+  quantity: string;
+  poPrice: string;
+  total: string;
+  margin: string;
+  grossProfit: string;
+  shelfLifeDuration: string;
+  cbm: string;
+  weight: string;
+  notes: string;
+}
+
 export interface POApprovalItem {
   id: string;
   poNumber: string;
@@ -23,106 +40,890 @@ export interface POApprovalItem {
   priority: 'High' | 'Normal' | 'Urgent';
   paymentTerms: string;
   notes: string;
-  items: {
-    itemCode: string;
-    description: string;
-    quantity: number;
-    unit: string;
-    unitPrice: number;
-    total: number;
+  items: POApprovalProduct[];
+  productsSummary?: {
+    quantity: string;
+    total: string;
+    grossProfit: string;
+    cbm: string;
+    weight: string;
+  };
+  otherExpenses?: {
+    expenseType: string;
+    charges: string;
+    remarks: string;
   }[];
-  approvals: {
-    role: string;
-    name: string;
-    status: 'Approved' | 'Pending' | 'Rejected';
-    date?: string;
+  discounts?: {
+    discountType: string;
+    amount: string;
+    remarks: string;
   }[];
+  containerSummary?: string;
+  summary?: {
+    productsTotal: string;
+    otherExpenses: string;
+    discount: string;
+    total: string;
+  };
+  portOfDischargeInstructions?: string[];
+  requisitionInstructions?: string[];
 }
 
 export const MOCK_PO_APPROVALS: POApprovalItem[] = [
   {
     id: 'po_app_1',
     poNumber: 'PO-2025-0842',
-    supplierName: 'Indus Dyes & Chemicals Ltd',
-    department: 'Dyeing & Processing',
-    requester: 'M. Tariq (Plant Manager)',
+    supplierName: 'Europa Industries',
+    department: 'Purchase',
+    requester: 'Tanvir (Buyer)',
     orderDate: '2025-02-18',
     deliveryDate: '2025-02-28',
-    currency: 'PKR',
-    totalAmount: 1850000,
-    taxAmount: 333000,
-    netAmount: 2183000,
+    currency: 'USD',
+    totalAmount: 18564,
+    taxAmount: 0,
+    netAmount: 18254,
     status: 'Pending Approval',
     priority: 'Urgent',
     paymentTerms: '30 Days Net from GRN',
-    notes: 'Critical reactive dyes for export batch #EXP-4402 destined for Hamburg client.',
+    notes: 'Export candy consignment — freight collect; promotional & docs discounts applied.',
     items: [
-      { itemCode: 'DYE-REC-BLU', description: 'Reactive Blue Direct Dye Grade A', quantity: 500, unit: 'Kg', unitPrice: 1800, total: 900000 },
-      { itemCode: 'DYE-REC-RED', description: 'Reactive Scarlet Red Fastness 4.5', quantity: 350, unit: 'Kg', unitPrice: 2000, total: 700000 },
-      { itemCode: 'CHM-FIX-AG', description: 'Cationic Dye Fixing Auxiliary Agent', quantity: 250, unit: 'Ltr', unitPrice: 1000, total: 250000 },
+      {
+        thumbnail: 'https://images.unsplash.com/photo-1582058091505-f87a2e55a40f?w=80&q=80',
+        productName:
+          'PRD-445 LIPPY CANDY 7 GRAM (G) PER PIECE, 100 PIECE PER BAG/POUCH, 12 BAG/POUCH PER CARTON',
+        variations:
+          'Candy Flavor: Assorted with Milk (Strawberry, Chocolate, Vanilla & Blueberry)',
+        salePrice: '$ 12.0000',
+        supplierPrice: '$ 8.7500',
+        quantity: '2050 Carton',
+        poPrice: '$ 9.0556',
+        total: '$ 18,564.0000',
+        margin: '24.537 %',
+        grossProfit: '$ 4,554.0000',
+        shelfLifeDuration: '24 Months',
+        cbm: '62.7300',
+        weight: '19785.0000 KG',
+        notes: 'Assorted flavor mix ratio as per last approved sample #7592.',
+      },
     ],
-    approvals: [
-      { role: 'Department Head', name: 'M. Tariq', status: 'Approved', date: '2025-02-18 10:15' },
-      { role: 'Purchase Manager', name: 'Rushan Ahmed', status: 'Approved', date: '2025-02-18 14:30' },
-      { role: 'Finance Director', name: 'M. Uzair', status: 'Pending' },
-      { role: 'Managing Director', name: 'MD Soneri', status: 'Pending' },
+    productsSummary: {
+      quantity: '2,050',
+      total: '$ 18,564.0000',
+      grossProfit: '$ 4,554.0000',
+      cbm: '62.73',
+      weight: '19,785.0 KG',
+    },
+    otherExpenses: [
+      {
+        expenseType: 'FREIGHT CHARGES TO COLLECT',
+        charges: '$ 330.0000',
+        remarks: '-',
+      },
+    ],
+    discounts: [
+      {
+        discountType: 'PROMOTIONAL DISCOUNT',
+        amount: '$ 340.0000',
+        remarks: '-',
+      },
+      {
+        discountType: 'DISCOUNT ON DOCS',
+        amount: '$ 300.0000',
+        remarks: '-',
+      },
+    ],
+    containerSummary: '40 ft HC x 1',
+    summary: {
+      productsTotal: '$ 18564.0000',
+      otherExpenses: '$ 330.0000',
+      discount: '$ 640.0000',
+      total: '$ 18254.0000',
+    },
+    portOfDischargeInstructions: [],
+    requisitionInstructions: [
+      'ALL ORDER INSTRUCTIONS MUST REMAIN SAME AS PER THEIR LAST ORDER / SHIPMENT.',
+      'EXPIRY REQUIRED ON EACH POUCH AND CARTON. (FORMAT WILL BE SAME AS PREVIOUS # 7592).',
+      'PURITY SHOULD BE GREATER THAN 97%. AND COLOR SHADE SHOULD BE SAME AS APPROVED FOR GULFOOD.',
+      'PLEASE DO NOT USE ANY ARTIFICIAL COLORS IN THE PRODUCT.',
+      'PLEASE SEND 3 BAGS / JARS OF EACH TO OUR HEAD OFFICE FOR INSPECTION PURPOSES.',
+      'CARTONS SHOULD BE STRONG AND BAGS/JARS QUALITY SHOULD BE FINE.',
     ],
   },
   {
     id: 'po_app_2',
     poNumber: 'PO-2025-0841',
-    supplierName: 'Pak Poly Packaging Solutions',
-    department: 'Packaging & Warehouse',
+    supplierName: 'Europa Industries',
+    department: 'Purchase',
     requester: 'Asim Raza',
     orderDate: '2025-02-17',
     deliveryDate: '2025-02-24',
-    currency: 'PKR',
-    totalAmount: 640000,
-    taxAmount: 115200,
-    netAmount: 755200,
+    currency: 'USD',
+    totalAmount: 18156.25,
+    taxAmount: 0,
+    netAmount: 17846.25,
     status: 'Approved',
     priority: 'Normal',
     paymentTerms: '15 Days Net',
-    notes: 'Heavy duty polyethylene moisture barrier liner bags for yarn carton export.',
+    notes: 'Center-filled biscuit cups for PI-903 / Everest SARL Abidjan shipment.',
     items: [
-      { itemCode: 'PKG-LIN-01', description: 'Export Grade PE Liner Bags (40x48)', quantity: 8000, unit: 'Pcs', unitPrice: 55, total: 440000 },
-      { itemCode: 'PKG-STP-02', description: 'PET Heavy Duty Strapping Band Rolls', quantity: 40, unit: 'Rolls', unitPrice: 5000, total: 200000 },
+      {
+        thumbnail: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=80&q=80',
+        productName:
+          'PRD-940 BISKEES CENTER FILLED BISCUIT 115 GRAM (G) PER CUP, 24 CUPS PER CARTON',
+        variations: 'Biscuit Flavor: Chocolate',
+        salePrice: '$ 11.5000',
+        supplierPrice: '$ 8.2500',
+        quantity: '2075 Carton',
+        poPrice: '$ 8.7500',
+        total: '$ 18,156.2500',
+        margin: '23.913 %',
+        grossProfit: '$ 5,706.2500',
+        shelfLifeDuration: '18 Months',
+        cbm: '47.3100',
+        weight: '7760.5000 KG',
+        notes: 'Center filling must be properly filled; chocolate quality as approved.',
+      },
     ],
-    approvals: [
-      { role: 'Department Head', name: 'Asim Raza', status: 'Approved', date: '2025-02-17 11:00' },
-      { role: 'Purchase Manager', name: 'Rushan Ahmed', status: 'Approved', date: '2025-02-17 15:40' },
-      { role: 'Finance Director', name: 'M. Uzair', status: 'Approved', date: '2025-02-18 09:30' },
-      { role: 'Managing Director', name: 'MD Soneri', status: 'Approved', date: '2025-02-18 11:00' },
+    productsSummary: {
+      quantity: '2,075',
+      total: '$ 18,156.2500',
+      grossProfit: '$ 5,706.2500',
+      cbm: '47.31',
+      weight: '7,760.5 KG',
+    },
+    otherExpenses: [
+      {
+        expenseType: 'FREIGHT CHARGES TO COLLECT',
+        charges: '$ 330.0000',
+        remarks: '-',
+      },
+    ],
+    discounts: [
+      {
+        discountType: 'PROMOTIONAL DISCOUNT',
+        amount: '$ 340.0000',
+        remarks: '-',
+      },
+      {
+        discountType: 'DISCOUNT ON DOCS',
+        amount: '$ 300.0000',
+        remarks: '-',
+      },
+    ],
+    containerSummary: '40 ft HC x 1',
+    summary: {
+      productsTotal: '$ 18156.2500',
+      otherExpenses: '$ 330.0000',
+      discount: '$ 640.0000',
+      total: '$ 17846.2500',
+    },
+    portOfDischargeInstructions: ['REQUIRED COC FOR THIS ORDER.'],
+    requisitionInstructions: [
+      'EXPIRY REQUIRED FROM THE DATES OF PRODUCTION IN DD/MM/YYYY FORMAT.',
+      'DATES, WEIGHTS & BATCH # REQUIRED ON EACH CUP & CARTON.',
+      'WEIGHT & PRODUCT SHAPES SHOULD BE ACCURATE.',
+      'FLAVORS TASTE SHOULD BE STRONG AND CHOCOLATE QUALITY SHOULD BE EXCELLENT.',
+      'CARTON SHOULD BE STRONG.',
+      'LOAD 20 EMPTY CARTONS IN THE CONTAINER.',
     ],
   },
   {
     id: 'po_app_3',
     poNumber: 'PO-2025-0839',
-    supplierName: 'Atlas Copco Compressors PK',
-    department: 'Maintenance & Power',
+    supplierName: 'Sweet Harvest Foods',
+    department: 'Purchase',
     requester: 'Engr. Jameel Akhtar',
     orderDate: '2025-02-14',
     deliveryDate: '2025-03-05',
-    currency: 'PKR',
-    totalAmount: 4200000,
-    taxAmount: 756000,
-    netAmount: 4956000,
+    currency: 'USD',
+    totalAmount: 9600,
+    taxAmount: 0,
+    netAmount: 9290,
     status: 'Under Review',
     priority: 'High',
-    paymentTerms: '50% Advance, 50% Post Commissioning',
-    notes: 'Air compressor overhaul overhaul parts kit for Spinning Unit 2 airjet looms.',
+    paymentTerms: '50% Advance, 50% Post Loading',
+    notes: 'Assorted hard candy for consolidated Port Qasim warehouse loading.',
     items: [
-      { itemCode: 'CMP-SCR-KIT', description: 'Rotary Screw Element Overhaul Kit GA-75', quantity: 2, unit: 'Set', unitPrice: 1600000, total: 3200000 },
-      { itemCode: 'CMP-SEP-FLT', description: 'Oil Separator & Intake Air Filters Set', quantity: 4, unit: 'Set', unitPrice: 250000, total: 1000000 },
+      {
+        thumbnail: 'https://images.unsplash.com/photo-1499636139345-8d0775343aea?w=80&q=80',
+        productName:
+          'PRD-312 FRUITY BLAST HARD CANDY 5 GRAM (G) PER PIECE, 200 PIECE PER JAR, 12 JAR PER CARTON',
+        variations: 'Candy Flavor: Mixed Fruit',
+        salePrice: '$ 10.0000',
+        supplierPrice: '$ 7.2000',
+        quantity: '800 Carton',
+        poPrice: '$ 7.5000',
+        total: '$ 6,000.0000',
+        margin: '25.000 %',
+        grossProfit: '$ 2,000.0000',
+        shelfLifeDuration: '24 Months',
+        cbm: '22.4000',
+        weight: '5280.0000 KG',
+        notes: 'Purity greater than 97%; no artificial colors.',
+      },
+      {
+        thumbnail: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=80&q=80',
+        productName:
+          'PRD-318 CHOCO WAFER STICK 18 GRAM (G) PER PIECE, 24 PIECE PER BOX, 12 BOX PER CARTON',
+        variations: 'Wafer Flavor: Milk Chocolate',
+        salePrice: '$ 9.5000',
+        supplierPrice: '$ 6.8000',
+        quantity: '500 Carton',
+        poPrice: '$ 7.2000',
+        total: '$ 3,600.0000',
+        margin: '24.211 %',
+        grossProfit: '$ 1,150.0000',
+        shelfLifeDuration: '12 Months',
+        cbm: '14.2500',
+        weight: '3240.0000 KG',
+        notes: 'Keep away from heat during transit and storage.',
+      },
     ],
-    approvals: [
-      { role: 'Department Head', name: 'Engr. Jameel', status: 'Approved', date: '2025-02-14 16:20' },
-      { role: 'Purchase Manager', name: 'Rushan Ahmed', status: 'Approved', date: '2025-02-15 11:30' },
-      { role: 'Finance Director', name: 'M. Uzair', status: 'Pending' },
-      { role: 'Managing Director', name: 'MD Soneri', status: 'Pending' },
+    productsSummary: {
+      quantity: '1,300',
+      total: '$ 9,600.0000',
+      grossProfit: '$ 3,150.0000',
+      cbm: '36.65',
+      weight: '8,520.0 KG',
+    },
+    otherExpenses: [
+      {
+        expenseType: 'FREIGHT CHARGES TO COLLECT',
+        charges: '$ 330.0000',
+        remarks: '-',
+      },
+    ],
+    discounts: [
+      {
+        discountType: 'PROMOTIONAL DISCOUNT',
+        amount: '$ 340.0000',
+        remarks: '-',
+      },
+      {
+        discountType: 'DISCOUNT ON DOCS',
+        amount: '$ 300.0000',
+        remarks: '-',
+      },
+    ],
+    containerSummary: '40 ft HC x 1',
+    summary: {
+      productsTotal: '$ 9600.0000',
+      otherExpenses: '$ 330.0000',
+      discount: '$ 640.0000',
+      total: '$ 9290.0000',
+    },
+    portOfDischargeInstructions: [],
+    requisitionInstructions: [
+      'ALL ORDER INSTRUCTIONS MUST REMAIN SAME AS PER THEIR LAST ORDER / SHIPMENT.',
+      'EXPIRY REQUIRED ON EACH POUCH AND CARTON. (FORMAT WILL BE SAME AS PREVIOUS # 7592).',
+      'PURITY SHOULD BE GREATER THAN 97%. AND COLOR SHADE SHOULD BE SAME AS APPROVED FOR GULFOOD.',
+      'PLEASE DO NOT USE ANY ARTIFICIAL COLORS IN THE PRODUCT.',
+      'PLEASE SEND 3 BAGS / JARS OF EACH TO OUR HEAD OFFICE FOR INSPECTION PURPOSES.',
+      'CARTONS SHOULD BE STRONG AND BAGS/JARS QUALITY SHOULD BE FINE.',
     ],
   },
 ];
+
+// ==========================================
+// 1b. FINANCE — AWAITING CONFIRMATIONS
+// ==========================================
+
+export interface AwaitingConfirmationProduct {
+  thumbnail: string;
+  productName: string;
+  variation: string;
+  costPrice: string;
+  quantity: string;
+  price: string;
+  total: string;
+  margin: string;
+  grossProfit: string;
+  shelfLifeDuration: string;
+  cbm: string;
+  weight: string;
+  notes: string;
+}
+
+export interface AwaitingConfirmationItem {
+  id: string;
+  proformaCode: string;
+  referenceProformaCode: string;
+  saleReturnCode: string;
+  quoteCode: string;
+  customer: string;
+  company: string;
+  marketingPersonal: string;
+  placeOfDelivery: string;
+  status: string;
+  currency: string;
+  amount: string;
+  createdAt: string;
+  expiryDate: string;
+  companyInfo: {
+    name: string;
+    address: string;
+    email: string;
+    phone: string;
+    trn: string;
+  };
+  customerInfo: {
+    code: string;
+    name: string;
+    address: string;
+  };
+  priceTerm: string;
+  createdBy: string;
+  collectionFrom: string;
+  buyerAndConsignee: {
+    billTo: string;
+    shipTo: string;
+    portOfLoading: string;
+    portOfDischarge: string;
+    placeOfDelivery: string;
+    shipmentType: string;
+    modeOfDelivery: string;
+    expectedDeliveryMonth: string;
+    insurance: string;
+  };
+  notifyParties: string;
+  products: AwaitingConfirmationProduct[];
+  productsSummary: {
+    quantity: string;
+    total: string;
+    grossProfit: string;
+    cbm: string;
+    weight: string;
+  };
+  otherExpenses: {
+    expenseType: string;
+    charges: string;
+    remarks: string;
+  }[];
+  discounts: {
+    discountType: string;
+    amount: string;
+    remarks: string;
+  }[];
+  containerMapping: {
+    containerSize: string;
+    containerName: string;
+    items: {
+      thumbnail: string;
+      productName: string;
+      variation: string;
+      quantity: string;
+    }[];
+  };
+  paymentDetails: {
+    proformaCode: string;
+    proformaAmount: string;
+    currentAmount: string;
+    exchangedAmount: string;
+    advance: string;
+    remainingAmount: string;
+    notes: string;
+  }[];
+  containerSummary: string;
+  summary: {
+    productsTotal: string;
+    totalDiscount: string;
+    otherExpenses: string;
+    margin: string;
+    total: string;
+  };
+  portOfDischargeInstructions: string[];
+  proformaInstructions: string[];
+  collectionInstructions: string[];
+  customerRemarks: string;
+  remarks: string;
+  paymentTerms: string;
+  marketerComments: string;
+}
+
+export const MOCK_AWAITING_CONFIRMATIONS: AwaitingConfirmationItem[] = [
+  {
+    id: 'ac_pi_308',
+    proformaCode: 'PI-308',
+    referenceProformaCode: 'PI-308',
+    saleReturnCode: '-',
+    quoteCode: 'Q-2432',
+    customer: 'CU-010 - AHMED MOHAMMAD NASER ABOU AL-WALED AMER',
+    company: 'CO-002 - Soneri International General Trading LLC',
+    marketingPersonal: 'BILAL',
+    placeOfDelivery: 'AGADIR',
+    status: 'Customer Accepted',
+    currency: 'US DOLLARS (USD)',
+    amount: '$ 14,040.0000',
+    createdAt: '27/07/2023',
+    expiryDate: '03/08/2023',
+    companyInfo: {
+      name: 'Soneri International General Trading LLC',
+      address: 'Office 1204, Twin Towers, Business Bay, Dubai, UAE',
+      email: 'info@soneriinternational.com',
+      phone: '+971 4 555 1204',
+      trn: '100345678900003',
+    },
+    customerInfo: {
+      code: 'CU-010',
+      name: 'AHMED MOHAMMAD NASER ABOU AL-WALED AMER',
+      address: 'Avenue Hassan II, Quartier Industriel, Agadir, Morocco',
+    },
+    priceTerm: 'CIF',
+    createdBy: 'BILAL',
+    collectionFrom: '-',
+    buyerAndConsignee: {
+      billTo: 'AHMED MOHAMMAD NASER ABOU AL-WALED AMER, Avenue Hassan II, Quartier Industriel, Agadir, Morocco',
+      shipTo: 'AHMED MOHAMMAD NASER ABOU AL-WALED AMER, Avenue Hassan II, Quartier Industriel, Agadir, Morocco',
+      portOfLoading: 'Jebel Ali, Dubai',
+      portOfDischarge: 'PT-AKP - Agadir (Morocco)',
+      placeOfDelivery: 'AGADIR',
+      shipmentType: 'FCL',
+      modeOfDelivery: 'BY SEA',
+      expectedDeliveryMonth: 'September 2023',
+      insurance: '-',
+    },
+    notifyParties:
+      'AHMED MOHAMMAD NASER ABOU AL-WALED AMER\nAvenue Hassan II, Quartier Industriel\nAgadir, Morocco\nTel: +212 528 000 000',
+    products: [
+      {
+        thumbnail: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=80&q=80',
+        productName:
+          'PRD-001 BOOM CENTER FILLED BISCUIT 115 GRAM (G) PER CUP, 24 CUPS PER CARTON',
+        variation: 'Chocolate',
+        costPrice: '$ 5.1100',
+        quantity: '500 Carton',
+        price: '$ 5.1413 / Carton',
+        total: '$ 2,570.6667',
+        margin: '0.610 %',
+        grossProfit: '$ 15.6667',
+        shelfLifeDuration: '18 Months',
+        cbm: '13.5400',
+        weight: '1515.0000 KG',
+        notes: '-',
+      },
+      {
+        thumbnail: 'https://images.unsplash.com/photo-1499636139345-8d0775343aea?w=80&q=80',
+        productName:
+          'PRD-002 BOOM CENTER FILLED BISCUIT 115 GRAM (G) PER CUP, 24 CUPS PER CARTON',
+        variation: 'Strawberry',
+        costPrice: '$ 5.1100',
+        quantity: '400 Carton',
+        price: '$ 5.1413 / Carton',
+        total: '$ 2,056.5333',
+        margin: '0.610 %',
+        grossProfit: '$ 12.5333',
+        shelfLifeDuration: '18 Months',
+        cbm: '10.8320',
+        weight: '1212.0000 KG',
+        notes: '-',
+      },
+      {
+        thumbnail: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=80&q=80',
+        productName:
+          'PRD-050 SALTIX BISCUIT 30 GRAM (G) PER PIECE, 24 PIECE PER TRAY, 6 TRAY PER CARTON',
+        variation: 'Salted',
+        costPrice: '$ 4.8500',
+        quantity: '300 Carton',
+        price: '$ 5.0600 / Carton',
+        total: '$ 1,518.0000',
+        margin: '4.150 %',
+        grossProfit: '$ 63.0000',
+        shelfLifeDuration: '12 Months',
+        cbm: '7.9380',
+        weight: '998.0000 KG',
+        notes: 'Strong carton required',
+      },
+    ],
+    productsSummary: {
+      quantity: '1,200',
+      total: '$ 6,145.2000',
+      grossProfit: '$ 91.2000',
+      cbm: '32.31',
+      weight: '3,725.00 KG',
+    },
+    otherExpenses: [
+      {
+        expenseType: 'FREIGHT CHARGES TO COLLECT',
+        charges: '$ 2,500.0000',
+        remarks: 'APPROX FREIGHT COST',
+      },
+    ],
+    discounts: [],
+    containerMapping: {
+      containerSize: '40 ft HC',
+      containerName: 'Container A',
+      items: [
+        {
+          thumbnail: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=80&q=80',
+          productName: 'PRD-001 BOOM CENTER FILLED BISCUIT 115 GRAM (G) PER CUP, 24 CUPS PER CARTON',
+          variation: 'Chocolate',
+          quantity: '500',
+        },
+        {
+          thumbnail: 'https://images.unsplash.com/photo-1499636139345-8d0775343aea?w=80&q=80',
+          productName: 'PRD-002 BOOM CENTER FILLED BISCUIT 115 GRAM (G) PER CUP, 24 CUPS PER CARTON',
+          variation: 'Strawberry',
+          quantity: '400',
+        },
+        {
+          thumbnail: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=80&q=80',
+          productName: 'PRD-050 SALTIX BISCUIT 30 GRAM (G) PER PIECE, 24 PIECE PER TRAY, 6 TRAY PER CARTON',
+          variation: 'Salted',
+          quantity: '300',
+        },
+      ],
+    },
+    paymentDetails: [
+      {
+        proformaCode: 'PI-308',
+        proformaAmount: '$ 14,040.0000',
+        currentAmount: '$ 14,040.0000',
+        exchangedAmount: '$ 14,040.0000',
+        advance: '$ 5,616.0000',
+        remainingAmount: '$ 8,424.0000',
+        notes: '40% advance pending confirmation',
+      },
+    ],
+    containerSummary: '40 ft HC x 1',
+    summary: {
+      productsTotal: '$ 11,540.0000',
+      totalDiscount: '$ 0.0000',
+      otherExpenses: '$ 2,500.0000',
+      margin: '$ 91.2000',
+      total: '$ 14,040.0000',
+    },
+    portOfDischargeInstructions: [],
+    proformaInstructions: ['LOAD 20 EMPTY CARTONS'],
+    collectionInstructions: [
+      'USE GENERIC STICKERS ON OUTER CARTONS.',
+      'FLAVOR TAGS MUST MATCH INNER PACKAGING.',
+      'CELLOPHANE WRAPPED CUPS REQUIRED.',
+    ],
+    customerRemarks: 'Auto created from Sales Quote Q-2432.',
+    remarks: '-',
+    paymentTerms: '40% advance & 60% on BL copy of SL.',
+    marketerComments: 'ADVANCE SWIFT ATTACHED',
+  },
+  {
+    id: 'ac_pi_550',
+    proformaCode: 'PI-550',
+    referenceProformaCode: 'PI-498',
+    saleReturnCode: 'S-001',
+    quoteCode: 'Q-103',
+    customer: 'CU-111 - AHMED MOHAMMAD NABIL ABID ALI AHMED AMER',
+    company: 'CO-002 - Soneri International General Trading LLC',
+    marketingPersonal: 'BILAL',
+    placeOfDelivery: 'AMMAN',
+    status: 'Customer Pending',
+    currency: 'US DOLLARS (USD)',
+    amount: '$ 22,203.3000',
+    createdAt: '07/07/2024',
+    expiryDate: '28/07/2024',
+    companyInfo: {
+      name: 'Soneri International General Trading LLC',
+      address: 'Office 1204, Twin Towers, Business Bay, Dubai, UAE',
+      email: 'info@soneriinternational.com',
+      phone: '+971 4 555 1204',
+      trn: '100345678900003',
+    },
+    customerInfo: {
+      code: 'CU-111',
+      name: 'AHMED MOHAMMAD NABIL ABID ALI AHMED AMER',
+      address: 'King Abdullah II Industrial City, Amman, Jordan',
+    },
+    priceTerm: 'FOB',
+    createdBy: 'BILAL',
+    collectionFrom: '-',
+    buyerAndConsignee: {
+      billTo: 'AHMED MOHAMMAD NABIL ABID ALI AHMED AMER, King Abdullah II Industrial City, Amman, Jordan',
+      shipTo: 'AHMED MOHAMMAD NABIL ABID ALI AHMED AMER, King Abdullah II Industrial City, Amman, Jordan',
+      portOfLoading: 'Jebel Ali Port',
+      portOfDischarge: 'PT-ABU - Aqaba (Al Aqaba)',
+      placeOfDelivery: 'AMMAN',
+      shipmentType: 'FCL',
+      modeOfDelivery: 'BY SEA',
+      expectedDeliveryMonth: 'September, 2024',
+      insurance: '-',
+    },
+    notifyParties:
+      'AHMED MOHAMMAD NABIL ABID ALI AHMED AMER\nKing Abdullah II Industrial City\nAmman, Jordan',
+    products: [
+      {
+        thumbnail: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=80&q=80',
+        productName:
+          'PRD-001 BOOM CENTER FILLED BISCUIT 115 GRAM (G) PER CUP, 24 CUPS PER CARTON',
+        variation: 'Chocolate',
+        costPrice: '$ 11.5000',
+        quantity: '500 Carton',
+        price: '$ 11.5435 / Carton',
+        total: '$ 5,771.7500',
+        margin: '10.000 %',
+        grossProfit: '$ 577.1750',
+        shelfLifeDuration: '18 Months',
+        cbm: '1.0540',
+        weight: '1000.0000 KG',
+        notes: '-',
+      },
+      {
+        thumbnail: 'https://images.unsplash.com/photo-1499636139345-8d0775343aea?w=80&q=80',
+        productName:
+          'PRD-002 BOOM CENTER FILLED BISCUIT 115 GRAM (G) PER CUP, 24 CUPS PER CARTON',
+        variation: 'Strawberry',
+        costPrice: '$ 11.5000',
+        quantity: '500 Carton',
+        price: '$ 11.5435 / Carton',
+        total: '$ 5,771.7500',
+        margin: '10.000 %',
+        grossProfit: '$ 577.1750',
+        shelfLifeDuration: '18 Months',
+        cbm: '1.0540',
+        weight: '1000.0000 KG',
+        notes: '-',
+      },
+      {
+        thumbnail: 'https://images.unsplash.com/photo-1582058091505-f87a2e55a40f?w=80&q=80',
+        productName:
+          'PRD-445 LIPPY CANDY 7 GRAM (G) PER PIECE, 100 PIECE PER BAG/POUCH, 12 BAG/POUCH PER CARTON',
+        variation: 'Assorted',
+        costPrice: '$ 10.8000',
+        quantity: '500 Carton',
+        price: '$ 11.3065 / Carton',
+        total: '$ 5,653.2500',
+        margin: '4.480 %',
+        grossProfit: '$ 253.2500',
+        shelfLifeDuration: '24 Months',
+        cbm: '1.1040',
+        weight: '2100.0000 KG',
+        notes: '-',
+      },
+    ],
+    productsSummary: {
+      quantity: '1,500',
+      total: '$ 17,196.7500',
+      grossProfit: '$ 1,407.6000',
+      cbm: '3.212',
+      weight: '4,100.00 KG',
+    },
+    otherExpenses: [
+      {
+        expenseType: 'FREIGHT CHARGES TO COLLECT',
+        charges: '$ 5,006.5500',
+        remarks: 'ATTOCK FREIGHT COST',
+      },
+    ],
+    discounts: [],
+    containerMapping: {
+      containerSize: '40 ft HC',
+      containerName: 'Container A',
+      items: [
+        {
+          thumbnail: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=80&q=80',
+          productName: 'PRD-001 BOOM CENTER FILLED BISCUIT 115 GRAM (G) PER CUP, 24 CUPS PER CARTON',
+          variation: 'Chocolate',
+          quantity: '500',
+        },
+        {
+          thumbnail: 'https://images.unsplash.com/photo-1499636139345-8d0775343aea?w=80&q=80',
+          productName: 'PRD-002 BOOM CENTER FILLED BISCUIT 115 GRAM (G) PER CUP, 24 CUPS PER CARTON',
+          variation: 'Strawberry',
+          quantity: '500',
+        },
+        {
+          thumbnail: 'https://images.unsplash.com/photo-1582058091505-f87a2e55a40f?w=80&q=80',
+          productName: 'PRD-445 LIPPY CANDY 7 GRAM (G) PER PIECE, 100 PIECE PER BAG/POUCH, 12 BAG/POUCH PER CARTON',
+          variation: 'Assorted',
+          quantity: '500',
+        },
+      ],
+    },
+    paymentDetails: [
+      {
+        proformaCode: 'PI-550',
+        proformaAmount: '$ 22,203.3000',
+        currentAmount: '$ 22,203.3000',
+        exchangedAmount: '$ 17,196.7500',
+        advance: '$ 8,881.3200',
+        remainingAmount: '$ 13,321.9800',
+        notes: 'Awaiting customer confirmation',
+      },
+    ],
+    containerSummary: '40 ft HC x 1',
+    summary: {
+      productsTotal: '$ 17,196.7500',
+      totalDiscount: '$ 0.0000',
+      otherExpenses: '$ 5,006.5500',
+      margin: '$ 1,407.6000',
+      total: '$ 22,203.3000',
+    },
+    portOfDischargeInstructions: [],
+    proformaInstructions: ['LOAD 20 EMPTY CARTONS'],
+    collectionInstructions: [
+      'GENERIC STICKERS REQUIRED.',
+      'FLAVOR TAGS MUST BE VISIBLE.',
+      'CELLOPHANE WRAPPED PACKAGING.',
+    ],
+    customerRemarks: 'Auto created from Lead/Quote Q-103.',
+    remarks: '-',
+    paymentTerms: '40% Advance & 60% on BL copy of SL.',
+    marketerComments: 'ADVANCE SLIP ATTACHED',
+  },
+  {
+    id: 'ac_pi_612',
+    proformaCode: 'PI-612',
+    referenceProformaCode: '-',
+    saleReturnCode: '-',
+    quoteCode: 'Q-188',
+    customer: 'CU-061 - HIMPEX SARL',
+    company: 'CO-001 - Soneri International General Trading LLC (SID)',
+    marketingPersonal: 'TEHSEENA .',
+    placeOfDelivery: "Cote D'Ivoire",
+    status: 'Under Review',
+    currency: 'US DOLLARS (USD)',
+    amount: '$ 18,564.0000',
+    createdAt: '12/09/2025',
+    expiryDate: '30/09/2025',
+    companyInfo: {
+      name: 'Soneri International General Trading LLC',
+      address: 'Plot # E-1, Port Qasim, Karachi, Pakistan',
+      email: 'info@soneriinternational.com',
+      phone: '+92 21 111 766 374',
+      trn: '100345678900003',
+    },
+    customerInfo: {
+      code: 'CU-061',
+      name: 'HIMPEX SARL',
+      address: 'Zone Industrielle, Abidjan, Cote D\'Ivoire',
+    },
+    priceTerm: 'CNF',
+    createdBy: 'TEHSEENA .',
+    collectionFrom: 'Port Qasim Warehouse',
+    buyerAndConsignee: {
+      billTo: "HIMPEX SARL, Zone Industrielle, Abidjan, Cote D'Ivoire",
+      shipTo: "HIMPEX SARL, Zone Industrielle, Abidjan, Cote D'Ivoire",
+      portOfLoading: 'Port Qasim',
+      portOfDischarge: 'PT-149 - Abidjan',
+      placeOfDelivery: "Cote D'Ivoire",
+      shipmentType: 'FCL',
+      modeOfDelivery: 'BY SEA',
+      expectedDeliveryMonth: 'October, 2025',
+      insurance: '-',
+    },
+    notifyParties: "HIMPEX SARL\nZone Industrielle\nAbidjan, Cote D'Ivoire",
+    products: [
+      {
+        thumbnail: 'https://images.unsplash.com/photo-1582058091505-f87a2e55a40f?w=80&q=80',
+        productName:
+          'PRD-445 LIPPY CANDY 7 GRAM (G) PER PIECE, 100 PIECE PER BAG/POUCH, 12 BAG/POUCH PER CARTON',
+        variation: 'Assorted with Milk',
+        costPrice: '$ 8.7500',
+        quantity: '2050 Carton',
+        price: '$ 9.0556 / Carton',
+        total: '$ 18,564.0000',
+        margin: '24.537 %',
+        grossProfit: '$ 4,554.0000',
+        shelfLifeDuration: '24 Months',
+        cbm: '62.7300',
+        weight: '19785.0000 KG',
+        notes: 'Assorted flavor mix as approved sample #7592',
+      },
+    ],
+    productsSummary: {
+      quantity: '2,050',
+      total: '$ 18,564.0000',
+      grossProfit: '$ 4,554.0000',
+      cbm: '62.73',
+      weight: '19,785.0 KG',
+    },
+    otherExpenses: [
+      {
+        expenseType: 'FREIGHT CHARGES TO COLLECT',
+        charges: '$ 330.0000',
+        remarks: '-',
+      },
+    ],
+    discounts: [
+      {
+        discountType: 'PROMOTIONAL DISCOUNT',
+        amount: '$ 340.0000',
+        remarks: '-',
+      },
+      {
+        discountType: 'DISCOUNT ON DOCS',
+        amount: '$ 300.0000',
+        remarks: '-',
+      },
+    ],
+    containerMapping: {
+      containerSize: '40 ft HC',
+      containerName: 'Container A',
+      items: [
+        {
+          thumbnail: 'https://images.unsplash.com/photo-1582058091505-f87a2e55a40f?w=80&q=80',
+          productName:
+            'PRD-445 LIPPY CANDY 7 GRAM (G) PER PIECE, 100 PIECE PER BAG/POUCH, 12 BAG/POUCH PER CARTON',
+          variation: 'Assorted with Milk',
+          quantity: '2050',
+        },
+      ],
+    },
+    paymentDetails: [
+      {
+        proformaCode: 'PI-612',
+        proformaAmount: '$ 18,254.0000',
+        currentAmount: '$ 18,254.0000',
+        exchangedAmount: '$ 18,254.0000',
+        advance: '$ 7,301.6000',
+        remainingAmount: '$ 10,952.4000',
+        notes: 'Awaiting finance confirmation',
+      },
+    ],
+    containerSummary: '40 ft HC x 1',
+    summary: {
+      productsTotal: '$ 18,564.0000',
+      totalDiscount: '$ 640.0000',
+      otherExpenses: '$ 330.0000',
+      margin: '$ 4,554.0000',
+      total: '$ 18,254.0000',
+    },
+    portOfDischargeInstructions: [],
+    proformaInstructions: [
+      'ALL ORDER INSTRUCTIONS MUST REMAIN SAME AS PER THEIR LAST ORDER / SHIPMENT.',
+      'LOAD 20 EMPTY CARTONS',
+    ],
+    collectionInstructions: [
+      'EXPIRY REQUIRED ON EACH POUCH AND CARTON.',
+      'CARTONS SHOULD BE STRONG AND BAGS/JARS QUALITY SHOULD BE FINE.',
+    ],
+    customerRemarks: 'Awaiting confirmation from finance desk.',
+    remarks: '-',
+    paymentTerms: '40% Advance & 60% on BL copy of SL.',
+    marketerComments: 'ADVANCE SWIFT ATTACHED',
+  },
+];
+
+export interface ProformaSupplierProduct {
+  thumbnail: string;
+  productName: string;
+  variation: string;
+  costPrice: string;
+  kgPrice: string;
+  quantity: string;
+  salePrice: string;
+  total: string;
+  margin: string;
+  grossProfit: string;
+  supplier: string;
+  supplierPrice: string;
+  supplierRemarks: string;
+  pricingOptions: {
+    supplier: string;
+    costPrice: string;
+  }[];
+  collectionPricingOptions?: {
+    supplier: string;
+    costPrice: string;
+  }[];
+}
 
 export interface ProformaSupplierItem {
   id: string;
@@ -149,30 +950,82 @@ export interface ProformaSupplierItem {
     rate: number;
     amount: number;
   }[];
+  products?: ProformaSupplierProduct[];
+  productsSummary?: {
+    kgPrice: string;
+    quantity: string;
+    total: string;
+    margin: string;
+    grossProfit: string;
+  };
+  customerRemarks?: string;
+  containerSummary?: string;
 }
 
 export const MOCK_PROFORMA_SUPPLIERS: ProformaSupplierItem[] = [
   {
     id: 'prof_sup_1',
     proformaNumber: 'PI-SUP-8910',
-    supplierName: 'Rieter Machine Works Ltd',
-    originCountry: 'Switzerland',
+    supplierName: 'AMBER NUTRITION PVT. LTD.',
+    originCountry: 'Pakistan',
     issueDate: '2025-02-10',
     dueDate: '2025-03-10',
     lcNumber: 'LC-MEZ-99021',
-    currency: 'EUR',
-    amount: 145000,
-    advancePercentage: 30,
-    advanceAmount: 43500,
+    currency: 'USD',
+    amount: 34220,
+    advancePercentage: 40,
+    advanceAmount: 13688,
     status: 'Awaiting Advance',
-    bankName: 'UBS Switzerland AG, Zurich',
-    ibanNumber: 'CH9300240240182341001',
-    swiftCode: 'UBSWCHZH80A',
-    purpose: 'Import of precision spinning spindle spare units & rotor cups for G38 spinning frames.',
+    bankName: 'Habib Bank Limited',
+    ibanNumber: 'PK36HABB0000123456789012',
+    swiftCode: 'HABBPKKA',
+    purpose: 'Center filled roll wafer export consignment — supplier pricing confirmation.',
     items: [
-      { description: 'High-Speed Spindle Rotor Cups Dia 32mm', hsCode: '8448.3300', quantity: 600, unit: 'Pcs', rate: 125, amount: 75000 },
-      { description: 'Precision Drafting Ceramic Guides Set', hsCode: '8448.3900', quantity: 200, unit: 'Set', rate: 350, amount: 70000 },
+      {
+        description: 'PRD-275 ROFIL CENTER FILLED ROLL WAFER',
+        hsCode: '1905.3200',
+        quantity: 2360,
+        unit: 'Carton',
+        rate: 14.5,
+        amount: 34220,
+      },
     ],
+    products: [
+      {
+        thumbnail: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=80&q=80',
+        productName:
+          'PRD-275 ROFIL CENTER FILLED ROLL WAFER, 18 GRAM (G) PER PIECE, 50 PIECES PER BOX, 8 BOXES PER CARTON',
+        variation: 'Vanilla, Strawberry, Chocolate',
+        costPrice: '$ 12.2500',
+        kgPrice: '$ 2.0139',
+        quantity: '2360 Carton',
+        salePrice: '14.5000/= Carton',
+        total: '34,220.0000',
+        margin: '15.517%',
+        grossProfit: '$ 5,310.0000',
+        supplier: 'SP-045 - AMBER NUTRITION PVT. LTD.',
+        supplierPrice: '$ 12.25',
+        supplierRemarks: '-',
+        pricingOptions: [
+          { supplier: 'SP-050 - NYRA CHOCOLATES PVT LTD', costPrice: '$ 12.25' },
+          { supplier: 'SP-038 - KIMS IMPEX PVT LTD', costPrice: '$ 11.25' },
+          { supplier: 'SP-045 - AMBER NUTRITION PVT. LTD.', costPrice: '$ 12.25' },
+        ],
+        collectionPricingOptions: [
+          { supplier: 'SP-045 - AMBER NUTRITION PVT. LTD.', costPrice: '$ 12.10' },
+          { supplier: 'SP-050 - NYRA CHOCOLATES PVT LTD', costPrice: '$ 12.40' },
+        ],
+      },
+    ],
+    productsSummary: {
+      kgPrice: '2.0138',
+      quantity: '2,360',
+      total: '34,220.0000',
+      margin: '15.517%',
+      grossProfit: '$ 5,310.0000',
+    },
+    customerRemarks: 'Auto-created from Lead (QuoteID: 102).',
+    containerSummary: '40 ft HC x 1',
   },
   {
     id: 'prof_sup_2',
@@ -194,6 +1047,39 @@ export const MOCK_PROFORMA_SUPPLIERS: ProformaSupplierItem[] = [
     items: [
       { description: 'Polyester Staple Fiber (PSF) Semi Dull 1.4D', hsCode: '5503.2000', quantity: 80, unit: 'Metric Tons', rate: 1080, amount: 86400 },
     ],
+    products: [
+      {
+        thumbnail: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=80&q=80',
+        productName: 'PRD-880 POLYESTER STAPLE FIBER 1.4D x 38mm SEMI DULL',
+        variation: 'Semi Dull',
+        costPrice: '$ 1,050.0000',
+        kgPrice: '$ 1.0500',
+        quantity: '80 MT',
+        salePrice: '1,080.0000/= MT',
+        total: '86,400.0000',
+        margin: '2.778%',
+        grossProfit: '$ 2,400.0000',
+        supplier: 'SP-088 - ZHEJIANG HENGYI PETROCHEMICALS',
+        supplierPrice: '$ 1050.00',
+        supplierRemarks: '-',
+        pricingOptions: [
+          { supplier: 'SP-088 - ZHEJIANG HENGYI PETROCHEMICALS', costPrice: '$ 1050.00' },
+          { supplier: 'SP-091 - RELIANCE FIBRES ASIA', costPrice: '$ 1045.00' },
+        ],
+        collectionPricingOptions: [
+          { supplier: 'SP-088 - ZHEJIANG HENGYI PETROCHEMICALS', costPrice: '$ 1048.00' },
+        ],
+      },
+    ],
+    productsSummary: {
+      kgPrice: '1.0500',
+      quantity: '80',
+      total: '86,400.0000',
+      margin: '2.778%',
+      grossProfit: '$ 2,400.0000',
+    },
+    customerRemarks: 'Auto-created from Lead (QuoteID: 88).',
+    containerSummary: '40 ft HC x 2',
   },
   {
     id: 'prof_sup_3',
@@ -216,6 +1102,61 @@ export const MOCK_PROFORMA_SUPPLIERS: ProformaSupplierItem[] = [
       { description: 'Denisol Indigo 30 Liq Eco Reducer', hsCode: '3204.1500', quantity: 12000, unit: 'Kg', rate: 3.20, amount: 38400 },
       { description: 'Diresul Smart Black RDT Dye', hsCode: '3204.1900', quantity: 3500, unit: 'Kg', rate: 3.97, amount: 13900 },
     ],
+    products: [
+      {
+        thumbnail: 'https://images.unsplash.com/photo-1582058091505-f87a2e55a40f?w=80&q=80',
+        productName: 'PRD-441 DENISOL INDIGO 30 LIQ ECO REDUCER',
+        variation: 'Liquid',
+        costPrice: '$ 3.0500',
+        kgPrice: '$ 3.0500',
+        quantity: '12000 Kg',
+        salePrice: '3.2000/= Kg',
+        total: '38,400.0000',
+        margin: '4.688%',
+        grossProfit: '$ 1,800.0000',
+        supplier: 'SP-102 - ARCHROMA SINGAPORE PTE LTD',
+        supplierPrice: '$ 3.05',
+        supplierRemarks: '-',
+        pricingOptions: [
+          { supplier: 'SP-102 - ARCHROMA SINGAPORE PTE LTD', costPrice: '$ 3.05' },
+          { supplier: 'SP-110 - HUNTSMAN TEXTILE FX', costPrice: '$ 2.95' },
+        ],
+        collectionPricingOptions: [
+          { supplier: 'SP-102 - ARCHROMA SINGAPORE PTE LTD', costPrice: '$ 3.00' },
+        ],
+      },
+      {
+        thumbnail: 'https://images.unsplash.com/photo-1499636139345-8d0775343aea?w=80&q=80',
+        productName: 'PRD-442 DIRESUL SMART BLACK RDT DYE',
+        variation: 'Black',
+        costPrice: '$ 3.8000',
+        kgPrice: '$ 3.8000',
+        quantity: '3500 Kg',
+        salePrice: '3.9700/= Kg',
+        total: '13,900.0000',
+        margin: '4.282%',
+        grossProfit: '$ 595.0000',
+        supplier: 'SP-102 - ARCHROMA SINGAPORE PTE LTD',
+        supplierPrice: '$ 3.80',
+        supplierRemarks: '-',
+        pricingOptions: [
+          { supplier: 'SP-102 - ARCHROMA SINGAPORE PTE LTD', costPrice: '$ 3.80' },
+          { supplier: 'SP-110 - HUNTSMAN TEXTILE FX', costPrice: '$ 3.70' },
+        ],
+        collectionPricingOptions: [
+          { supplier: 'SP-110 - HUNTSMAN TEXTILE FX', costPrice: '$ 3.65' },
+        ],
+      },
+    ],
+    productsSummary: {
+      kgPrice: '3.2500',
+      quantity: '15,500',
+      total: '52,300.0000',
+      margin: '4.580%',
+      grossProfit: '$ 2,395.0000',
+    },
+    customerRemarks: 'Auto-created from Lead (QuoteID: 64).',
+    containerSummary: '20 ft × 1',
   },
 ];
 
@@ -223,25 +1164,89 @@ export const MOCK_PROFORMA_SUPPLIERS: ProformaSupplierItem[] = [
 // 2. EXPORT WORKSTREAMS
 // ==========================================
 
+export interface TrackingRouteEvent {
+  description: string;
+  date: string;
+  completed: boolean;
+  highlight?: boolean;
+}
+
+export interface TrackingRouteStop {
+  location: string;
+  events: TrackingRouteEvent[];
+  isCurrent?: boolean;
+  isFinal?: boolean;
+}
+
+export interface TrackingVesselLeg {
+  vessel: string;
+  voyage: string;
+  loading: string;
+  discharge: string;
+  etd: string;
+  eta: string;
+}
+
+export interface TrackingExceptionItem {
+  title: string;
+  details: string[];
+}
+
+export interface TrackingContainerDetail {
+  containerNumber: string;
+  status: string;
+  sizeType: string;
+  route: TrackingRouteStop[];
+}
+
 export interface ContainerTrackingItem {
   id: string;
+  proformaCode: string;
+  marketer: string;
+  deliveryDate: string;
+  containerCount: number;
+  trackingType: 'AlertScan' | 'InTransitScan' | 'NoScan' | 'GateOutScans' | 'Other';
+  blNumber: string;
+  sealineCode: string;
+  sealineName: string;
+  trackingApiStatus: string;
+  trackingError?: string;
+  customer: string;
+  company: string;
+  fromLocation: string;
+  toLocation: string;
+  atd: string;
+  eta: string;
+  ata?: string;
+  activeEventDescription: string;
+  activeEventLocation: string;
+  activeEventDate: string;
+  placeOfDelivery: string;
+  portOfDischarge: string;
+  inquiryCode: string;
+  shipmentCode: string;
+  shipmentStatus: string;
+  trackingStatus: string;
+  trackingCreated: string;
   containerNumber: string;
   sizeType: string;
-  shippingLine: string;
-  blNumber: string;
   vesselName: string;
   voyageNumber: string;
-  portOfLoading: string;
-  portOfDischarge: string;
-  departureDate: string;
-  eta: string;
-  status: 'At Sea' | 'Customs Cleared' | 'Port Gate In' | 'Berthing' | 'Discharged';
-  currentMilestoneIndex: number;
   sealNumber: string;
   grossWeightKg: number;
   totalCartons: number;
   cargoDescription: string;
-  customerName: string;
+  /** e.g. "1 x 40' High Cube Dry" */
+  containerSpecLabel: string;
+  /** 0–100 journey progress for summary bar */
+  progressPercent: number;
+  routeStops: TrackingRouteStop[];
+  vesselLegs: TrackingVesselLeg[];
+  containersDetail: TrackingContainerDetail[];
+  /** AlertScan only */
+  exceptions?: TrackingExceptionItem[];
+  /** AlertScan only — Route Logs timeline */
+  routeLogs?: TrackingRouteStop[];
   milestones: {
     title: string;
     location: string;
@@ -253,89 +1258,690 @@ export interface ContainerTrackingItem {
 export const MOCK_CONTAINER_TRACKING: ContainerTrackingItem[] = [
   {
     id: 'cnt_01',
-    containerNumber: 'MSKU-9081244',
+    proformaCode: 'PI-782',
+    marketer: 'ANUM KHAN',
+    deliveryDate: '2026-07-01',
+    containerCount: 1,
+    trackingType: 'AlertScan',
+    blNumber: '2336321560',
+    sealineCode: 'OOLU',
+    sealineName: 'Orient Overseas Container Line (OOCL)',
+    trackingApiStatus: 'IN_TRANSIT',
+    customer: 'CU-050 - KEO SOK LENG',
+    company: 'CO-001 - Soneri International General Trading LLC (SID)',
+    fromLocation: 'Port Muhammad Bin Qasim',
+    toLocation: 'Cat Lai',
+    atd: '2026-06-12',
+    eta: '2026-07-01',
+    activeEventDescription: 'Vessel Departed',
+    activeEventLocation: 'Port Muhammad Bin Qasim',
+    activeEventDate: '2026-06-12',
+    placeOfDelivery: 'Cambodia',
+    portOfDischarge: 'PT-828 - Cat Lai',
+    inquiryCode: 'EI-603',
+    shipmentCode: 'ES-565',
+    shipmentStatus: 'Loaded on Vessel (LOV)',
+    trackingStatus: '-',
+    trackingCreated: '03/09/2026, 05:44 AM',
+    containerNumber: 'OOLU-9081244',
     sizeType: '40ft High Cube',
-    shippingLine: 'Maersk',
-    blNumber: 'MAEU-9928104',
-    vesselName: 'Maersk Mc-Kinney Moller',
+    vesselName: 'OOCL TOKYO',
     voyageNumber: '2501W',
-    portOfLoading: 'Port Qasim, Karachi (PKBQM)',
-    portOfDischarge: 'Port of Hamburg, Germany (DEHAM)',
-    departureDate: '2025-02-12',
-    eta: '2025-03-08',
-    status: 'At Sea',
-    currentMilestoneIndex: 4,
     sealNumber: 'PK-QAS-88129',
     grossWeightKg: 24650,
     totalCartons: 1120,
-    cargoDescription: '100% Combed Cotton Ring Spun Weaving Yarn Ne 30/1 On Cones',
-    customerName: 'Hanseatic Spinning Mills GmbH',
+    cargoDescription: 'Center filled biscuits & confectionery cartons',
+    containerSpecLabel: "1 x 40' High Cube Dry",
+    progressPercent: 45,
+    routeStops: [
+      {
+        location: 'Port Muhammad Bin Qasim',
+        isCurrent: true,
+        events: [
+          { description: 'Gate in', date: '05 Jun 2026, 08:32', completed: true, highlight: true },
+          { description: 'Load', date: '10 Jun 2026, 14:00', completed: true },
+          { description: 'Vessel departure', date: '12 Jun 2026, 04:15', completed: true },
+        ],
+      },
+      {
+        location: 'Salalah',
+        events: [
+          { description: 'Vessel arrival', date: '20 Jun 2026, 10:00', completed: false },
+          { description: 'Discharge', date: '20 Jun 2026, 16:00', completed: false },
+          { description: 'Load', date: '21 Jun 2026, 09:00', completed: false },
+          { description: 'Vessel departure', date: '22 Jun 2026, 18:00', completed: false },
+        ],
+      },
+      {
+        location: 'Cat Lai',
+        isFinal: true,
+        events: [
+          { description: 'Vessel arrival', date: '01 Jul 2026, 06:00', completed: false },
+          { description: 'Discharge', date: '01 Jul 2026, 14:00', completed: false },
+        ],
+      },
+    ],
+    vesselLegs: [
+      {
+        vessel: 'OOCL TOKYO',
+        voyage: '2501W',
+        loading: 'Port Muhammad Bin Qasim',
+        discharge: 'Salalah',
+        etd: '12 Jun 2026',
+        eta: '20 Jun 2026',
+      },
+      {
+        vessel: 'OOCL KUALA LUMPUR',
+        voyage: '092FL',
+        loading: 'Salalah',
+        discharge: 'Cat Lai',
+        etd: '22 Jun 2026',
+        eta: '01 Jul 2026',
+      },
+    ],
+    containersDetail: [
+      {
+        containerNumber: 'OOLU-9081244',
+        status: 'IN_TRANSIT',
+        sizeType: "40' High Cube Dry",
+        route: [
+          {
+            location: 'Port Muhammad Bin Qasim',
+            isCurrent: true,
+            events: [
+              { description: 'Gate in', date: '05 Jun 2026, 08:32', completed: true, highlight: true },
+              { description: 'Load', date: '10 Jun 2026, 14:00', completed: true },
+              { description: 'Vessel departure', date: '12 Jun 2026, 04:15', completed: true },
+            ],
+          },
+          {
+            location: 'Salalah',
+            events: [
+              { description: 'Vessel arrival', date: '20 Jun 2026, 10:00', completed: false },
+              { description: 'Vessel departure', date: '22 Jun 2026, 18:00', completed: false },
+            ],
+          },
+          {
+            location: 'Cat Lai',
+            isFinal: true,
+            events: [
+              { description: 'Vessel arrival', date: '01 Jul 2026, 06:00', completed: false },
+              { description: 'Discharge', date: '01 Jul 2026, 14:00', completed: false },
+            ],
+          },
+        ],
+      },
+    ],
+    exceptions: [
+      {
+        title: 'ETA difference: 14 days',
+        details: ['Log ETA: 2026-07-15', 'Current ETA: 2026-07-01'],
+      },
+      {
+        title: 'Event date difference: 8 days',
+        details: [
+          "Description: 'Vessel arrival'",
+          "Location Name: 'Salalah'",
+          'Log date: 2026-06-12',
+          'Current date: 2026-06-20',
+        ],
+      },
+    ],
+    routeLogs: [
+      {
+        location: 'Port Muhammad Bin Qasim',
+        isCurrent: true,
+        events: [
+          { description: 'Gate in', date: '05 Jun 2026, 08:32', completed: true, highlight: true },
+          { description: 'Vessel departure', date: '12 Jun 2026, 04:15', completed: true },
+        ],
+      },
+      {
+        location: 'Salalah',
+        events: [
+          { description: 'Vessel arrival', date: '20 Jun 2026, 10:00', completed: false },
+          { description: 'Vessel departure', date: '04 Jul 2026, 09:00', completed: false },
+        ],
+      },
+      {
+        location: 'Cat Lai',
+        isFinal: true,
+        events: [
+          { description: 'Vessel arrival', date: '15 Jul 2026, 06:00', completed: false },
+        ],
+      },
+    ],
     milestones: [
-      { title: 'Empty Dispatched from Depot', location: 'Karachi Central Depot', date: '2025-02-08 09:00', completed: true },
-      { title: 'Factory Loading & Sealing', location: 'Soneri Mill No. 1 Raiwind', date: '2025-02-09 17:30', completed: true },
-      { title: 'Port Gate In & Weighbridge', location: 'Qasim International Terminal', date: '2025-02-10 14:00', completed: true },
-      { title: 'Pakistan Customs Export Cleared', location: 'Customs Collectorate PKBQM', date: '2025-02-11 11:20', completed: true },
-      { title: 'Loaded on Vessel & Departed', location: 'Vessel Maersk Moller', date: '2025-02-12 04:15', completed: true },
-      { title: 'Suez Canal Transit Crossing', location: 'Port Said, Egypt', date: '2025-02-26 (Est)', completed: false },
-      { title: 'Vessel Arrival & Discharge', location: 'CTA Terminal Hamburg', date: '2025-03-08 (Est)', completed: false },
+      { title: 'Empty Dispatched from Depot', location: 'Karachi Central Depot', date: '2026-06-08 09:00', completed: true },
+      { title: 'Factory Loading & Sealing', location: 'Soneri Warehouse', date: '2026-06-09 17:30', completed: true },
+      { title: 'Port Gate In', location: 'Qasim International Terminal', date: '2026-06-10 14:00', completed: true },
+      { title: 'Loaded on Vessel & Departed', location: 'Vessel OOCL TOKYO', date: '2026-06-12 04:15', completed: true },
+      { title: 'Vessel Arrival & Discharge', location: 'Cat Lai Terminal', date: '2026-07-01 (Est)', completed: false },
     ],
   },
   {
     id: 'cnt_02',
-    containerNumber: 'CMAU-7721890',
+    proformaCode: 'PI-783',
+    marketer: 'ANUM KHAN',
+    deliveryDate: '2026-07-01',
+    containerCount: 1,
+    trackingType: 'InTransitScan',
+    blNumber: '2336321561',
+    sealineCode: 'OOLU',
+    sealineName: 'Orient Overseas Container Line (OOCL)',
+    trackingApiStatus: 'IN_TRANSIT',
+    customer: 'CU-050 - KEO SOK LENG',
+    company: 'CO-001 - Soneri International General Trading LLC (SID)',
+    fromLocation: 'Port Muhammad Bin Qasim',
+    toLocation: 'Cat Lai',
+    atd: '2026-06-14',
+    eta: '2026-07-03',
+    activeEventDescription: 'Vessel Departed',
+    activeEventLocation: 'Salalah',
+    activeEventDate: '2026-06-20',
+    placeOfDelivery: 'Cambodia',
+    portOfDischarge: 'PT-828 - Cat Lai',
+    inquiryCode: 'EI-603',
+    shipmentCode: 'ES-566',
+    shipmentStatus: 'Loaded on Vessel (LOV)',
+    trackingStatus: '-',
+    trackingCreated: '03/09/2026, 05:44 AM',
+    containerNumber: 'OOLU-7721890',
     sizeType: '40ft High Cube',
-    shippingLine: 'CMA CGM',
-    blNumber: 'CMA-PK-749102',
-    vesselName: 'CMA CGM Jacques Saade',
+    vesselName: 'OOCL KUALA LUMPUR',
     voyageNumber: '092FL',
-    portOfLoading: 'Karachi Port Trust, Karachi (PKKHI)',
-    portOfDischarge: 'Jebel Ali Port, Dubai (AEJEA)',
-    departureDate: '2025-02-16',
-    eta: '2025-02-20',
-    status: 'Berthing',
-    currentMilestoneIndex: 5,
     sealNumber: 'PK-KHI-40918',
     grossWeightKg: 26100,
     totalCartons: 950,
-    cargoDescription: 'Indigo Dyed Denim Fabrics 11.5 Oz Slub Stretch Finished 58 Inch',
-    customerName: 'Al-Madina Garments FZE Dubai',
+    cargoDescription: 'Assorted confectionery export cartons',
+    containerSpecLabel: "1 x 40' High Cube Dry",
+    progressPercent: 55,
+    routeStops: [
+      {
+        location: 'Port Muhammad Bin Qasim',
+        events: [
+          { description: 'Gate in', date: '10 Jun 2026, 09:00', completed: true },
+          { description: 'Vessel departure', date: '14 Jun 2026, 02:00', completed: true },
+        ],
+      },
+      {
+        location: 'Salalah',
+        isCurrent: true,
+        events: [
+          { description: 'Vessel arrival', date: '20 Jun 2026, 08:00', completed: true, highlight: true },
+          { description: 'Discharge', date: '20 Jun 2026, 14:00', completed: true },
+          { description: 'Load', date: '21 Jun 2026, 11:00', completed: true },
+          { description: 'Vessel departure', date: '22 Jun 2026, 19:00', completed: true },
+        ],
+      },
+      {
+        location: 'Cat Lai',
+        isFinal: true,
+        events: [
+          { description: 'Vessel arrival', date: '03 Jul 2026, 06:00', completed: false },
+          { description: 'Discharge', date: '03 Jul 2026, 15:00', completed: false },
+        ],
+      },
+    ],
+    vesselLegs: [
+      {
+        vessel: 'OOCL KUALA LUMPUR',
+        voyage: '092FL',
+        loading: 'Port Muhammad Bin Qasim',
+        discharge: 'Salalah',
+        etd: '14 Jun 2026',
+        eta: '20 Jun 2026',
+      },
+      {
+        vessel: 'OOCL BANGKOK',
+        voyage: '110E',
+        loading: 'Salalah',
+        discharge: 'Cat Lai',
+        etd: '22 Jun 2026',
+        eta: '03 Jul 2026',
+      },
+    ],
+    containersDetail: [
+      {
+        containerNumber: 'OOLU-7721890',
+        status: 'IN_TRANSIT',
+        sizeType: "40' High Cube Dry",
+        route: [
+          {
+            location: 'Port Muhammad Bin Qasim',
+            events: [
+              { description: 'Gate in', date: '10 Jun 2026, 09:00', completed: true },
+              { description: 'Vessel departure', date: '14 Jun 2026, 02:00', completed: true },
+            ],
+          },
+          {
+            location: 'Salalah',
+            isCurrent: true,
+            events: [
+              { description: 'Vessel arrival', date: '20 Jun 2026, 08:00', completed: true, highlight: true },
+              { description: 'Vessel departure', date: '22 Jun 2026, 19:00', completed: true },
+            ],
+          },
+          {
+            location: 'Cat Lai',
+            isFinal: true,
+            events: [
+              { description: 'Vessel arrival', date: '03 Jul 2026, 06:00', completed: false },
+            ],
+          },
+        ],
+      },
+    ],
     milestones: [
-      { title: 'Empty Dispatched from Depot', location: 'Keamari Depot KHI', date: '2025-02-13 10:00', completed: true },
-      { title: 'Factory Loading & Sealing', location: 'Soneri Denim Mill Karachi', date: '2025-02-14 16:00', completed: true },
-      { title: 'Port Gate In & Weighbridge', location: 'SAPT Terminal KHI', date: '2025-02-15 08:30', completed: true },
-      { title: 'Customs Form E Examination Cleared', location: 'KPT Customs House', date: '2025-02-15 15:45', completed: true },
-      { title: 'Loaded on Vessel & Departed', location: 'Berth 16 SAPT', date: '2025-02-16 02:00', completed: true },
-      { title: 'Vessel Berthing at Jebel Ali', location: 'Terminal 2 Jebel Ali', date: '2025-02-20 08:00', completed: true },
-      { title: 'Discharged to Consignee Yard', location: 'Al Quoz Industrial Dubai', date: '2025-02-21 (Est)', completed: false },
+      { title: 'Loaded on Vessel & Departed', location: 'Port Qasim', date: '2026-06-14 02:00', completed: true },
+      { title: 'Transshipment Hub', location: 'Salalah', date: '2026-06-20 08:00', completed: true },
+      { title: 'Vessel Arrival & Discharge', location: 'Cat Lai', date: '2026-07-03 (Est)', completed: false },
     ],
   },
   {
     id: 'cnt_03',
-    containerNumber: 'HLCU-4402198',
-    sizeType: '20ft Standard',
-    shippingLine: 'Hapag-Lloyd',
-    blNumber: 'HLCU-KHI-88219',
-    vesselName: 'Al Jmeliyah',
+    proformaCode: 'PI-780',
+    marketer: 'BILAL',
+    deliveryDate: '2026-06-15',
+    containerCount: 2,
+    trackingType: 'NoScan',
+    blNumber: 'AUTO-PENDING',
+    sealineCode: '-',
+    sealineName: '-',
+    trackingApiStatus: 'ERROR',
+    trackingError: "API status is 'error' with message 'AUTO_CANT_DETECT_SEALINE'",
+    customer: 'CU-061 - HIMPEX SARL',
+    company: 'CO-001 - Soneri International General Trading LLC (SID)',
+    fromLocation: 'Port Muhammad Bin Qasim',
+    toLocation: 'Abidjan',
+    atd: '-',
+    eta: '2026-06-15',
+    activeEventDescription: '-',
+    activeEventLocation: '-',
+    activeEventDate: '-',
+    placeOfDelivery: "Cote D'Ivoire",
+    portOfDischarge: 'PT-149 - Abidjan',
+    inquiryCode: 'EI-590',
+    shipmentCode: 'ES-550',
+    shipmentStatus: 'Booking Confirmed',
+    trackingStatus: '-',
+    trackingCreated: '28/08/2026, 11:20 AM',
+    containerNumber: 'TBA-0001',
+    sizeType: '40ft High Cube',
+    vesselName: '-',
+    voyageNumber: '-',
+    sealNumber: '-',
+    grossWeightKg: 0,
+    totalCartons: 0,
+    cargoDescription: 'Pending sealine detection',
+    containerSpecLabel: "2 x 40' High Cube Dry",
+    progressPercent: 5,
+    routeStops: [
+      {
+        location: 'Port Muhammad Bin Qasim',
+        isCurrent: true,
+        events: [
+          { description: 'Booking created', date: '28 Aug 2026, 11:20', completed: true },
+        ],
+      },
+      {
+        location: 'Abidjan',
+        isFinal: true,
+        events: [
+          { description: 'Vessel arrival', date: '-', completed: false },
+        ],
+      },
+    ],
+    vesselLegs: [],
+    containersDetail: [
+      {
+        containerNumber: 'TBA-0001',
+        status: 'ERROR',
+        sizeType: "40' High Cube Dry",
+        route: [
+          {
+            location: 'Port Muhammad Bin Qasim',
+            isCurrent: true,
+            events: [{ description: 'Booking created', date: '28 Aug 2026, 11:20', completed: true }],
+          },
+        ],
+      },
+    ],
+    milestones: [
+      { title: 'Booking Created', location: 'Soneri Export Desk', date: '2026-08-28 11:20', completed: true },
+      { title: 'Sealine Detection', location: 'Tracking API', date: '-', completed: false },
+    ],
+  },
+  {
+    id: 'cnt_04',
+    proformaCode: 'PI-490',
+    marketer: 'BILAL',
+    deliveryDate: '2026-08-01',
+    containerCount: 1,
+    trackingType: 'InTransitScan',
+    blNumber: 'MAEU-7788123',
+    sealineCode: 'MAEU',
+    sealineName: 'Maersk',
+    trackingApiStatus: 'IN_TRANSIT',
+    customer: 'CU-119 - ETS PLAZA',
+    company: 'CO-001 - Soneri International General Trading LLC (SID)',
+    fromLocation: 'Port Muhammad Bin Qasim',
+    toLocation: 'Casablanca',
+    atd: '2026-07-10',
+    eta: '2026-08-01',
+    activeEventDescription: 'Vessel departure',
+    activeEventLocation: 'Salalah',
+    activeEventDate: '2026-07-18',
+    placeOfDelivery: 'Morocco',
+    portOfDischarge: 'PT-384 - Casablanca',
+    inquiryCode: 'EI-410',
+    shipmentCode: 'ES-388',
+    shipmentStatus: 'Loaded on Vessel (LOV)',
+    trackingStatus: '-',
+    trackingCreated: '04/08/2026, 05:34 AM',
+    containerNumber: 'MSKU-4402198',
+    sizeType: '40ft High Cube',
+    vesselName: 'Maersk Sealand',
     voyageNumber: '2504E',
-    portOfLoading: 'Port Qasim, Karachi (PKBQM)',
-    portOfDischarge: 'Port of New York / New Jersey (USNYC)',
-    departureDate: '2025-02-04',
-    eta: '2025-03-12',
-    status: 'At Sea',
-    currentMilestoneIndex: 4,
     sealNumber: 'HL-QAS-22108',
     grossWeightKg: 18200,
     totalCartons: 540,
-    cargoDescription: '100% Organic Cotton Terry Bath Sheets 650 GSM OEKO-TEX 100',
-    customerName: 'Manhattan Home Living LLC',
+    cargoDescription: 'Hard candy & wafer cartons',
+    containerSpecLabel: "1 x 40' High Cube Dry",
+    progressPercent: 50,
+    routeStops: [
+      {
+        location: 'Port Muhammad Bin Qasim',
+        events: [
+          { description: 'Gate in', date: '08 Jul 2026, 10:00', completed: true },
+          { description: 'Vessel departure', date: '10 Jul 2026, 06:30', completed: true },
+        ],
+      },
+      {
+        location: 'Salalah',
+        isCurrent: true,
+        events: [
+          { description: 'Vessel arrival', date: '16 Jul 2026, 08:00', completed: true },
+          { description: 'Vessel departure', date: '18 Jul 2026, 10:00', completed: true, highlight: true },
+        ],
+      },
+      {
+        location: 'Casablanca',
+        isFinal: true,
+        events: [
+          { description: 'Vessel arrival', date: '01 Aug 2026, 06:00', completed: false },
+        ],
+      },
+    ],
+    vesselLegs: [
+      {
+        vessel: 'Maersk Sealand',
+        voyage: '2504E',
+        loading: 'Port Muhammad Bin Qasim',
+        discharge: 'Salalah',
+        etd: '10 Jul 2026',
+        eta: '16 Jul 2026',
+      },
+      {
+        vessel: 'MAERSK HOUSTON',
+        voyage: '608W',
+        loading: 'Salalah',
+        discharge: 'Casablanca',
+        etd: '18 Jul 2026',
+        eta: '01 Aug 2026',
+      },
+    ],
+    containersDetail: [
+      {
+        containerNumber: 'MSKU-4402198',
+        status: 'IN_TRANSIT',
+        sizeType: "40' High Cube Dry",
+        route: [
+          {
+            location: 'Port Muhammad Bin Qasim',
+            events: [
+              { description: 'Gate in', date: '08 Jul 2026, 10:00', completed: true },
+              { description: 'Vessel departure', date: '10 Jul 2026, 06:30', completed: true },
+            ],
+          },
+          {
+            location: 'Salalah',
+            isCurrent: true,
+            events: [
+              { description: 'Vessel departure', date: '18 Jul 2026, 10:00', completed: true, highlight: true },
+            ],
+          },
+          {
+            location: 'Casablanca',
+            isFinal: true,
+            events: [{ description: 'Vessel arrival', date: '01 Aug 2026, 06:00', completed: false }],
+          },
+        ],
+      },
+    ],
     milestones: [
-      { title: 'Empty Dispatched from Depot', location: 'Qasim Depot', date: '2025-01-31 10:00', completed: true },
-      { title: 'Factory Loading & Sealing', location: 'Soneri Home Textile Lahore', date: '2025-02-01 18:00', completed: true },
-      { title: 'Port Gate In & Weighbridge', location: 'DP World QICT Terminal', date: '2025-02-02 12:00', completed: true },
-      { title: 'Customs & US CBP Security Filing', location: 'Customs House Karachi', date: '2025-02-03 14:00', completed: true },
-      { title: 'Loaded on Vessel & Departed', location: 'Berth QICT 2', date: '2025-02-04 06:30', completed: true },
-      { title: 'Transshipment Hub Tanger Med', location: 'Tanger Med Morocco', date: '2025-02-22 (Est)', completed: false },
-      { title: 'Port Newark Arrival & Clearance', location: 'Maher Terminals NJ', date: '2025-03-12 (Est)', completed: false },
+      { title: 'Loaded on Vessel & Departed', location: 'Port Qasim', date: '2026-07-10 06:30', completed: true },
+      { title: 'Transshipment Hub', location: 'Salalah', date: '2026-07-18 10:00', completed: true },
+      { title: 'Port Arrival', location: 'Casablanca', date: '2026-08-01 (Est)', completed: false },
+    ],
+  },
+  {
+    id: 'cnt_05',
+    proformaCode: 'PI-755',
+    marketer: 'TEHSEENA .',
+    deliveryDate: '2026-05-20',
+    containerCount: 1,
+    trackingType: 'GateOutScans',
+    blNumber: 'MAEU-9900441',
+    sealineCode: 'MAEU',
+    sealineName: 'Maersk',
+    trackingApiStatus: 'DELIVERED',
+    customer: 'CU-066 - AMA BOM BOM SWEETS',
+    company: 'CO-004 - Soneri Foods Pvt. Ltd.(S.F)',
+    fromLocation: 'Port Muhammad Bin Qasim',
+    toLocation: 'Beirut',
+    atd: '2026-04-22',
+    eta: '2026-05-18',
+    ata: '2026-05-19',
+    activeEventDescription: 'Empty container return',
+    activeEventLocation: 'Beirut',
+    activeEventDate: '2026-05-22',
+    placeOfDelivery: 'Lebanon',
+    portOfDischarge: 'PT-405 - Beirut',
+    inquiryCode: 'EI-580',
+    shipmentCode: 'ES-540',
+    shipmentStatus: 'Container Gate-Out (Port)',
+    trackingStatus: '-',
+    trackingCreated: '11/05/2026, 09:54 AM',
+    containerNumber: 'MSKU-5512099',
+    sizeType: '20ft Standard',
+    vesselName: 'Maersk Alabama',
+    voyageNumber: '2418W',
+    sealNumber: 'PK-SF-77821',
+    grossWeightKg: 15400,
+    totalCartons: 420,
+    cargoDescription: 'Chocolate spread & biscuit cups',
+    containerSpecLabel: "1 x 20' Standard Dry",
+    progressPercent: 100,
+    routeStops: [
+      {
+        location: 'Karachi',
+        events: [
+          { description: 'Gate out Empty', date: '18 Apr 2026, 00:10', completed: true },
+        ],
+      },
+      {
+        location: 'Port Muhammad Bin Qasim',
+        events: [
+          { description: 'Gate in', date: '19 Apr 2026, 08:00', completed: true },
+          { description: 'Load', date: '21 Apr 2026, 12:00', completed: true },
+          { description: 'Vessel departure', date: '22 Apr 2026, 06:00', completed: true },
+        ],
+      },
+      {
+        location: 'Salalah',
+        events: [
+          { description: 'Vessel arrival', date: '28 Apr 2026, 10:00', completed: true },
+          { description: 'Discharge', date: '28 Apr 2026, 16:00', completed: true },
+          { description: 'Load', date: '29 Apr 2026, 09:00', completed: true },
+          { description: 'Vessel departure', date: '30 Apr 2026, 18:00', completed: true },
+        ],
+      },
+      {
+        location: 'Beirut',
+        isFinal: true,
+        isCurrent: true,
+        events: [
+          { description: 'Vessel arrival', date: '19 May 2026, 08:00', completed: true },
+          { description: 'Discharge', date: '19 May 2026, 14:00', completed: true },
+          { description: 'Gate out', date: '20 May 2026, 14:00', completed: true },
+          { description: 'Empty container return', date: '22 May 2026, 11:00', completed: true, highlight: true },
+        ],
+      },
+    ],
+    vesselLegs: [
+      {
+        vessel: 'Maersk Alabama',
+        voyage: '2418W',
+        loading: 'Port Muhammad Bin Qasim',
+        discharge: 'Salalah',
+        etd: '22 Apr 2026',
+        eta: '28 Apr 2026',
+      },
+      {
+        vessel: 'MAERSK NOKWANDA',
+        voyage: '120N',
+        loading: 'Salalah',
+        discharge: 'Beirut',
+        etd: '30 Apr 2026',
+        eta: '19 May 2026',
+      },
+    ],
+    containersDetail: [
+      {
+        containerNumber: 'MSKU-5512099',
+        status: 'DELIVERED',
+        sizeType: "20' Standard Dry",
+        route: [
+          {
+            location: 'Port Muhammad Bin Qasim',
+            events: [
+              { description: 'Gate in', date: '19 Apr 2026, 08:00', completed: true },
+              { description: 'Vessel departure', date: '22 Apr 2026, 06:00', completed: true },
+            ],
+          },
+          {
+            location: 'Beirut',
+            isFinal: true,
+            isCurrent: true,
+            events: [
+              { description: 'Vessel arrival', date: '19 May 2026, 08:00', completed: true },
+              { description: 'Empty container return', date: '22 May 2026, 11:00', completed: true, highlight: true },
+            ],
+          },
+        ],
+      },
+    ],
+    milestones: [
+      { title: 'Vessel Arrival', location: 'Beirut', date: '2026-05-19 08:00', completed: true },
+      { title: 'Gate Out', location: 'Beirut Port', date: '2026-05-20 14:00', completed: true },
+      { title: 'Empty Return', location: 'Beirut Depot', date: '2026-05-22 11:00', completed: true },
+    ],
+  },
+  {
+    id: 'cnt_06',
+    proformaCode: 'PI-760',
+    marketer: 'PERVAIZ MORANI',
+    deliveryDate: '2026-09-10',
+    containerCount: 1,
+    trackingType: 'Other',
+    blNumber: 'HLCU-KHI-88219',
+    sealineCode: 'HLCU',
+    sealineName: 'Hapag-Lloyd',
+    trackingApiStatus: 'IN_TRANSIT',
+    customer: 'CU-076 - ARIDIM - SENGAL',
+    company: 'CO-001 - Soneri International General Trading LLC (SID)',
+    fromLocation: 'Port Muhammad Bin Qasim',
+    toLocation: 'Dakar',
+    atd: '2026-08-20',
+    eta: '2026-09-10',
+    activeEventDescription: 'Discharge',
+    activeEventLocation: 'Dakar',
+    activeEventDate: '2026-09-09',
+    placeOfDelivery: 'Senegal',
+    portOfDischarge: 'PT-210 - Dakar',
+    inquiryCode: 'EI-676',
+    shipmentCode: 'ES-610',
+    shipmentStatus: 'Vessel Arrival (ETA / ATA)',
+    trackingStatus: '-',
+    trackingCreated: '20/08/2026, 02:10 PM',
+    containerNumber: 'HLCU-3301882',
+    sizeType: '40ft High Cube',
+    vesselName: 'Al Jmeliyah',
+    voyageNumber: '2504E',
+    sealNumber: 'HL-QAS-33011',
+    grossWeightKg: 21000,
+    totalCartons: 800,
+    cargoDescription: 'Biscuit cups export cartons',
+    containerSpecLabel: "1 x 40' High Cube Dry",
+    progressPercent: 90,
+    routeStops: [
+      {
+        location: 'Port Muhammad Bin Qasim',
+        events: [
+          { description: 'Gate in', date: '18 Aug 2026, 09:00', completed: true },
+          { description: 'Vessel departure', date: '20 Aug 2026, 06:00', completed: true },
+        ],
+      },
+      {
+        location: 'Dakar',
+        isFinal: true,
+        isCurrent: true,
+        events: [
+          { description: 'Vessel arrival', date: '09 Sep 2026, 16:00', completed: true, highlight: true },
+          { description: 'Discharge', date: '09 Sep 2026, 20:00', completed: true },
+          { description: 'Gate out', date: '10 Sep 2026, 10:00', completed: false },
+        ],
+      },
+    ],
+    vesselLegs: [
+      {
+        vessel: 'Al Jmeliyah',
+        voyage: '2504E',
+        loading: 'Port Muhammad Bin Qasim',
+        discharge: 'Dakar',
+        etd: '20 Aug 2026',
+        eta: '09 Sep 2026',
+      },
+    ],
+    containersDetail: [
+      {
+        containerNumber: 'HLCU-3301882',
+        status: 'IN_TRANSIT',
+        sizeType: "40' High Cube Dry",
+        route: [
+          {
+            location: 'Port Muhammad Bin Qasim',
+            events: [
+              { description: 'Vessel departure', date: '20 Aug 2026, 06:00', completed: true },
+            ],
+          },
+          {
+            location: 'Dakar',
+            isFinal: true,
+            isCurrent: true,
+            events: [
+              { description: 'Vessel arrival', date: '09 Sep 2026, 16:00', completed: true, highlight: true },
+              { description: 'Discharge', date: '09 Sep 2026, 20:00', completed: true },
+            ],
+          },
+        ],
+      },
+    ],
+    milestones: [
+      { title: 'Loaded on Vessel & Departed', location: 'Port Qasim', date: '2026-08-20 06:00', completed: true },
+      { title: 'Vessel Arrival', location: 'Dakar', date: '2026-09-09 16:00', completed: true },
+      { title: 'Gate Out', location: 'Dakar Port', date: '2026-09-10 (Est)', completed: false },
     ],
   },
 ];

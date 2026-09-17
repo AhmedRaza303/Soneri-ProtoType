@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useRef } from 'react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, BarChart3, Table2 } from 'lucide-react';
 import { ChartDataPoint } from '../../data/dashboardAnalyticsData';
 import { useTheme } from '../../context/ThemeContext';
 
@@ -33,6 +33,7 @@ export const ContainerDualAxisChart: React.FC<ContainerDualAxisChartProps> = ({
 }) => {
   const { isDark } = useTheme();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [viewMode, setViewMode] = useState<'chart' | 'table'>('chart');
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Calculate ticks
@@ -107,57 +108,180 @@ export const ContainerDualAxisChart: React.FC<ContainerDualAxisChartProps> = ({
     >
       {/* Top Header */}
       <div className="flex items-start justify-between gap-2 mb-2">
-        <div>
+        <div className="min-w-0">
           <span
-            className={`text-[9px] sm:text-[10px] font-bold tracking-wider uppercase block ${
+            className={`text-caption sm:text-label font-bold tracking-wider uppercase block ${
               isDark ? 'text-indigo-400' : 'text-slate-400'
             }`}
           >
             {subEyebrow}
           </span>
           <h3
-            className={`text-sm sm:text-base font-bold tracking-tight ${
+            className={`text-base sm:text-lg font-bold tracking-tight ${
               isDark ? 'text-slate-100' : 'text-[#1e293b]'
             }`}
           >
             {title}
           </h3>
         </div>
-        <button
-          type="button"
-          onClick={onViewAll}
-          className={`text-xs font-bold flex items-center gap-1 shrink-0 mt-0.5 cursor-pointer transition-colors ${
-            isDark
-              ? 'text-indigo-400 hover:text-indigo-300'
-              : 'text-[#1e293b] hover:text-blue-600'
+        <div className="flex items-center gap-1.5 shrink-0 mt-0.5">
+          <div
+            className={`inline-flex rounded-xl border p-0.5 ${
+              isDark ? 'border-slate-700 bg-slate-900/60' : 'border-slate-200 bg-slate-50'
+            }`}
+          >
+            <button
+              type="button"
+              onClick={() => setViewMode('chart')}
+              className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg text-caption font-bold cursor-pointer transition-colors ${
+                viewMode === 'chart'
+                  ? isDark
+                    ? 'bg-slate-700 text-white'
+                    : 'bg-[#0f2b3c] text-white'
+                  : isDark
+                    ? 'text-slate-400 hover:text-slate-200'
+                    : 'text-slate-500 hover:text-slate-800'
+              }`}
+              title="Chart view"
+            >
+              <BarChart3 className="w-3.5 h-3.5" />
+              <span className="hidden xs:inline">Chart</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('table')}
+              className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg text-caption font-bold cursor-pointer transition-colors ${
+                viewMode === 'table'
+                  ? isDark
+                    ? 'bg-slate-700 text-white'
+                    : 'bg-[#0f2b3c] text-white'
+                  : isDark
+                    ? 'text-slate-400 hover:text-slate-200'
+                    : 'text-slate-500 hover:text-slate-800'
+              }`}
+              title="Table view"
+            >
+              <Table2 className="w-3.5 h-3.5" />
+              <span className="hidden xs:inline">Table</span>
+            </button>
+          </div>
+          {onViewAll && (
+            <button
+              type="button"
+              onClick={onViewAll}
+              className={`text-body font-bold flex items-center gap-1 cursor-pointer transition-colors ${
+                isDark
+                  ? 'text-indigo-400 hover:text-indigo-300'
+                  : 'text-[#1e293b] hover:text-blue-600'
+              }`}
+            >
+              <span className="hidden sm:inline">View All</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Legend — chart mode only */}
+      {viewMode === 'chart' && (
+        <div
+          className={`flex items-center justify-center gap-4 text-body-sm font-semibold my-2 ${
+            isDark ? 'text-slate-300' : 'text-slate-600'
           }`}
         >
-          <span>View All</span>
-          <ArrowRight className="w-3.5 h-3.5" />
-        </button>
-      </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-xs bg-[#3b82f6]" />
+            <span>Delivered</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-xs bg-[#10b981]" />
+            <span>Confirmed</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-xs bg-[#f97316]" />
+            <span>Profit</span>
+          </div>
+        </div>
+      )}
 
-      {/* Legend */}
-      <div
-        className={`flex items-center justify-center gap-4 text-[11px] font-semibold my-2 ${
-          isDark ? 'text-slate-300' : 'text-slate-600'
-        }`}
-      >
-        <div className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-xs bg-[#3b82f6]" />
-          <span>Delivered</span>
+      {viewMode === 'table' ? (
+        <div
+          className={`mt-1 rounded-xl border overflow-hidden ${
+            isDark ? 'border-slate-800' : 'border-slate-200'
+          }`}
+        >
+          <div className="overflow-x-auto max-h-[280px] overflow-y-auto">
+            <table className="w-full text-caption text-left border-collapse min-w-[280px]">
+              <thead
+                className={`sticky top-0 z-10 ${
+                  isDark ? 'bg-slate-900 text-slate-300' : 'bg-slate-50 text-slate-600'
+                }`}
+              >
+                <tr className={`border-b ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
+                  <th className="py-2 px-2.5 font-bold">Name</th>
+                  <th className="py-2 px-2 font-bold text-center">
+                    <span className="inline-flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#3b82f6]" />
+                      Deliv.
+                    </span>
+                  </th>
+                  <th className="py-2 px-2 font-bold text-center">
+                    <span className="inline-flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#10b981]" />
+                      Conf.
+                    </span>
+                  </th>
+                  <th className="py-2 px-2.5 font-bold text-right">
+                    <span className="inline-flex items-center gap-1 justify-end">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#f97316]" />
+                      Profit
+                    </span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody className={`divide-y ${isDark ? 'divide-slate-800' : 'divide-slate-100'}`}>
+                {data.map((row) => (
+                  <tr
+                    key={row.label}
+                    className={isDark ? 'hover:bg-slate-800/40' : 'hover:bg-slate-50/80'}
+                  >
+                    <td
+                      className={`py-1.5 px-2.5 font-extrabold truncate max-w-[140px] ${
+                        isDark ? 'text-slate-100' : 'text-[#0f2b3c]'
+                      }`}
+                      title={row.fullName || row.label}
+                    >
+                      {row.fullName || row.label}
+                    </td>
+                    <td
+                      className={`py-1.5 px-2 text-center font-semibold tabular-nums ${
+                        isDark ? 'text-slate-200' : 'text-slate-700'
+                      }`}
+                    >
+                      {row.delivered}
+                    </td>
+                    <td
+                      className={`py-1.5 px-2 text-center font-semibold tabular-nums ${
+                        isDark ? 'text-slate-200' : 'text-slate-700'
+                      }`}
+                    >
+                      {row.confirmed}
+                    </td>
+                    <td
+                      className={`py-1.5 px-2.5 text-right font-mono font-bold tabular-nums ${
+                        isDark ? 'text-orange-300' : 'text-orange-600'
+                      }`}
+                    >
+                      {formatTooltipCurrency(row.profit)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-        <div className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-xs bg-[#10b981]" />
-          <span>Confirmed</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-xs bg-[#f97316]" />
-          <span>Profit</span>
-        </div>
-      </div>
-
-      {/* SVG Chart */}
+      ) : (
+      /* SVG Chart */
       <div className="relative w-full overflow-x-auto -mx-1 sm:mx-0 px-1 sm:px-0 pb-1">
         <svg
           viewBox={`0 0 ${svgWidth} ${svgHeight}`}
@@ -185,7 +309,7 @@ export const ContainerDualAxisChart: React.FC<ContainerDualAxisChartProps> = ({
                   x={paddingLeft - 8}
                   y={y + 3.5}
                   textAnchor="end"
-                  className={`text-[10px] font-medium ${isDark ? 'fill-slate-500' : 'fill-slate-400'}`}
+                  className={`text-label font-medium ${isDark ? 'fill-slate-500' : 'fill-slate-400'}`}
                 >
                   {tick}
                 </text>
@@ -194,7 +318,7 @@ export const ContainerDualAxisChart: React.FC<ContainerDualAxisChartProps> = ({
                   x={svgWidth - paddingRight + 8}
                   y={y + 3.5}
                   textAnchor="start"
-                  className={`text-[10px] font-medium ${isDark ? 'fill-slate-500' : 'fill-slate-400'}`}
+                  className={`text-label font-medium ${isDark ? 'fill-slate-500' : 'fill-slate-400'}`}
                 >
                   {formatCurrency(rTick)}
                 </text>
@@ -265,7 +389,7 @@ export const ContainerDualAxisChart: React.FC<ContainerDualAxisChartProps> = ({
                   y={paddingTop + chartHeight + 14}
                   textAnchor="end"
                   transform={`rotate(-40, ${centerX}, ${paddingTop + chartHeight + 14})`}
-                  className={`text-[9.5px] select-none transition-colors ${
+                  className={`text-caption select-none transition-colors ${
                     isHovered
                       ? isDark
                         ? 'fill-white font-bold'
@@ -314,7 +438,7 @@ export const ContainerDualAxisChart: React.FC<ContainerDualAxisChartProps> = ({
         {/* Hover / Touch Tooltip overlay */}
         {hoveredItem && hoveredPoint && (
           <div
-            className={`absolute z-20 pointer-events-none rounded-xl shadow-lg border p-3 text-xs min-w-44 transition-all ${
+            className={`absolute z-20 pointer-events-none rounded-xl shadow-lg border p-3 text-body min-w-44 transition-all ${
               isDark
                 ? 'bg-[#151c2f] border-slate-750 text-slate-100 shadow-slate-950/80'
                 : 'bg-white border-slate-200/90 text-slate-900'
@@ -326,13 +450,13 @@ export const ContainerDualAxisChart: React.FC<ContainerDualAxisChartProps> = ({
             }}
           >
             <p
-              className={`font-bold text-xs leading-tight mb-2 pb-1.5 truncate border-b ${
+              className={`font-bold text-body leading-tight mb-2 pb-1.5 truncate border-b ${
                 isDark ? 'border-slate-800 text-white' : 'border-slate-100 text-[#1e293b]'
               }`}
             >
               {hoveredItem.fullName || hoveredItem.label}
             </p>
-            <div className="space-y-1 text-[11px]">
+            <div className="space-y-1 text-body-sm">
               <div className="flex items-center justify-between gap-3">
                 <span className={`flex items-center gap-1.5 ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
                   <span className="w-2 h-2 rounded-full bg-[#3b82f6]" />
@@ -368,6 +492,7 @@ export const ContainerDualAxisChart: React.FC<ContainerDualAxisChartProps> = ({
           </div>
         )}
       </div>
+      )}
     </div>
   );
 };

@@ -165,7 +165,7 @@ export const ManageValuesScreen: React.FC<ManageValuesScreenProps> = ({
               <h2 className="text-base sm:text-lg font-bold text-[#1e293b] tracking-tight">
                 Values
               </h2>
-              <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-200/70 text-slate-700">
+              <span className="text-body-sm font-bold px-2 py-0.5 rounded-full bg-slate-200/70 text-slate-700">
                 {totalValuesCount}
               </span>
             </div>
@@ -194,7 +194,7 @@ export const ManageValuesScreen: React.FC<ManageValuesScreenProps> = ({
           </div>
 
           {/* Quick Expand / Collapse Controls */}
-          <div className="px-4 py-2 border-b border-slate-100 flex items-center justify-between text-[11px] text-slate-500 bg-white">
+          <div className="px-4 py-2 border-b border-slate-100 flex items-center justify-between text-body-sm text-slate-500 bg-white">
             <span>
               {Object.keys(filteredGroups).length} Parent Code{Object.keys(filteredGroups).length !== 1 ? 's' : ''}
             </span>
@@ -262,7 +262,7 @@ export const ManageValuesScreen: React.FC<ManageValuesScreenProps> = ({
                           {parentCode}
                         </span>
                       </div>
-                      <span className="text-[11px] font-semibold text-slate-500 bg-white border border-slate-200 px-2 py-0.5 rounded-full shrink-0 ml-2">
+                      <span className="text-body-sm font-semibold text-slate-500 bg-white border border-slate-200 px-2 py-0.5 rounded-full shrink-0 ml-2">
                         {items.length} {items.length === 1 ? 'item' : 'items'}
                       </span>
                     </button>
@@ -285,7 +285,7 @@ export const ManageValuesScreen: React.FC<ManageValuesScreenProps> = ({
                                   <span className="text-xs sm:text-sm font-bold text-slate-800">
                                     {displayName}
                                   </span>
-                                  <span className="text-[10px] font-bold text-slate-500 bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded-md">
+                                  <span className="text-label font-bold text-slate-500 bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded-md">
                                     Order: #{displayOrderVal}
                                   </span>
                                 </div>

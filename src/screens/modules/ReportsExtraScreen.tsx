@@ -64,8 +64,8 @@ const Money: React.FC<{ value: string; neg?: boolean }> = ({ value, neg }) => (
 
 const Field: React.FC<{ label: string; value: React.ReactNode }> = ({ label, value }) => (
   <div className="min-w-0">
-    <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">{label}</p>
-    <p className="text-[11px] font-semibold text-slate-800 break-words">{value}</p>
+    <p className="text-caption font-bold uppercase tracking-wider text-slate-400">{label}</p>
+    <p className="text-body-sm font-semibold text-slate-800 break-words">{value}</p>
   </div>
 );
 
@@ -76,7 +76,7 @@ const SelectField: React.FC<{
   options: string[];
 }> = ({ label, value, onChange, options }) => (
   <label className="block space-y-1">
-    <span className="text-[11px] font-bold text-slate-600">{label}</span>
+    <span className="text-body-sm font-bold text-slate-600">{label}</span>
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
@@ -98,8 +98,8 @@ const AmtRow: React.FC<{ label: string; amount: string; highlight?: boolean; red
   red,
 }) => (
   <div className={`flex items-center justify-between gap-3 py-2.5 px-3 rounded-xl ${highlight ? 'bg-rose-50/80' : 'bg-white'}`}>
-    <p className={`text-[11px] font-bold ${highlight || red ? 'text-rose-700' : 'text-slate-700'}`}>{label}</p>
-    <p className={`text-[11px] font-extrabold tabular-nums shrink-0 ${highlight || red ? 'text-rose-700' : 'text-slate-900'}`}>
+    <p className={`text-body-sm font-bold ${highlight || red ? 'text-rose-700' : 'text-slate-700'}`}>{label}</p>
+    <p className={`text-body-sm font-extrabold tabular-nums shrink-0 ${highlight || red ? 'text-rose-700' : 'text-slate-900'}`}>
       {amount}
     </p>
   </div>
@@ -108,7 +108,7 @@ const AmtRow: React.FC<{ label: string; amount: string; highlight?: boolean; red
 const SectionHeading: React.FC<{ title: string; subtitle?: string }> = ({ title, subtitle }) => (
   <div className="flex items-end justify-between gap-2 px-0.5">
     <div>
-      <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">{subtitle ?? 'Insights'}</p>
+      <p className="text-label font-bold uppercase tracking-wider text-slate-400">{subtitle ?? 'Insights'}</p>
       <h3 className="text-sm font-extrabold text-[#0f2b3c]">{title}</h3>
     </div>
   </div>
@@ -128,9 +128,9 @@ const KpiCard: React.FC<{ label: string; value: string; tone?: 'default' | 'rose
           : 'bg-white border-slate-200'
     }`}
   >
-    <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">{label}</p>
+    <p className="text-caption font-bold uppercase tracking-wider text-slate-400">{label}</p>
     <p
-      className={`text-[12px] font-black mt-1 ${
+      className={`text-body font-black mt-1 ${
         tone === 'rose' ? 'text-rose-700' : tone === 'teal' ? 'text-teal-700' : 'text-[#0f2b3c]'
       }`}
     >
@@ -213,11 +213,11 @@ export const ReportsExtraScreen: React.FC<Props> = ({ reportId, onBack, onShowSn
         return (
           <>
             <label className="block space-y-1">
-              <span className="text-[11px] font-bold text-slate-600">From Date</span>
+              <span className="text-body-sm font-bold text-slate-600">From Date</span>
               <input type="date" value={filters.fromDate} onChange={(e) => setFilters({ ...filters, fromDate: e.target.value })} className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs font-semibold outline-none focus:border-teal-600" />
             </label>
             <label className="block space-y-1">
-              <span className="text-[11px] font-bold text-slate-600">To Date</span>
+              <span className="text-body-sm font-bold text-slate-600">To Date</span>
               <input type="date" value={filters.toDate} onChange={(e) => setFilters({ ...filters, toDate: e.target.value })} className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs font-semibold outline-none focus:border-teal-600" />
             </label>
             <SelectField label="Company" value={filters.company} onChange={(v) => setFilters({ ...filters, company: v })} options={['Select Company', 'Soneri International', 'Soneri Foods']} />
@@ -228,7 +228,7 @@ export const ReportsExtraScreen: React.FC<Props> = ({ reportId, onBack, onShowSn
             )}
             <SelectField label="Currency" value={filters.currency} onChange={(v) => setFilters({ ...filters, currency: v })} options={['United States Dollar (USD)', 'Pakistani Rupee (PKR)', 'Euro (EUR)']} />
             <div className="space-y-2 pt-1">
-              <p className="text-[11px] font-bold text-slate-600">Balance View</p>
+              <p className="text-body-sm font-bold text-slate-600">Balance View</p>
               {(['Both', 'Without Balance', 'With Balance'] as const).map((m) => (
                 <button
                   key={m}
@@ -247,11 +247,11 @@ export const ReportsExtraScreen: React.FC<Props> = ({ reportId, onBack, onShowSn
         return (
           <>
             <label className="block space-y-1">
-              <span className="text-[11px] font-bold text-slate-600">From Date *</span>
+              <span className="text-body-sm font-bold text-slate-600">From Date *</span>
               <input type="date" value={filters.fromDate} onChange={(e) => setFilters({ ...filters, fromDate: e.target.value })} className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs font-semibold outline-none focus:border-teal-600" />
             </label>
             <label className="block space-y-1">
-              <span className="text-[11px] font-bold text-slate-600">To Date *</span>
+              <span className="text-body-sm font-bold text-slate-600">To Date *</span>
               <input type="date" value={filters.toDate} onChange={(e) => setFilters({ ...filters, toDate: e.target.value })} className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs font-semibold outline-none focus:border-teal-600" />
             </label>
             <SelectField label="Company" value={filters.company} onChange={(v) => setFilters({ ...filters, company: v })} options={['Select Company', 'Soneri International', 'Soneri Foods']} />
@@ -265,7 +265,7 @@ export const ReportsExtraScreen: React.FC<Props> = ({ reportId, onBack, onShowSn
         return (
           <>
             <label className="block space-y-1">
-              <span className="text-[11px] font-bold text-slate-600">Date</span>
+              <span className="text-body-sm font-bold text-slate-600">Date</span>
               <input type="date" value={filters.date} onChange={(e) => setFilters({ ...filters, date: e.target.value })} className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs font-semibold outline-none focus:border-teal-600" />
             </label>
             <SelectField label="Company" value={filters.company} onChange={(v) => setFilters({ ...filters, company: v })} options={['Select Company', 'Soneri International']} />
@@ -317,7 +317,7 @@ export const ReportsExtraScreen: React.FC<Props> = ({ reportId, onBack, onShowSn
           >
             <div className="flex items-center gap-1.5 min-w-0">
               {hasKids && <ChevronDown className={`w-3.5 h-3.5 text-slate-400 shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} />}
-              <p className={`text-[11px] font-bold truncate ${depth === 0 ? 'text-[#0f2b3c]' : 'text-slate-700'}`}>{n.label}</p>
+              <p className={`text-body-sm font-bold truncate ${depth === 0 ? 'text-[#0f2b3c]' : 'text-slate-700'}`}>{n.label}</p>
             </div>
             <Money value={n.amount} neg={n.neg} />
           </button>
@@ -363,7 +363,7 @@ export const ReportsExtraScreen: React.FC<Props> = ({ reportId, onBack, onShowSn
                   </span>
                 )}
                 <p
-                  className={`text-[11px] leading-snug break-words ${
+                  className={`text-body-sm leading-snug break-words ${
                     isRoot ? 'font-extrabold text-white' : depth === 1 ? 'font-extrabold text-[#0f2b3c]' : 'font-bold text-slate-700'
                   }`}
                 >
@@ -371,8 +371,8 @@ export const ReportsExtraScreen: React.FC<Props> = ({ reportId, onBack, onShowSn
                 </p>
               </div>
               <div className="text-right shrink-0">
-                <p className={`text-[9px] font-bold uppercase tracking-wider ${isRoot ? 'text-white/50' : 'text-slate-400'}`}>Closing</p>
-                <p className={`text-[11px] font-black tabular-nums ${isRoot ? 'text-teal-200' : n.neg ? 'text-rose-600' : 'text-slate-900'}`}>
+                <p className={`text-caption font-bold uppercase tracking-wider ${isRoot ? 'text-white/50' : 'text-slate-400'}`}>Closing</p>
+                <p className={`text-body-sm font-black tabular-nums ${isRoot ? 'text-teal-200' : n.neg ? 'text-rose-600' : 'text-slate-900'}`}>
                   {n.closing}
                 </p>
               </div>
@@ -387,8 +387,8 @@ export const ReportsExtraScreen: React.FC<Props> = ({ reportId, onBack, onShowSn
                   key={label}
                   className={`rounded-lg px-2 py-1.5 ${isRoot ? 'bg-white/10' : 'bg-slate-50 border border-slate-100'}`}
                 >
-                  <p className={`text-[8px] font-bold uppercase tracking-wider ${isRoot ? 'text-white/50' : 'text-slate-400'}`}>{label}</p>
-                  <p className={`text-[10px] font-bold tabular-nums mt-0.5 ${isRoot ? 'text-white' : n.neg && label === 'Opening' ? 'text-rose-600' : 'text-slate-800'}`}>
+                  <p className={`text-micro font-bold uppercase tracking-wider ${isRoot ? 'text-white/50' : 'text-slate-400'}`}>{label}</p>
+                  <p className={`text-label font-bold tabular-nums mt-0.5 ${isRoot ? 'text-white' : n.neg && label === 'Opening' ? 'text-rose-600' : 'text-slate-800'}`}>
                     {val}
                   </p>
                 </div>
@@ -416,19 +416,19 @@ export const ReportsExtraScreen: React.FC<Props> = ({ reportId, onBack, onShowSn
           </button>
           <div className="min-w-0 flex-1">
             <h1 className="text-base font-extrabold text-[#0f2b3c] truncate">{TITLES[reportId]}</h1>
-            <p className="text-[10px] font-semibold text-slate-400">Mobile report view</p>
+            <p className="text-label font-semibold text-slate-400">Mobile report view</p>
           </div>
           {reportId === 'party' && (
-            <button type="button" onClick={() => setSummaryOpen(true)} className="px-2.5 py-1.5 rounded-xl text-[10px] font-bold bg-slate-100 text-slate-700 cursor-pointer">
+            <button type="button" onClick={() => setSummaryOpen(true)} className="px-2.5 py-1.5 rounded-xl text-label font-bold bg-slate-100 text-slate-700 cursor-pointer">
               Summary
             </button>
           )}
           {reportId === 'cashflow' && (
-            <button type="button" onClick={() => snack('Template saved')} className="px-2.5 py-1.5 rounded-xl text-[10px] font-bold bg-sky-600 text-white cursor-pointer">
+            <button type="button" onClick={() => snack('Template saved')} className="px-2.5 py-1.5 rounded-xl text-label font-bold bg-sky-600 text-white cursor-pointer">
               Save
             </button>
           )}
-          <button type="button" onClick={() => setDrawerOpen(true)} className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-[10px] font-bold bg-[#0f2b3c] text-white cursor-pointer">
+          <button type="button" onClick={() => setDrawerOpen(true)} className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-label font-bold bg-[#0f2b3c] text-white cursor-pointer">
             <Filter className="w-3.5 h-3.5" />
             Filters
           </button>
@@ -464,7 +464,7 @@ export const ReportsExtraScreen: React.FC<Props> = ({ reportId, onBack, onShowSn
                 key={m}
                 type="button"
                 onClick={() => setBalanceMode(m)}
-                className={`shrink-0 px-3 py-1.5 rounded-full text-[10px] font-bold cursor-pointer ${balanceMode === m ? 'bg-[#0f2b3c] text-white' : 'bg-slate-100 text-slate-600'}`}
+                className={`shrink-0 px-3 py-1.5 rounded-full text-label font-bold cursor-pointer ${balanceMode === m ? 'bg-[#0f2b3c] text-white' : 'bg-slate-100 text-slate-600'}`}
               >
                 {m}
               </button>
@@ -479,7 +479,7 @@ export const ReportsExtraScreen: React.FC<Props> = ({ reportId, onBack, onShowSn
                 key={m}
                 type="button"
                 onClick={() => setApproveMode(m)}
-                className={`shrink-0 px-3 py-1.5 rounded-full text-[10px] font-bold cursor-pointer ${approveMode === m ? 'bg-[#0f2b3c] text-white' : 'bg-slate-100 text-slate-600'}`}
+                className={`shrink-0 px-3 py-1.5 rounded-full text-label font-bold cursor-pointer ${approveMode === m ? 'bg-[#0f2b3c] text-white' : 'bg-slate-100 text-slate-600'}`}
               >
                 {m}
               </button>
@@ -516,7 +516,7 @@ export const ReportsExtraScreen: React.FC<Props> = ({ reportId, onBack, onShowSn
               {expanded[s.id] &&
                 s.rows.map((row) => (
                   <div key={row.proforma} className="border-t border-slate-100 bg-slate-50/70 p-3 space-y-2">
-                    <p className="text-[10px] font-bold uppercase text-teal-700">Proforma {row.proforma}</p>
+                    <p className="text-label font-bold uppercase text-teal-700">Proforma {row.proforma}</p>
                     <div className="grid grid-cols-2 gap-2">
                       <Field label="Customer" value={<span className="text-sky-700">{row.customer}</span>} />
                       <Field label="Company" value={row.company} />
@@ -531,7 +531,7 @@ export const ReportsExtraScreen: React.FC<Props> = ({ reportId, onBack, onShowSn
                         <div key={inv.inquiry} className="bg-white rounded-xl border border-slate-200 overflow-hidden">
                           <button type="button" onClick={() => toggle(iid)} className="w-full text-left p-2.5 cursor-pointer">
                             <div className="flex justify-between">
-                              <p className="text-[11px] font-bold text-[#0f2b3c]">Invoice {inv.purchaseInvoice}</p>
+                              <p className="text-body-sm font-bold text-[#0f2b3c]">Invoice {inv.purchaseInvoice}</p>
                               <ChevronDown className={`w-3.5 h-3.5 text-slate-400 ${expanded[iid] ? 'rotate-180' : ''}`} />
                             </div>
                             <div className="grid grid-cols-2 gap-2 mt-2">
@@ -604,7 +604,7 @@ export const ReportsExtraScreen: React.FC<Props> = ({ reportId, onBack, onShowSn
                     <div key={pf.code} className="border-t border-slate-100 bg-slate-50/70 p-3 space-y-2">
                       <button type="button" onClick={() => toggle(pid)} className="w-full text-left cursor-pointer">
                         <div className="flex justify-between">
-                          <p className="text-[11px] font-bold text-[#0f2b3c]">Proforma {pf.code}</p>
+                          <p className="text-body-sm font-bold text-[#0f2b3c]">Proforma {pf.code}</p>
                           <ChevronDown className={`w-3.5 h-3.5 text-slate-400 ${expanded[pid] ? 'rotate-180' : ''}`} />
                         </div>
                         <div className="grid grid-cols-2 gap-2 mt-2">
@@ -624,7 +624,7 @@ export const ReportsExtraScreen: React.FC<Props> = ({ reportId, onBack, onShowSn
                             <div key={inq.inquiry} className="bg-white rounded-xl border border-slate-200 p-2.5 space-y-2">
                               <button type="button" onClick={() => toggle(iid)} className="w-full text-left cursor-pointer">
                                 <div className="flex justify-between">
-                                  <p className="text-[11px] font-bold">Inquiry {inq.inquiry}</p>
+                                  <p className="text-body-sm font-bold">Inquiry {inq.inquiry}</p>
                                   <ChevronDown className={`w-3.5 h-3.5 text-slate-400 ${expanded[iid] ? 'rotate-180' : ''}`} />
                                 </div>
                                 <div className="grid grid-cols-2 gap-2 mt-2">
@@ -673,7 +673,7 @@ export const ReportsExtraScreen: React.FC<Props> = ({ reportId, onBack, onShowSn
                   <p className="text-xs font-extrabold text-[#0f2b3c] leading-snug">{r.vendor}</p>
                   <Money value={r.closing} neg={r.negative} />
                 </div>
-                <p className="text-[9px] font-bold uppercase text-slate-400 mb-2">Closing Balance</p>
+                <p className="text-caption font-bold uppercase text-slate-400 mb-2">Closing Balance</p>
                 <div className="grid grid-cols-2 gap-2.5">
                   <Field label="Opening Balance" value={<Money value={r.opening} />} />
                   <Field label="Debit" value={r.debit} />
@@ -683,14 +683,14 @@ export const ReportsExtraScreen: React.FC<Props> = ({ reportId, onBack, onShowSn
               </div>
             ))}
             <div className="bg-[#0f2b3c] text-white rounded-2xl p-3.5 space-y-2 shadow-sm">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-white/60">Totals</p>
-              <div className="grid grid-cols-2 gap-2 text-[11px] font-bold">
+              <p className="text-label font-bold uppercase tracking-wider text-white/60">Totals</p>
+              <div className="grid grid-cols-2 gap-2 text-body-sm font-bold">
                 <span>Opening USD (6,350.00)</span>
                 <span>Debit USD 11,200.00</span>
                 <span>Credit USD 5,100.00</span>
                 <span className="text-rose-300">Closing USD (350.00)</span>
               </div>
-              <div className="border-t border-white/15 pt-2 text-[11px] font-extrabold">Difference · USD 0.00</div>
+              <div className="border-t border-white/15 pt-2 text-body-sm font-extrabold">Difference · USD 0.00</div>
             </div>
           </>
         )}
@@ -715,15 +715,15 @@ export const ReportsExtraScreen: React.FC<Props> = ({ reportId, onBack, onShowSn
               </div>
             ))}
             <div className="bg-[#0f2b3c] text-white rounded-2xl p-3.5 space-y-2 shadow-sm">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-white/60">Totals</p>
-              <div className="grid grid-cols-2 gap-2 text-[11px] font-bold">
+              <p className="text-label font-bold uppercase tracking-wider text-white/60">Totals</p>
+              <div className="grid grid-cols-2 gap-2 text-body-sm font-bold">
                 <span>Advance USD 1,900.00</span>
                 <span>Opening USD 22,099.15</span>
                 <span>Debit USD 10,700.00</span>
                 <span>Credit USD 12,800.00</span>
                 <span className="col-span-2 text-teal-300">Closing USD 19,999.15</span>
               </div>
-              <div className="border-t border-white/15 pt-2 text-[11px] font-extrabold">Difference · USD 0.00</div>
+              <div className="border-t border-white/15 pt-2 text-body-sm font-extrabold">Difference · USD 0.00</div>
             </div>
           </>
         )}
@@ -778,14 +778,14 @@ export const ReportsExtraScreen: React.FC<Props> = ({ reportId, onBack, onShowSn
             <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-3 space-y-2">
               <div className="flex items-center justify-between px-1">
                 <p className="text-xs font-extrabold text-[#0f2b3c]">Details · Panel A</p>
-                <p className="text-[11px] font-black text-emerald-700">USD 11,885,035.30</p>
+                <p className="text-body-sm font-black text-emerald-700">USD 11,885,035.30</p>
               </div>
               {renderTree(CASH_FLOW_LEFT)}
             </div>
             <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-3 space-y-2">
               <div className="flex items-center justify-between px-1">
                 <p className="text-xs font-extrabold text-[#0f2b3c]">Details · Panel B</p>
-                <p className="text-[11px] font-black text-rose-600">USD (1,748,013.92)</p>
+                <p className="text-body-sm font-black text-rose-600">USD (1,748,013.92)</p>
               </div>
               {renderTree(CASH_FLOW_RIGHT)}
             </div>
@@ -804,7 +804,7 @@ export const ReportsExtraScreen: React.FC<Props> = ({ reportId, onBack, onShowSn
         {reportId === 'trial' && (
           <>
             <div className="flex items-center justify-between px-0.5">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Account hierarchy</p>
+              <p className="text-label font-bold uppercase tracking-wider text-slate-400">Account hierarchy</p>
               <div className="flex gap-1.5">
                 <button
                   type="button"
@@ -821,14 +821,14 @@ export const ReportsExtraScreen: React.FC<Props> = ({ reportId, onBack, onShowSn
                     walk(TRIAL_BALANCE);
                     setExpanded((e) => ({ ...e, ...all }));
                   }}
-                  className="px-2.5 py-1 rounded-lg text-[9px] font-bold bg-slate-100 text-slate-600 cursor-pointer"
+                  className="px-2.5 py-1 rounded-lg text-caption font-bold bg-slate-100 text-slate-600 cursor-pointer"
                 >
                   Expand all
                 </button>
                 <button
                   type="button"
                   onClick={() => setExpanded({})}
-                  className="px-2.5 py-1 rounded-lg text-[9px] font-bold bg-slate-100 text-slate-600 cursor-pointer"
+                  className="px-2.5 py-1 rounded-lg text-caption font-bold bg-slate-100 text-slate-600 cursor-pointer"
                 >
                   Collapse
                 </button>
@@ -836,14 +836,14 @@ export const ReportsExtraScreen: React.FC<Props> = ({ reportId, onBack, onShowSn
             </div>
             <div className="space-y-2.5">{renderTrialTree(TRIAL_BALANCE)}</div>
             <div className="bg-[#0f2b3c] text-white rounded-2xl p-3.5 space-y-2 shadow-sm">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-white/60">Total</p>
-              <div className="grid grid-cols-2 gap-2 text-[11px] font-bold">
+              <p className="text-label font-bold uppercase tracking-wider text-white/60">Total</p>
+              <div className="grid grid-cols-2 gap-2 text-body-sm font-bold">
                 <span>Opening 2,710,000.00</span>
                 <span>Debit 384,200.00</span>
                 <span>Credit 855,500.00</span>
                 <span>Closing 2,238,700.00</span>
               </div>
-              <div className="border-t border-white/15 pt-2 text-[11px] font-extrabold text-teal-300">Difference · 0.00</div>
+              <div className="border-t border-white/15 pt-2 text-body-sm font-extrabold text-teal-300">Difference · 0.00</div>
             </div>
           </>
         )}
@@ -859,20 +859,20 @@ export const ReportsExtraScreen: React.FC<Props> = ({ reportId, onBack, onShowSn
                     <Package className="w-6 h-6 text-slate-400" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-[11px] font-extrabold text-[#0f2b3c] leading-snug">{r.name}</p>
+                    <p className="text-body-sm font-extrabold text-[#0f2b3c] leading-snug">{r.name}</p>
                     <div className="flex items-center justify-between mt-2 gap-2">
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-teal-50 text-teal-800">{r.variation}</span>
+                      <span className="text-label font-bold px-2 py-0.5 rounded-full bg-teal-50 text-teal-800">{r.variation}</span>
                       <span className="text-sm font-black text-[#0f2b3c] tabular-nums">{r.qty.toLocaleString()}</span>
                     </div>
                   </div>
                 </div>
-                <button type="button" onClick={() => toggle(r.id)} className="w-full border-t border-slate-100 px-3.5 py-2 flex items-center justify-between text-[10px] font-bold text-slate-500 cursor-pointer">
+                <button type="button" onClick={() => toggle(r.id)} className="w-full border-t border-slate-100 px-3.5 py-2 flex items-center justify-between text-label font-bold text-slate-500 cursor-pointer">
                   Invoice / Reference codes
                   <ChevronDown className={`w-3.5 h-3.5 ${expanded[r.id] ? 'rotate-180' : ''}`} />
                 </button>
                 {expanded[r.id] && (
                   <div className="px-3.5 pb-3.5">
-                    <p className="text-[10px] font-semibold text-slate-600 leading-relaxed break-words bg-slate-50 rounded-xl p-2.5 border border-slate-100">
+                    <p className="text-label font-semibold text-slate-600 leading-relaxed break-words bg-slate-50 rounded-xl p-2.5 border border-slate-100">
                       {r.invoiceCode}
                     </p>
                   </div>
@@ -880,7 +880,7 @@ export const ReportsExtraScreen: React.FC<Props> = ({ reportId, onBack, onShowSn
               </div>
             ))}
             <div className="sticky bottom-3 bg-[#0f2b3c] text-white rounded-2xl px-4 py-3 flex justify-between items-center shadow-lg">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-white/60">Total Quantity</span>
+              <span className="text-label font-bold uppercase tracking-wider text-white/60">Total Quantity</span>
               <span className="text-lg font-black tabular-nums">{inventoryTotal.toLocaleString()}</span>
             </div>
           </>
@@ -914,7 +914,7 @@ export const ReportsExtraScreen: React.FC<Props> = ({ reportId, onBack, onShowSn
               {expanded[p.id] && (
                 <div className="border-t border-slate-100 bg-slate-50/70 p-3 space-y-3">
                   <div className="bg-white rounded-xl border border-slate-200 p-2.5">
-                    <p className="text-[10px] font-bold uppercase text-teal-700 mb-2">Transaction</p>
+                    <p className="text-label font-bold uppercase text-teal-700 mb-2">Transaction</p>
                     <div className="grid grid-cols-2 gap-2">
                       <Field label="Inquiry Code" value={<span className="text-sky-700">{p.tx.inquiry}</span>} />
                       <Field label="Pay Days" value={p.tx.payDays} />
@@ -924,7 +924,7 @@ export const ReportsExtraScreen: React.FC<Props> = ({ reportId, onBack, onShowSn
                     </div>
                   </div>
                   <div className="bg-white rounded-xl border border-slate-200 p-2.5">
-                    <p className="text-[10px] font-bold uppercase text-teal-700 mb-2">Shipment & Logistics</p>
+                    <p className="text-label font-bold uppercase text-teal-700 mb-2">Shipment & Logistics</p>
                     <div className="grid grid-cols-2 gap-2">
                       <Field label="Shipment Code" value={<span className="text-sky-700">{p.shipment.code}</span>} />
                       <Field label="Shipment Date" value={p.shipment.date} />
@@ -940,7 +940,7 @@ export const ReportsExtraScreen: React.FC<Props> = ({ reportId, onBack, onShowSn
                   </div>
                   {p.products.map((pr, i) => (
                     <div key={i} className="bg-rose-50/50 rounded-xl border border-rose-100 p-2.5">
-                      <p className="text-[11px] font-bold text-[#0f2b3c]">{pr.name}</p>
+                      <p className="text-body-sm font-bold text-[#0f2b3c]">{pr.name}</p>
                       <div className="grid grid-cols-2 gap-2 mt-2">
                         <Field label="Variation" value={pr.variation} />
                         <Field label="Quantity" value={pr.qty} />
@@ -966,12 +966,12 @@ export const ReportsExtraScreen: React.FC<Props> = ({ reportId, onBack, onShowSn
                 <button type="button" onClick={() => toggle(g.id)} className="w-full text-left p-3.5 cursor-pointer">
                   <div className="flex justify-between gap-2">
                     <div>
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-teal-700">{g.country}</p>
+                      <p className="text-label font-bold uppercase tracking-wider text-teal-700">{g.country}</p>
                       <p className="text-xs font-extrabold text-[#0f2b3c] mt-0.5">{g.customer}</p>
                     </div>
                     <ChevronDown className={`w-4 h-4 text-slate-400 ${expanded[g.id] ? 'rotate-180' : ''}`} />
                   </div>
-                  <p className="text-[10px] font-semibold text-slate-400 mt-2">
+                  <p className="text-label font-semibold text-slate-400 mt-2">
                     {g.rows.length} products · Qty {g.rows.reduce((a, r) => a + r.qty, 0).toLocaleString()}
                   </p>
                 </button>
@@ -983,7 +983,7 @@ export const ReportsExtraScreen: React.FC<Props> = ({ reportId, onBack, onShowSn
                           <Field label="Approved Date" value={r.approvedDate} />
                           <p className="text-sm font-black text-[#0f2b3c] tabular-nums">{r.qty.toLocaleString()}</p>
                         </div>
-                        <p className="text-[11px] font-semibold text-slate-700 leading-snug">{r.product}</p>
+                        <p className="text-body-sm font-semibold text-slate-700 leading-snug">{r.product}</p>
                       </div>
                     ))}
                   </div>
@@ -991,7 +991,7 @@ export const ReportsExtraScreen: React.FC<Props> = ({ reportId, onBack, onShowSn
               </div>
             ))}
             <div className="bg-[#0f2b3c] text-white rounded-2xl px-4 py-3 flex justify-between items-center">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-white/60">TOTAL QTY</span>
+              <span className="text-label font-bold uppercase tracking-wider text-white/60">TOTAL QTY</span>
               <span className="text-lg font-black tabular-nums">{salesTotal.toLocaleString()}</span>
             </div>
           </>
@@ -1004,7 +1004,7 @@ export const ReportsExtraScreen: React.FC<Props> = ({ reportId, onBack, onShowSn
         <aside className={`absolute top-0 right-0 h-full w-[min(92vw,340px)] bg-white shadow-2xl flex flex-col transition-transform duration-300 rounded-l-3xl ${drawerOpen ? 'translate-x-0' : 'translate-x-full'}`}>
           <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Filters</p>
+              <p className="text-label font-bold uppercase tracking-wider text-slate-400">Filters</p>
               <p className="text-sm font-extrabold text-[#0f2b3c]">{TITLES[reportId]}</p>
             </div>
             <button type="button" onClick={() => setDrawerOpen(false)} className="p-2 rounded-xl bg-slate-100 cursor-pointer">
@@ -1059,7 +1059,7 @@ export const ReportsExtraScreen: React.FC<Props> = ({ reportId, onBack, onShowSn
                   ['Marketing', row.marketing],
                   ['Supplier Status', row.status],
                 ].map(([label, vals]) => (
-                  <div key={label as string} className="flex items-center justify-between text-[10px] font-bold">
+                  <div key={label as string} className="flex items-center justify-between text-label font-bold">
                     <span className="text-slate-500">{label as string}</span>
                     <span className="tabular-nums text-slate-800">
                       T {(vals as number[])[0]} · P {(vals as number[])[1]} · R {(vals as number[])[2]}
@@ -1068,7 +1068,7 @@ export const ReportsExtraScreen: React.FC<Props> = ({ reportId, onBack, onShowSn
                 ))}
               </div>
             ))}
-            <div className="rounded-xl bg-[#0f2b3c] text-white p-3 text-[11px] font-extrabold flex justify-between">
+            <div className="rounded-xl bg-[#0f2b3c] text-white p-3 text-body-sm font-extrabold flex justify-between">
               <span>Total</span>
               <span>T 20 · P 6 · R 14</span>
             </div>

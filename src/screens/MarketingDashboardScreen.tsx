@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -9,16 +9,16 @@ import {
   CheckCircle2,
   Clock,
   FileText,
+  FileCheck,
+  List,
   MessageSquare,
   Search,
   Palette,
   Layers,
-  Info,
   ChevronDown,
   ChevronRight,
   Printer,
   Filter,
-  Columns as ColumnsIcon,
   X,
   Building2,
   Ship,
@@ -33,14 +33,13 @@ import {
   MARKETING_PERSONNEL_OPTIONS,
 } from '../data/marketingDashboardData';
 import { MarketingDashboardJourney } from '../components/dashboard/DashboardJourneys';
+import { DashCriteriaTip } from '../components/dashboard/DashboardChrome';
 import { useTheme } from '../context/ThemeContext';
 
 export const MarketingDashboardScreen: React.FC = () => {
   const { isDark } = useTheme();
   const [selectedPersonnel, setSelectedPersonnel] = useState(MARKETING_PERSONNEL_OPTIONS[0]);
-  const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [isColumnsOpen, setIsColumnsOpen] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [activeFilterStatus, setActiveFilterStatus] = useState<string>('All');
   const [currentPage, setCurrentPage] = useState(1);
@@ -96,7 +95,7 @@ export const MarketingDashboardScreen: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className="dash-type">
       {/* Journey-style mobile dashboard */}
       <MarketingDashboardJourney />
 
@@ -107,7 +106,7 @@ export const MarketingDashboardScreen: React.FC = () => {
         {/* Header with Title and Marketing Personal Filter */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
           <div>
-            <span className="text-[10px] sm:text-xs font-bold tracking-wider text-slate-400 uppercase block">
+            <span className="text-label sm:text-body font-bold tracking-wider text-slate-400 uppercase block">
               OVERVIEW
             </span>
             <h1 className="text-2xl sm:text-3xl font-black text-[#1e293b] tracking-tight">
@@ -126,7 +125,7 @@ export const MarketingDashboardScreen: React.FC = () => {
               id="marketing-personnel-select"
               value={selectedPersonnel}
               onChange={(e) => setSelectedPersonnel(e.target.value)}
-              className="w-full appearance-none bg-white border border-slate-200 text-xs sm:text-sm font-semibold text-slate-800 py-2.5 pl-9 pr-8 rounded-xl shadow-2xs focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer transition-all"
+              className="w-full appearance-none bg-white border border-slate-200 text-body sm:text-md font-semibold text-slate-800 py-2.5 pl-9 pr-8 rounded-xl shadow-2xs focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer transition-all"
             >
               {MARKETING_PERSONNEL_OPTIONS.map((person) => (
                 <option key={person} value={person}>
@@ -139,114 +138,9 @@ export const MarketingDashboardScreen: React.FC = () => {
         </div>
       </div>
 
-      {/* Grouped Operations Panel: Combines Follow-ups & Tasks into 2 clean, cohesive enterprise sections */}
+      {/* Grouped Operations Panel: Tasks first, then Follow-ups */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        {/* Section 1: Follow-ups (Total 144) */}
-        <section className="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-5 space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-blue-600" />
-              <h2 className="text-base sm:text-lg font-black text-[#1e293b] tracking-tight">
-                Follow-ups
-              </h2>
-            </div>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
-              Total 144
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {MARKETING_FOLLOW_UPS.map((item) => {
-              const hasTooltip = Boolean(item.infoTooltip);
-              const isTooltipActive = activeTooltip === item.id;
-
-              // Distinct visual styles per marketing follow-up category
-              const styleConfig =
-                item.icon === 'orders'
-                  ? { border: 'border-blue-200/80', bg: 'bg-blue-50/20', iconBg: 'bg-blue-50 text-blue-700 border-blue-100', bar: 'bg-blue-600' }
-                  : item.icon === 'payments'
-                  ? { border: 'border-emerald-200/80', bg: 'bg-emerald-50/20', iconBg: 'bg-emerald-50 text-emerald-700 border-emerald-100', bar: 'bg-emerald-600' }
-                  : item.icon === 'shipping'
-                  ? { border: 'border-purple-200/80', bg: 'bg-purple-50/20', iconBg: 'bg-purple-50 text-purple-700 border-purple-100', bar: 'bg-purple-600' }
-                  : { border: 'border-amber-200/80', bg: 'bg-amber-50/20', iconBg: 'bg-amber-50 text-amber-700 border-amber-100', bar: 'bg-amber-600' };
-
-              return (
-                <div
-                  key={item.id}
-                  id={`marketing-followup-${item.id}`}
-                  className={`relative rounded-2xl border ${styleConfig.border} ${styleConfig.bg} bg-white p-4 flex flex-col justify-between transition-all hover:shadow-sm overflow-hidden`}
-                >
-                  <div className={`absolute top-0 left-0 right-0 h-1 ${styleConfig.bar}`} />
-
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between gap-1.5">
-                      <div className="flex items-center gap-2 min-w-0">
-                        <div className={`w-8 h-8 rounded-xl flex items-center justify-center border shrink-0 ${styleConfig.iconBg}`}>
-                          {item.icon === 'orders' && <FileText className="w-4 h-4" />}
-                          {item.icon === 'payments' && <Clock className="w-4 h-4" />}
-                          {item.icon === 'shipping' && <CheckCircle2 className="w-4 h-4" />}
-                          {item.icon === 'quotations' && <FileText className="w-4 h-4" />}
-                        </div>
-                        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-700 truncate">
-                          {item.label}
-                        </span>
-                      </div>
-
-                      {hasTooltip && (
-                        <div className="relative shrink-0">
-                          <button
-                            type="button"
-                            onClick={() => setActiveTooltip(isTooltipActive ? null : item.id)}
-                            onMouseEnter={() => setActiveTooltip(item.id)}
-                            onMouseLeave={() => setActiveTooltip(null)}
-                            className="p-1 text-slate-400 hover:text-slate-600"
-                            title="Information"
-                          >
-                            <Info className="w-3.5 h-3.5" />
-                          </button>
-                          {isTooltipActive && (
-                            <div className="absolute right-0 bottom-full mb-1.5 z-30 px-2.5 py-1 text-[11px] font-medium text-white bg-slate-900 rounded-lg shadow-md whitespace-nowrap">
-                              {item.infoTooltip}
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="flex items-baseline justify-between gap-2 pt-1">
-                      <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-                        {item.value}
-                      </span>
-                      {item.extraBadge && (
-                        <div className="relative inline-flex items-center">
-                          <span
-                            onMouseEnter={() => setActiveTooltip(`${item.id}-badge`)}
-                            onMouseLeave={() => setActiveTooltip(null)}
-                            className="px-2 py-0.5 text-[10px] font-extrabold rounded-full bg-purple-100 text-purple-800 border border-purple-200 cursor-help whitespace-nowrap"
-                          >
-                            {item.extraBadge.text}
-                          </span>
-                          {activeTooltip === `${item.id}-badge` && item.extraBadge.infoTooltip && (
-                            <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-1.5 z-30 px-2 py-1 text-[10px] font-medium text-white bg-slate-900 rounded-lg shadow-md whitespace-nowrap">
-                              {item.extraBadge.infoTooltip}
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  <p className="text-[11px] font-medium text-slate-400 pt-2 border-t border-slate-100 mt-2 truncate flex items-center gap-1.5">
-                    <span className={`w-1.5 h-1.5 rounded-full ${styleConfig.bar}`} />
-                    <span>{item.subtitle}</span>
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* Section 2: Tasks (Total 73) */}
+        {/* Section 1: Tasks (Total 73) */}
         <section className="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-5 space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <div className="flex items-center gap-2">
@@ -255,66 +149,48 @@ export const MarketingDashboardScreen: React.FC = () => {
                 Tasks
               </h2>
             </div>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+            <span className="px-2.5 py-0.5 rounded-full text-body font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
               Total 73
             </span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {MARKETING_TASKS.map((task) => {
-              const hasTooltip = Boolean(task.infoTooltip);
-              const isTooltipActive = activeTooltip === task.id;
-
               const styleConfig =
                 task.icon === 'ticket'
-                  ? { border: 'border-emerald-200/80', bg: 'bg-emerald-50/20', iconBg: 'bg-emerald-50 text-emerald-700 border-emerald-100', bar: 'bg-emerald-600' }
+                  ? { border: 'border-emerald-200/80', bg: 'bg-emerald-50/20', iconBg: 'bg-emerald-50 text-emerald-700 border-emerald-100', bar: 'bg-emerald-600', accent: '#059669' }
                   : task.icon === 'freight'
-                  ? { border: 'border-sky-200/80', bg: 'bg-sky-50/20', iconBg: 'bg-sky-50 text-sky-700 border-sky-100', bar: 'bg-sky-600' }
+                  ? { border: 'border-sky-200/80', bg: 'bg-sky-50/20', iconBg: 'bg-sky-50 text-sky-700 border-sky-100', bar: 'bg-sky-600', accent: '#0284c7' }
                   : task.icon === 'artwork'
-                  ? { border: 'border-rose-200/80', bg: 'bg-rose-50/20', iconBg: 'bg-rose-50 text-rose-700 border-rose-100', bar: 'bg-rose-600' }
-                  : { border: 'border-teal-200/80', bg: 'bg-teal-50/20', iconBg: 'bg-teal-50 text-teal-700 border-teal-100', bar: 'bg-teal-600' };
+                  ? { border: 'border-rose-200/80', bg: 'bg-rose-50/20', iconBg: 'bg-rose-50 text-rose-700 border-rose-100', bar: 'bg-rose-600', accent: '#e11d48' }
+                  : { border: 'border-teal-200/80', bg: 'bg-teal-50/20', iconBg: 'bg-teal-50 text-teal-700 border-teal-100', bar: 'bg-teal-600', accent: '#0d9488' };
 
               return (
                 <div
                   key={task.id}
                   id={`marketing-task-${task.id}`}
-                  className={`relative rounded-2xl border ${styleConfig.border} ${styleConfig.bg} bg-white p-4 flex flex-col justify-between transition-all hover:shadow-sm overflow-hidden`}
+                  className={`relative rounded-2xl border ${styleConfig.border} ${styleConfig.bg} bg-white p-4 flex flex-col justify-between transition-all hover:shadow-sm overflow-visible`}
                 >
                   <div className={`absolute top-0 left-0 right-0 h-1 ${styleConfig.bar}`} />
 
                   <div className="space-y-2">
-                    <div className="flex items-center justify-between gap-1.5">
-                      <div className="flex items-center gap-2 min-w-0">
+                    <div className="flex items-start justify-between gap-1.5">
+                      <div className="flex items-start gap-1.5 min-w-0">
                         <div className={`w-8 h-8 rounded-xl flex items-center justify-center border shrink-0 ${styleConfig.iconBg}`}>
                           {task.icon === 'ticket' && <MessageSquare className="w-4 h-4" />}
                           {task.icon === 'freight' && <Search className="w-4 h-4" />}
                           {task.icon === 'artwork' && <Palette className="w-4 h-4" />}
                           {task.icon === 'container' && <Layers className="w-4 h-4" />}
                         </div>
-                        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-700 truncate">
-                          {task.label}
-                        </span>
-                      </div>
-
-                      {hasTooltip && (
-                        <div className="relative shrink-0">
-                          <button
-                            type="button"
-                            onClick={() => setActiveTooltip(isTooltipActive ? null : task.id)}
-                            onMouseEnter={() => setActiveTooltip(task.id)}
-                            onMouseLeave={() => setActiveTooltip(null)}
-                            className="p-1 text-slate-400 hover:text-slate-600"
-                            title="Information"
-                          >
-                            <Info className="w-3.5 h-3.5" />
-                          </button>
-                          {isTooltipActive && (
-                            <div className="absolute right-0 bottom-full mb-1.5 z-30 px-2.5 py-1 text-[11px] font-medium text-white bg-slate-900 rounded-lg shadow-md whitespace-nowrap">
-                              {task.infoTooltip}
-                            </div>
+                        <div className="flex items-start gap-1 min-w-0 pt-0.5">
+                          <span className="text-micro font-bold uppercase tracking-normal text-slate-600 leading-[1.35] break-words [overflow-wrap:anywhere]">
+                            {task.label}
+                          </span>
+                          {task.criteria && (
+                            <DashCriteriaTip criteria={task.criteria} accentColor={styleConfig.accent} className="shrink-0" />
                           )}
                         </div>
-                      )}
+                      </div>
                     </div>
 
                     <div className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight pt-1">
@@ -322,9 +198,92 @@ export const MarketingDashboardScreen: React.FC = () => {
                     </div>
                   </div>
 
-                  <p className="text-[11px] font-medium text-slate-400 pt-2 border-t border-slate-100 mt-2 truncate flex items-center gap-1.5">
-                    <span className={`w-1.5 h-1.5 rounded-full ${styleConfig.bar}`} />
+                  <p className="text-micro font-medium text-slate-400 pt-2 border-t border-slate-100 mt-2 leading-[1.35] break-words flex items-start gap-1.5">
+                    <span className={`w-1.5 h-1.5 rounded-full ${styleConfig.bar} mt-1 shrink-0`} />
                     <span>{task.subtitle}</span>
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* Section 2: Follow-ups (Total 144) */}
+        <section className="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-5 space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-blue-600" />
+              <h2 className="text-base sm:text-lg font-black text-[#1e293b] tracking-tight">
+                Follow-ups
+              </h2>
+            </div>
+            <span className="px-2.5 py-0.5 rounded-full text-body font-bold bg-blue-50 text-blue-700 border border-blue-200">
+              Total 144
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {MARKETING_FOLLOW_UPS.map((item) => {
+              const styleConfig =
+                item.icon === 'orders'
+                  ? { border: 'border-blue-200/80', bg: 'bg-blue-50/20', iconBg: 'bg-blue-50 text-blue-700 border-blue-100', bar: 'bg-blue-600', accent: '#2563eb' }
+                  : item.icon === 'payments'
+                  ? { border: 'border-emerald-200/80', bg: 'bg-emerald-50/20', iconBg: 'bg-emerald-50 text-emerald-700 border-emerald-100', bar: 'bg-emerald-600', accent: '#0d9488' }
+                  : item.icon === 'shipping'
+                  ? { border: 'border-purple-200/80', bg: 'bg-purple-50/20', iconBg: 'bg-purple-50 text-purple-700 border-purple-100', bar: 'bg-purple-600', accent: '#7c3aed' }
+                  : { border: 'border-amber-200/80', bg: 'bg-amber-50/20', iconBg: 'bg-amber-50 text-amber-700 border-amber-100', bar: 'bg-amber-600', accent: '#d97706' };
+
+              return (
+                <div
+                  key={item.id}
+                  id={`marketing-followup-${item.id}`}
+                  className={`relative rounded-2xl border ${styleConfig.border} ${styleConfig.bg} bg-white p-4 flex flex-col justify-between transition-all hover:shadow-sm overflow-visible`}
+                >
+                  <div className={`absolute top-0 left-0 right-0 h-1 ${styleConfig.bar}`} />
+
+                  <div className="space-y-2">
+                    <div className="flex items-start justify-between gap-1.5">
+                      <div className="flex items-start gap-1.5 min-w-0">
+                        <div className={`w-8 h-8 rounded-xl flex items-center justify-center border shrink-0 ${styleConfig.iconBg}`}>
+                          {item.icon === 'orders' && <List className="w-4 h-4" />}
+                          {item.icon === 'payments' && <Clock className="w-4 h-4" />}
+                          {item.icon === 'shipping' && <CheckCircle2 className="w-4 h-4" />}
+                          {item.icon === 'quotations' && <FileCheck className="w-4 h-4" />}
+                        </div>
+                        <div className="flex items-start gap-1 min-w-0 pt-0.5">
+                          <span className="text-micro font-bold uppercase tracking-normal text-slate-600 leading-[1.35] break-words [overflow-wrap:anywhere]">
+                            {item.label}
+                          </span>
+                          {item.criteria && (
+                            <DashCriteriaTip criteria={item.criteria} accentColor={styleConfig.accent} className="shrink-0" />
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-baseline justify-between gap-2 pt-1">
+                      <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                        {item.value}
+                      </span>
+                      {item.extraBadge && (
+                        <div className="inline-flex items-center gap-1">
+                          <span className="px-2 py-0.5 text-label font-extrabold rounded-full bg-purple-100 text-purple-800 border border-purple-200 whitespace-nowrap">
+                            {item.extraBadge.text}
+                          </span>
+                          {item.extraBadge.criteria && (
+                            <DashCriteriaTip
+                              criteria={item.extraBadge.criteria}
+                              accentColor={styleConfig.accent}
+                            />
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <p className="text-micro font-medium text-slate-400 pt-2 border-t border-slate-100 mt-2 leading-[1.35] break-words flex items-start gap-1.5">
+                    <span className={`w-1.5 h-1.5 rounded-full ${styleConfig.bar} mt-1 shrink-0`} />
+                    <span>{item.subtitle}</span>
                   </p>
                 </div>
               );
@@ -345,14 +304,14 @@ export const MarketingDashboardScreen: React.FC = () => {
               Performance Summary
             </h2>
           </div>
-          <span className="sm:hidden text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md self-start">
-            ← Scroll horizontally to view all metrics →
+          <span className="sm:hidden text-label font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md self-start">
+            â† Scroll horizontally to view all metrics â†’
           </span>
         </div>
 
         {/* Responsive Performance Matrix Table */}
         <div className="overflow-x-auto -mx-5 sm:mx-0">
-          <table className="w-full text-xs text-left border-collapse min-w-[700px]">
+          <table className="w-full text-body text-left border-collapse min-w-[700px]">
             <thead>
               <tr className="border-b border-slate-200 bg-slate-50/70 text-slate-600">
                 <th className="py-2.5 px-4 font-bold">Criteria</th>
@@ -367,25 +326,13 @@ export const MarketingDashboardScreen: React.FC = () => {
             <tbody className="divide-y divide-slate-100 text-slate-700">
               {PERFORMANCE_SUMMARY.map((row, idx) => (
                 <tr key={idx} className="hover:bg-slate-50/60 transition-colors">
-                  <td className="py-3 px-4 font-bold text-slate-800 flex items-center gap-1.5">
-                    <span>{row.criteria}</span>
-                    {row.infoTooltip && (
-                      <div className="relative inline-flex items-center">
-                        <button
-                          type="button"
-                          onMouseEnter={() => setActiveTooltip(`perf-${idx}`)}
-                          onMouseLeave={() => setActiveTooltip(null)}
-                          className="text-slate-400 hover:text-slate-600"
-                        >
-                          <Info className="w-3.5 h-3.5" />
-                        </button>
-                        {activeTooltip === `perf-${idx}` && (
-                          <div className="absolute left-0 bottom-full mb-1 z-30 px-2 py-1 text-[10px] font-medium text-white bg-slate-900 rounded-md shadow-md whitespace-nowrap">
-                            {row.infoTooltip}
-                          </div>
-                        )}
-                      </div>
-                    )}
+                  <td className="py-3 px-4 font-bold text-slate-800">
+                    <div className="flex items-center gap-1.5">
+                      <span>{row.criteria}</span>
+                      {row.tip && (
+                        <DashCriteriaTip criteria={row.tip} accentColor="#64748b" />
+                      )}
+                    </div>
                   </td>
                   <td className="py-3 px-3 text-center font-black text-slate-900">
                     {row.currentMonth}
@@ -395,7 +342,7 @@ export const MarketingDashboardScreen: React.FC = () => {
                   </td>
                   <td className="py-3 px-4">
                     <div className="space-y-1 max-w-[140px]">
-                      <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-700">
+                      <span className="inline-block px-2 py-0.5 rounded-full text-label font-black bg-emerald-100 text-emerald-700">
                         {row.percentageChangeMonth}
                       </span>
                       <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
@@ -411,7 +358,7 @@ export const MarketingDashboardScreen: React.FC = () => {
                   </td>
                   <td className="py-3 px-4">
                     <div className="space-y-1 max-w-[140px]">
-                      <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-700">
+                      <span className="inline-block px-2 py-0.5 rounded-full text-label font-black bg-emerald-100 text-emerald-700">
                         {row.percentageChangeYtd}
                       </span>
                       <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
@@ -444,7 +391,7 @@ export const MarketingDashboardScreen: React.FC = () => {
             <button
               type="button"
               onClick={() => window.print()}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 text-xs font-semibold text-slate-700 rounded-xl shadow-2xs hover:bg-slate-50 transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 text-body font-semibold text-slate-700 rounded-xl shadow-2xs hover:bg-slate-50 transition-colors cursor-pointer"
             >
               <Printer className="w-3.5 h-3.5 text-slate-500" />
               <span>Print</span>
@@ -455,13 +402,13 @@ export const MarketingDashboardScreen: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setIsFilterOpen(!isFilterOpen)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 text-xs font-semibold text-slate-700 rounded-xl shadow-2xs hover:bg-slate-50 transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 text-body font-semibold text-slate-700 rounded-xl shadow-2xs hover:bg-slate-50 transition-colors cursor-pointer"
               >
                 <Filter className="w-3.5 h-3.5 text-slate-500" />
                 <span>Filters</span>
               </button>
               {isFilterOpen && (
-                <div className="absolute right-0 top-full mt-1 w-44 bg-white border border-slate-200 rounded-xl shadow-lg p-2 z-20 text-xs space-y-1">
+                <div className="absolute right-0 top-full mt-1 w-44 bg-white border border-slate-200 rounded-xl shadow-lg p-2 z-20 text-body space-y-1">
                   <div className="font-bold text-slate-800 px-2 py-1">Filter by Status</div>
                   {['All', 'Delivered', 'In Transit'].map((status) => (
                     <button
@@ -484,39 +431,6 @@ export const MarketingDashboardScreen: React.FC = () => {
               )}
             </div>
 
-            {/* Columns toggle */}
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => setIsColumnsOpen(!isColumnsOpen)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 text-xs font-semibold text-slate-700 rounded-xl shadow-2xs hover:bg-slate-50 transition-colors cursor-pointer"
-              >
-                <ColumnsIcon className="w-3.5 h-3.5 text-slate-500" />
-                <span>Columns</span>
-              </button>
-              {isColumnsOpen && (
-                <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-slate-200 rounded-xl shadow-lg p-2 z-20 text-xs space-y-1">
-                  <div className="font-bold text-slate-800 px-2 py-1">Visible Columns</div>
-                  <div className="px-2 py-1 text-slate-600 flex items-center gap-2">
-                    <input type="checkbox" defaultChecked disabled />
-                    <span>Customer Name</span>
-                  </div>
-                  <div className="px-2 py-1 text-slate-600 flex items-center gap-2">
-                    <input type="checkbox" defaultChecked disabled />
-                    <span>Gate Out Date</span>
-                  </div>
-                  <div className="px-2 py-1 text-slate-600 flex items-center gap-2">
-                    <input type="checkbox" defaultChecked disabled />
-                    <span>Total Invoice Amount</span>
-                  </div>
-                  <div className="px-2 py-1 text-slate-600 flex items-center gap-2">
-                    <input type="checkbox" defaultChecked disabled />
-                    <span>Total Remaining Amount</span>
-                  </div>
-                </div>
-              )}
-            </div>
-
             {/* Search Input */}
             <div className="relative flex items-center w-full sm:w-44">
               <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 pointer-events-none" />
@@ -525,7 +439,7 @@ export const MarketingDashboardScreen: React.FC = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search..."
-                className="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl py-1.5 pl-8 pr-7 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-slate-800 placeholder-slate-400"
+                className="w-full text-body bg-slate-50 border border-slate-200 rounded-xl py-1.5 pl-8 pr-7 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-slate-800 placeholder-slate-400"
               />
               {searchQuery && (
                 <button
@@ -542,7 +456,7 @@ export const MarketingDashboardScreen: React.FC = () => {
 
         {/* Hierarchical Drill-down Table for Delivered Orders */}
         <div className="overflow-x-auto -mx-4 sm:mx-0">
-          <table className="w-full text-xs text-left border-collapse min-w-[760px]">
+          <table className="w-full text-body text-left border-collapse min-w-[760px]">
             <thead>
               <tr className="border-b border-slate-200 bg-slate-50/70 text-slate-600">
                 <th className="py-2.5 px-3 w-8 text-center" aria-label="Toggle" />
@@ -616,33 +530,33 @@ export const MarketingDashboardScreen: React.FC = () => {
                                   </button>
                                 </td>
                                 <td colSpan={7} className="py-2 px-3">
-                                  <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 text-[11px]">
+                                  <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 text-body-sm">
                                     <div>
-                                      <span className="text-[9.5px] uppercase font-bold text-slate-400 block">Proforma Code</span>
+                                      <span className="text-caption uppercase font-bold text-slate-400 block">Proforma Code</span>
                                       <span className="font-bold text-blue-600">{proforma.proformaCode}</span>
                                     </div>
                                     <div className="sm:col-span-2">
-                                      <span className="text-[9.5px] uppercase font-bold text-slate-400 block">Company</span>
+                                      <span className="text-caption uppercase font-bold text-slate-400 block">Company</span>
                                       <span className="font-medium text-slate-700 truncate block">{proforma.company}</span>
                                     </div>
                                     <div>
-                                      <span className="text-[9.5px] uppercase font-bold text-slate-400 block">Marketing Person</span>
+                                      <span className="text-caption uppercase font-bold text-slate-400 block">Marketing Person</span>
                                       <span className="font-medium text-blue-600">{proforma.marketingPerson}</span>
                                     </div>
                                     <div>
-                                      <span className="text-[9.5px] uppercase font-bold text-slate-400 block">Place of Delivery</span>
+                                      <span className="text-caption uppercase font-bold text-slate-400 block">Place of Delivery</span>
                                       <span className="font-medium text-blue-600">{proforma.placeOfDelivery}</span>
                                     </div>
                                     <div>
-                                      <span className="text-[9.5px] uppercase font-bold text-slate-400 block">Port of Discharge</span>
+                                      <span className="text-caption uppercase font-bold text-slate-400 block">Port of Discharge</span>
                                       <span className="font-medium text-slate-700">{proforma.portOfDischarge}</span>
                                     </div>
                                     <div>
-                                      <span className="text-[9.5px] uppercase font-bold text-slate-400 block">Advance</span>
+                                      <span className="text-caption uppercase font-bold text-slate-400 block">Advance</span>
                                       <span className="font-medium text-slate-700">{proforma.advance}</span>
                                     </div>
                                     <div>
-                                      <span className="text-[9.5px] uppercase font-bold text-slate-400 block">Total Paid Amount</span>
+                                      <span className="text-caption uppercase font-bold text-slate-400 block">Total Paid Amount</span>
                                       <span className="font-black text-slate-800">{proforma.totalPaidAmount}</span>
                                     </div>
                                   </div>
@@ -671,39 +585,39 @@ export const MarketingDashboardScreen: React.FC = () => {
                                           </button>
                                         </td>
                                         <td colSpan={7} className="py-2.5 px-3">
-                                          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 text-[11px]">
+                                          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 text-body-sm">
                                             <div>
-                                              <span className="text-[9.5px] uppercase font-bold text-slate-400 block">Inquiry Code</span>
+                                              <span className="text-caption uppercase font-bold text-slate-400 block">Inquiry Code</span>
                                               <span className="font-bold text-blue-600">{inv.inquiryCode}</span>
                                             </div>
                                             <div>
-                                              <span className="text-[9.5px] uppercase font-bold text-slate-400 block">Invoice Code</span>
+                                              <span className="text-caption uppercase font-bold text-slate-400 block">Invoice Code</span>
                                               <span className="font-bold text-blue-600">{inv.invoiceCode}</span>
                                             </div>
                                             <div>
-                                              <span className="text-[9.5px] uppercase font-bold text-slate-400 block">No of Days</span>
+                                              <span className="text-caption uppercase font-bold text-slate-400 block">No of Days</span>
                                               <span className="font-medium text-slate-700">{inv.noOfDays}</span>
                                             </div>
                                             <div>
-                                              <span className="text-[9.5px] uppercase font-bold text-slate-400 block">Invoice Amount</span>
+                                              <span className="text-caption uppercase font-bold text-slate-400 block">Invoice Amount</span>
                                               <span className="font-black text-slate-900">{inv.invoiceAmount}</span>
                                             </div>
                                             <div>
-                                              <span className="text-[9.5px] uppercase font-bold text-slate-400 block">Sale Return</span>
-                                              <span className="font-medium text-slate-700 text-[10px] leading-tight block">
+                                              <span className="text-caption uppercase font-bold text-slate-400 block">Sale Return</span>
+                                              <span className="font-medium text-slate-700 text-label leading-tight block">
                                                 {inv.saleReturn.total} | Other: {inv.saleReturn.otherPiAdj} | SR JV: {inv.saleReturn.srJvAdj}
                                               </span>
                                             </div>
                                             <div>
-                                              <span className="text-[9.5px] uppercase font-bold text-slate-400 block">JV Adj. Amount</span>
+                                              <span className="text-caption uppercase font-bold text-slate-400 block">JV Adj. Amount</span>
                                               <span className="font-medium text-slate-700">{inv.jvAdjAmount}</span>
                                             </div>
                                             <div>
-                                              <span className="text-[9.5px] uppercase font-bold text-slate-400 block">Adj Advance</span>
+                                              <span className="text-caption uppercase font-bold text-slate-400 block">Adj Advance</span>
                                               <span className="font-medium text-slate-700">{inv.adjAdvance}</span>
                                             </div>
                                             <div>
-                                              <span className="text-[9.5px] uppercase font-bold text-slate-400 block">Sale Invoice Doc</span>
+                                              <span className="text-caption uppercase font-bold text-slate-400 block">Sale Invoice Doc</span>
                                               <span className="font-medium text-slate-400">{inv.saleInvoiceDocument}</span>
                                             </div>
                                           </div>
@@ -732,21 +646,21 @@ export const MarketingDashboardScreen: React.FC = () => {
                                                   </button>
                                                 </td>
                                                 <td colSpan={7} className="py-2 px-3">
-                                                  <div className="flex flex-wrap items-center gap-4 text-[11px]">
+                                                  <div className="flex flex-wrap items-center gap-4 text-body-sm">
                                                     <div className="flex items-center gap-1.5">
                                                       <Ship className="w-3.5 h-3.5 text-indigo-600" />
                                                       <span className="font-bold text-blue-600">{shipment.shipmentCode}</span>
                                                     </div>
                                                     <div>
-                                                      <span className="text-[9.5px] uppercase font-bold text-slate-400 mr-1">Created:</span>
+                                                      <span className="text-caption uppercase font-bold text-slate-400 mr-1">Created:</span>
                                                       <span className="font-medium text-slate-700">{shipment.shipmentCreatedDate}</span>
                                                     </div>
                                                     <div>
-                                                      <span className="text-[9.5px] uppercase font-bold text-slate-400 mr-1">Freight Invoice:</span>
+                                                      <span className="text-caption uppercase font-bold text-slate-400 mr-1">Freight Invoice:</span>
                                                       <span className="font-medium text-slate-400">{shipment.freightInvoiceDocument}</span>
                                                     </div>
                                                     <div>
-                                                      <span className="text-[9.5px] uppercase font-bold text-slate-400 mr-1">BL Copy:</span>
+                                                      <span className="text-caption uppercase font-bold text-slate-400 mr-1">BL Copy:</span>
                                                       <span className="font-medium text-slate-400">{shipment.blCopyDocument}</span>
                                                     </div>
                                                   </div>
@@ -759,28 +673,28 @@ export const MarketingDashboardScreen: React.FC = () => {
                                                   <tr key={cIdx} className="bg-amber-50/30 border-b border-amber-100/60">
                                                     <td className="py-2 px-3" />
                                                     <td colSpan={7} className="py-2 px-4">
-                                                      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-[11px] bg-white p-2.5 rounded-lg border border-amber-200/50">
+                                                      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-body-sm bg-white p-2.5 rounded-lg border border-amber-200/50">
                                                         <div className="flex items-center gap-1.5">
                                                           <Box className="w-3.5 h-3.5 text-amber-600" />
                                                           <div>
-                                                            <span className="text-[9px] uppercase font-bold text-slate-400 block">Container Type</span>
+                                                            <span className="text-caption uppercase font-bold text-slate-400 block">Container Type</span>
                                                             <span className="font-bold text-slate-800">{container.containerType}</span>
                                                           </div>
                                                         </div>
                                                         <div>
-                                                          <span className="text-[9px] uppercase font-bold text-slate-400 block">Container No</span>
+                                                          <span className="text-caption uppercase font-bold text-slate-400 block">Container No</span>
                                                           <span className="font-semibold text-blue-600">{container.containerNo}</span>
                                                         </div>
                                                         <div>
-                                                          <span className="text-[9px] uppercase font-bold text-slate-400 block">Gate Out Date</span>
+                                                          <span className="text-caption uppercase font-bold text-slate-400 block">Gate Out Date</span>
                                                           <span className="font-medium text-slate-700">{container.gateOutDate}</span>
                                                         </div>
                                                         <div>
-                                                          <span className="text-[9px] uppercase font-bold text-slate-400 block">ETA Date</span>
+                                                          <span className="text-caption uppercase font-bold text-slate-400 block">ETA Date</span>
                                                           <span className="font-medium text-slate-700">{container.etaDate}</span>
                                                         </div>
                                                         <div>
-                                                          <span className="text-[9px] uppercase font-bold text-slate-400 block">BL Number</span>
+                                                          <span className="text-caption uppercase font-bold text-slate-400 block">BL Number</span>
                                                           <span className="font-semibold text-slate-800">{container.blNumber}</span>
                                                         </div>
                                                       </div>
@@ -805,7 +719,7 @@ export const MarketingDashboardScreen: React.FC = () => {
         </div>
 
         {/* Footer: Pagination & Record Count */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-slate-100 text-xs text-slate-500">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-slate-100 text-body text-slate-500">
           <div>
             Showing <span className="font-bold text-slate-800">1</span> to <span className="font-bold text-slate-800">1</span> of <span className="font-bold text-slate-800">1</span> records
           </div>
@@ -816,7 +730,7 @@ export const MarketingDashboardScreen: React.FC = () => {
                 type="button"
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage(1)}
-                className={`w-7 h-7 rounded-lg text-xs font-bold transition-colors ${
+                className={`w-7 h-7 rounded-lg text-body font-bold transition-colors ${
                   currentPage === 1
                     ? 'bg-blue-600 text-white shadow-xs'
                     : 'border border-slate-200 text-slate-700 hover:bg-slate-50'
@@ -830,7 +744,7 @@ export const MarketingDashboardScreen: React.FC = () => {
               <select
                 value={rowsPerPage}
                 onChange={(e) => setRowsPerPage(e.target.value)}
-                className="appearance-none bg-white border border-slate-200 text-xs font-semibold text-slate-700 py-1.5 pl-2.5 pr-7 rounded-xl focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer"
+                className="appearance-none bg-white border border-slate-200 text-body font-semibold text-slate-700 py-1.5 pl-2.5 pr-7 rounded-xl focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer"
               >
                 <option value="10">10 / page</option>
                 <option value="20">20 / page</option>

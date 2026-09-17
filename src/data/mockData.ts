@@ -438,10 +438,11 @@ export const ERP_MODULES: ERPModule[] = [
   {
     id: 'finance',
     name: 'Finance',
-    description: 'PO approvals & proforma suppliers',
+    description: 'PO approvals, awaiting confirmations & proforma suppliers',
     iconName: 'Landmark',
     items: [
       { id: 'fin_po', title: 'Finance Order → PO Approval', subtitle: 'Review & approve purchase commitments' },
+      { id: 'fin_awaiting', title: 'Awaiting Confirmations', subtitle: 'Customer proformas pending finance confirmation' },
       { id: 'fin_proforma', title: 'Proforma Supplier', subtitle: 'Commercial proforma vendor payments' },
     ],
   },

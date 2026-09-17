@@ -90,13 +90,13 @@ export const BottomNav: React.FC<BottomNavProps> = ({
                   }`}
                 />
                 {item.badge && item.badge > 0 ? (
-                  <span className="absolute -top-1.5 -right-2.5 min-w-4 h-4 px-1 rounded-full bg-rose-500 text-[9px] font-black text-white flex items-center justify-center border-2 border-slate-900">
+                  <span className="absolute -top-1.5 -right-2.5 min-w-4 h-4 px-1 rounded-full bg-rose-500 text-caption font-black text-white flex items-center justify-center border-2 border-slate-900">
                     {item.badge > 9 ? '9+' : item.badge}
                   </span>
                 ) : null}
               </div>
               <span
-                className={`text-[10px] sm:text-[11px] mt-0.5 tracking-tight transition-colors ${
+                className={`text-label sm:text-body-sm mt-0.5 tracking-tight transition-colors ${
                   isActive
                     ? isDark
                       ? 'text-indigo-300 font-bold'

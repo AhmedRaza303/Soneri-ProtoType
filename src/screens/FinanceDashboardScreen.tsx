@@ -22,16 +22,17 @@ import {
   ArrowRight,
   Eye,
   EyeOff,
-  Info,
   ChevronDown,
   ChevronRight,
   Printer,
   Filter,
-  Columns as ColumnsIcon,
   Search,
   X,
   Plus,
   Minus,
+  BarChart3,
+  Table2,
+  LineChart,
 } from 'lucide-react';
 import {
   FINANCE_TASKS,
@@ -40,8 +41,10 @@ import {
   CONTAINER_WISE_FORECAST_DATA,
   OPERATING_EXPENSE_DATA,
   PENDING_PAYMENTS_DATA,
+  PENDING_PAYMENTS_CRITERIA,
 } from '../data/financeDashboardData';
 import { FinanceDashboardJourney } from '../components/dashboard/DashboardJourneys';
+import { DashCriteriaTip } from '../components/dashboard/DashboardChrome';
 import { useTheme } from '../context/ThemeContext';
 
 export const FinanceDashboardScreen: React.FC = () => {
@@ -56,14 +59,13 @@ export const FinanceDashboardScreen: React.FC = () => {
     receivable_from_customer: true,
     accounts_payables: true,
   });
-  const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [isColumnsOpen, setIsColumnsOpen] = useState(false);
   const [hoveredBarMonth, setHoveredBarMonth] = useState<string | null>(null);
   const [forecastDuration, setForecastDuration] = useState('Current Year');
+  const [forecastViewMode, setForecastViewMode] = useState<'chart' | 'table'>('chart');
+  const [expenseViewMode, setExpenseViewMode] = useState<'chart' | 'table'>('chart');
   const [expandedPaymentRows, setExpandedPaymentRows] = useState<Record<string, boolean>>({});
-  const [mobileAnalyticsTab, setMobileAnalyticsTab] = useState<'forecast' | 'expense'>('forecast');
 
   const toggleItemMask = (id: string) => {
     setMaskedItemsState((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -97,7 +99,7 @@ export const FinanceDashboardScreen: React.FC = () => {
   }, [searchQuery]);
 
   return (
-    <div>
+    <div className="dash-type">
       {/* Journey-style mobile dashboard */}
       <FinanceDashboardJourney />
 
@@ -112,19 +114,19 @@ export const FinanceDashboardScreen: React.FC = () => {
       >
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-blue-400/30">
           <div>
-            <span className="text-[10px] sm:text-xs font-bold tracking-wider text-blue-200 uppercase block mb-0.5">
+            <span className="text-label sm:text-body font-bold tracking-wider text-blue-200 uppercase block mb-0.5">
               FINANCE OVERVIEW
             </span>
             <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
               Your finance tasks, all in one place
             </h1>
-            <p className="text-xs sm:text-sm text-blue-100 mt-1 max-w-xl">
+            <p className="text-body sm:text-md text-blue-100 mt-1 max-w-xl">
               Track confirmations, vouchers, documents and approvals at a glance.
             </p>
           </div>
 
           <div className="self-start sm:self-auto">
-            <span className="px-3.5 py-1 rounded-full text-xs font-extrabold bg-blue-500/40 text-white border border-blue-300/40 shadow-xs">
+            <span className="px-3.5 py-1 rounded-full text-body font-extrabold bg-blue-500/40 text-white border border-blue-300/40 shadow-xs">
               Total 39
             </span>
           </div>
@@ -133,15 +135,23 @@ export const FinanceDashboardScreen: React.FC = () => {
         {/* Unified Finance Tasks Grid - Mobile-First Responsive Layout */}
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5 sm:gap-3 pt-5">
           {FINANCE_TASKS.map((task, idx) => {
-            const hasTooltip = Boolean(task.infoTooltip);
-            const isTooltipActive = activeTooltip === task.id;
             const isLastOddOnMobile = idx === FINANCE_TASKS.length - 1;
+            const accent =
+              task.icon === 'payment_confirmations'
+                ? '#38bdf8'
+                : task.icon === 'awaiting_confirmations'
+                ? '#2dd4bf'
+                : task.icon === 'receipt_vouchers'
+                ? '#c4b5fd'
+                : task.icon === 'open_ticket'
+                ? '#e2e8f0'
+                : '#ffffff';
 
             return (
               <div
                 key={task.id}
                 id={`finance-task-${task.id}`}
-                className={`bg-white/15 hover:bg-white/20 backdrop-blur-md border border-white/25 rounded-2xl p-3.5 flex flex-col justify-between transition-all shadow-xs ${
+                className={`bg-white/15 hover:bg-white/20 backdrop-blur-md border border-white/25 rounded-2xl p-3.5 flex flex-col justify-between transition-all shadow-xs overflow-visible ${
                   isLastOddOnMobile ? 'col-span-2 sm:col-span-1' : 'col-span-1'
                 }`}
               >
@@ -155,34 +165,19 @@ export const FinanceDashboardScreen: React.FC = () => {
                     {task.icon === 'open_ticket' && <MessageSquare className="w-4 h-4 text-white" />}
                     {task.icon === 'awaiting_documents' && <FileText className="w-4 h-4 text-white" />}
                   </div>
-
-                  {hasTooltip && (
-                    <div className="relative">
-                      <button
-                        type="button"
-                        onClick={() => setActiveTooltip(isTooltipActive ? null : task.id)}
-                        onMouseEnter={() => setActiveTooltip(task.id)}
-                        onMouseLeave={() => setActiveTooltip(null)}
-                        className="p-1 text-white/70 hover:text-white"
-                        title="Information"
-                      >
-                        <Info className="w-3.5 h-3.5" />
-                      </button>
-                      {isTooltipActive && (
-                        <div className="absolute right-0 bottom-full mb-1.5 z-30 px-2.5 py-1 text-[10px] font-medium text-slate-900 bg-white rounded-lg shadow-md whitespace-nowrap">
-                          {task.infoTooltip}
-                        </div>
-                      )}
-                    </div>
-                  )}
                 </div>
 
                 <div className="mt-3">
                   <div className="text-2xl sm:text-3xl font-black text-white leading-none tracking-tight">
                     {task.value}
                   </div>
-                  <div className="text-[11px] font-bold text-blue-100 uppercase tracking-tight mt-1.5 line-clamp-2">
-                    {task.label}
+                  <div className="flex items-start gap-1 mt-1.5">
+                    <div className="text-body-sm font-bold text-blue-100 uppercase tracking-tight line-clamp-2 min-w-0">
+                      {task.label}
+                    </div>
+                    {task.criteria && (
+                      <DashCriteriaTip criteria={task.criteria} accentColor={accent} className="mt-0.5" />
+                    )}
                   </div>
                 </div>
               </div>
@@ -198,7 +193,7 @@ export const FinanceDashboardScreen: React.FC = () => {
       >
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
           <div>
-            <span className="text-[10px] sm:text-xs font-bold tracking-wider text-slate-400 uppercase block">
+            <span className="text-label sm:text-body font-bold tracking-wider text-slate-400 uppercase block">
               FINANCE SNAPSHOT
             </span>
             <div className="flex items-center gap-2">
@@ -222,12 +217,12 @@ export const FinanceDashboardScreen: React.FC = () => {
 
           {/* Company Filter Dropdown */}
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-slate-500 uppercase shrink-0">Company</span>
+            <span className="text-body font-bold text-slate-500 uppercase shrink-0">Company</span>
             <div className="relative w-full sm:w-60">
               <select
                 value={selectedCompany}
                 onChange={(e) => setSelectedCompany(e.target.value)}
-                className="w-full appearance-none bg-white border border-slate-200 text-xs sm:text-sm font-semibold text-slate-800 py-1.5 pl-3 pr-8 rounded-xl shadow-2xs focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                className="w-full appearance-none bg-white border border-slate-200 text-body sm:text-md font-semibold text-slate-800 py-1.5 pl-3 pr-8 rounded-xl shadow-2xs focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
               >
                 {FINANCE_COMPANY_OPTIONS.map((c) => (
                   <option key={c} value={c}>
@@ -278,7 +273,7 @@ export const FinanceDashboardScreen: React.FC = () => {
 
                   <div className="min-w-0">
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 truncate">
+                      <span className="text-body-sm font-bold uppercase tracking-wider text-slate-500 truncate">
                         {item.label}
                       </span>
                       <button
@@ -317,9 +312,9 @@ export const FinanceDashboardScreen: React.FC = () => {
           id="container-wise-forecast-section"
           className="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-5 space-y-4 flex flex-col justify-between"
         >
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 pb-3 border-b border-slate-100">
             <div>
-              <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase block">
+              <span className="text-label font-bold tracking-wider text-slate-400 uppercase block">
                 CONTAINER ANALYTICS
               </span>
               <h2 className="text-base sm:text-lg font-black text-[#1e293b] tracking-tight">
@@ -327,22 +322,49 @@ export const FinanceDashboardScreen: React.FC = () => {
               </h2>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="inline-flex rounded-xl border border-slate-200 bg-slate-50 p-0.5">
+                <button
+                  type="button"
+                  onClick={() => setForecastViewMode('chart')}
+                  className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg text-caption font-bold cursor-pointer transition-colors ${
+                    forecastViewMode === 'chart'
+                      ? 'bg-[#0f2b3c] text-white'
+                      : 'text-slate-500 hover:text-slate-800'
+                  }`}
+                  title="Chart view"
+                >
+                  <BarChart3 className="w-3.5 h-3.5" />
+                  Chart
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setForecastViewMode('table')}
+                  className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg text-caption font-bold cursor-pointer transition-colors ${
+                    forecastViewMode === 'table'
+                      ? 'bg-[#0f2b3c] text-white'
+                      : 'text-slate-500 hover:text-slate-800'
+                  }`}
+                  title="Table view"
+                >
+                  <Table2 className="w-3.5 h-3.5" />
+                  Table
+                </button>
+              </div>
               <div className="relative">
                 <select
                   value={forecastDuration}
                   onChange={(e) => setForecastDuration(e.target.value)}
-                  className="appearance-none bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 py-1 pl-2.5 pr-6 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer"
+                  className="appearance-none bg-slate-50 border border-slate-200 text-body font-semibold text-slate-700 py-1 pl-2.5 pr-6 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer"
                 >
                   <option value="Current Year">Current Year</option>
                   <option value="Previous Year">Previous Year</option>
                 </select>
                 <ChevronDown className="w-3 h-3 text-slate-400 absolute right-1.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               </div>
-
               <button
                 type="button"
-                className="text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1 cursor-pointer"
+                className="text-body font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1 cursor-pointer"
               >
                 <span>View All</span>
                 <span>→</span>
@@ -350,71 +372,100 @@ export const FinanceDashboardScreen: React.FC = () => {
             </div>
           </div>
 
-          {/* Legend */}
-          <div className="flex items-center gap-4 text-xs">
-            <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-xs bg-[#3b82f6]" />
-              <span className="font-semibold text-slate-600">Delivered</span>
+          {forecastViewMode === 'table' ? (
+            <div className="rounded-xl border border-slate-200 overflow-hidden">
+              <div className="overflow-x-auto max-h-64">
+                <table className="w-full text-body text-left border-collapse min-w-[320px]">
+                  <thead className="bg-slate-50 sticky top-0">
+                    <tr className="border-b border-slate-200 text-slate-600">
+                      <th className="py-2 px-3 font-bold">Month</th>
+                      <th className="py-2 px-3 font-bold text-right">Delivered</th>
+                      <th className="py-2 px-3 font-bold text-right">Confirmed</th>
+                      <th className="py-2 px-3 font-bold text-right">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {CONTAINER_WISE_FORECAST_DATA.map((item) => (
+                      <tr key={item.month} className="hover:bg-slate-50/70">
+                        <td className="py-2 px-3 font-bold text-slate-800">{item.month}</td>
+                        <td className="py-2 px-3 text-right font-semibold text-blue-700 tabular-nums">
+                          {item.delivered}
+                        </td>
+                        <td className="py-2 px-3 text-right font-semibold text-emerald-700 tabular-nums">
+                          {item.confirmed}
+                        </td>
+                        <td className="py-2 px-3 text-right font-black text-slate-900 tabular-nums">
+                          {item.delivered + item.confirmed}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-xs bg-[#10b981]" />
-              <span className="font-semibold text-slate-600">Confirmed</span>
-            </div>
-          </div>
-
-          {/* High Precision SVG Bar Chart */}
-          <div className="relative h-56 w-full pt-4">
-            <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
-              {[80, 60, 40, 20, 0].map((val) => (
-                <div key={val} className="flex items-center gap-2 text-[10px] text-slate-400 font-medium">
-                  <span className="w-5 text-right">{val}</span>
-                  <div className="flex-1 border-b border-slate-100" />
+          ) : (
+            <>
+              <div className="flex items-center justify-center gap-4 text-body">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-xs bg-[#3b82f6]" />
+                  <span className="font-semibold text-slate-600">Delivered</span>
                 </div>
-              ))}
-            </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-xs bg-[#10b981]" />
+                  <span className="font-semibold text-slate-600">Confirmed</span>
+                </div>
+              </div>
 
-            {/* Bars */}
-            <div className="absolute inset-x-7 bottom-5 top-2 flex items-end justify-between gap-1 sm:gap-2">
-              {CONTAINER_WISE_FORECAST_DATA.map((item) => {
-                const maxVal = 80;
-                const deliveredHeight = Math.min(100, (item.delivered / maxVal) * 100);
-                const confirmedHeight = Math.min(100, (item.confirmed / maxVal) * 100);
-                const isHovered = hoveredBarMonth === item.month;
-
-                return (
-                  <div
-                    key={item.month}
-                    onMouseEnter={() => setHoveredBarMonth(item.month)}
-                    onMouseLeave={() => setHoveredBarMonth(null)}
-                    className="flex-1 h-full flex flex-col justify-end items-center group cursor-pointer relative"
-                  >
-                    {/* Hover Tooltip */}
-                    {isHovered && (
-                      <div className="absolute bottom-full mb-1 z-30 px-2 py-1 text-[10px] font-bold text-white bg-slate-900 rounded-md shadow-md whitespace-nowrap">
-                        {item.month}: Delivered {item.delivered} | Confirmed {item.confirmed}
-                      </div>
-                    )}
-
-                    <div className="w-full flex items-end justify-center gap-0.5 sm:gap-1 h-full">
-                      {/* Delivered Bar */}
-                      <div
-                        style={{ height: `${deliveredHeight}%` }}
-                        className="w-1/2 max-w-[12px] bg-[#3b82f6] rounded-t-xs transition-all group-hover:brightness-110"
-                      />
-                      {/* Confirmed Bar */}
-                      <div
-                        style={{ height: `${confirmedHeight}%` }}
-                        className="w-1/2 max-w-[12px] bg-[#10b981] rounded-t-xs transition-all group-hover:brightness-110"
-                      />
+              <div className="relative h-56 w-full pt-4">
+                <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
+                  {[80, 60, 40, 20, 0].map((val) => (
+                    <div key={val} className="flex items-center gap-2 text-label text-slate-400 font-medium">
+                      <span className="w-5 text-right">{val}</span>
+                      <div className="flex-1 border-b border-slate-100" />
                     </div>
-                    <span className="text-[9px] sm:text-[10px] font-bold text-slate-500 mt-1 uppercase">
-                      {item.month}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+                  ))}
+                </div>
+
+                <div className="absolute inset-x-7 bottom-5 top-2 flex items-end justify-between gap-1 sm:gap-2">
+                  {CONTAINER_WISE_FORECAST_DATA.map((item) => {
+                    const maxVal = 80;
+                    const deliveredHeight = Math.min(100, (item.delivered / maxVal) * 100);
+                    const confirmedHeight = Math.min(100, (item.confirmed / maxVal) * 100);
+                    const isHovered = hoveredBarMonth === item.month;
+
+                    return (
+                      <div
+                        key={item.month}
+                        onMouseEnter={() => setHoveredBarMonth(item.month)}
+                        onMouseLeave={() => setHoveredBarMonth(null)}
+                        className="flex-1 h-full flex flex-col justify-end items-center group cursor-pointer relative"
+                      >
+                        {isHovered && (
+                          <div className="absolute bottom-full mb-1 z-30 px-2 py-1 text-label font-bold text-white bg-slate-900 rounded-md shadow-md whitespace-nowrap">
+                            {item.month}: Delivered {item.delivered} | Confirmed {item.confirmed}
+                          </div>
+                        )}
+
+                        <div className="w-full flex items-end justify-center gap-0.5 sm:gap-1 h-full">
+                          <div
+                            style={{ height: `${deliveredHeight}%` }}
+                            className="w-1/2 max-w-[12px] bg-[#3b82f6] rounded-t-xs transition-all group-hover:brightness-110"
+                          />
+                          <div
+                            style={{ height: `${confirmedHeight}%` }}
+                            className="w-1/2 max-w-[12px] bg-[#10b981] rounded-t-xs transition-all group-hover:brightness-110"
+                          />
+                        </div>
+                        <span className="text-caption sm:text-label font-bold text-slate-500 mt-1 uppercase">
+                          {item.month}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </>
+          )}
         </section>
 
         {/* Chart 2: Operating Expense Intelligence */}
@@ -422,9 +473,9 @@ export const FinanceDashboardScreen: React.FC = () => {
           id="operating-expense-section"
           className="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-5 space-y-4 flex flex-col justify-between"
         >
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+          <div className="flex items-start justify-between gap-2 pb-3 border-b border-slate-100">
             <div>
-              <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase block">
+              <span className="text-label font-bold tracking-wider text-slate-400 uppercase block">
                 EXPENSE INTELLIGENCE
               </span>
               <h2 className="text-base sm:text-lg font-black text-[#1e293b] tracking-tight">
@@ -432,105 +483,188 @@ export const FinanceDashboardScreen: React.FC = () => {
               </h2>
             </div>
 
-            <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
-              Year-over-year
-            </span>
+            <div className="flex items-center gap-2">
+              <div className="inline-flex rounded-xl border border-slate-200 bg-slate-50 p-0.5">
+                <button
+                  type="button"
+                  onClick={() => setExpenseViewMode('chart')}
+                  className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg text-caption font-bold cursor-pointer transition-colors ${
+                    expenseViewMode === 'chart'
+                      ? 'bg-[#0f2b3c] text-white'
+                      : 'text-slate-500 hover:text-slate-800'
+                  }`}
+                  title="Chart view"
+                >
+                  <BarChart3 className="w-3.5 h-3.5" />
+                  Chart
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setExpenseViewMode('table')}
+                  className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg text-caption font-bold cursor-pointer transition-colors ${
+                    expenseViewMode === 'table'
+                      ? 'bg-[#0f2b3c] text-white'
+                      : 'text-slate-500 hover:text-slate-800'
+                  }`}
+                  title="Table view"
+                >
+                  <Table2 className="w-3.5 h-3.5" />
+                  Table
+                </button>
+              </div>
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-body font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                <LineChart className="w-3.5 h-3.5" />
+                Year-over-year
+              </span>
+            </div>
           </div>
 
-          {/* Donut Chart and Metrics Row */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 py-4">
-            {/* Donut Chart SVG */}
-            <div className="relative w-44 h-44 flex items-center justify-center shrink-0">
-              <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-                {/* Background Ring */}
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="38"
-                  fill="transparent"
-                  stroke="#f1f5f9"
-                  strokeWidth="12"
-                />
-                {/* 2026 Ring: 8.88% of circumference (2 * pi * 38 = 238.76) */}
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="38"
-                  fill="transparent"
-                  stroke="#2563eb"
-                  strokeWidth="12"
-                  strokeDasharray={`${(8.88 / 100) * 238.76} 238.76`}
-                  strokeLinecap="round"
-                />
-                {/* 2025 Ring: 0.02% (subtle tick) */}
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="28"
-                  fill="transparent"
-                  stroke="#10b981"
-                  strokeWidth="6"
-                  strokeDasharray={`${(0.02 / 100) * 175.93 + 1} 175.93`}
-                  strokeLinecap="round"
-                />
-              </svg>
-
-              {/* Donut Center Labels */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                <span className="text-xs font-bold text-slate-400">2026</span>
-                <span className="text-base font-black text-slate-900">8.88%</span>
-                <span className="text-[10px] text-slate-400">2025: 0.02%</span>
-              </div>
+          {expenseViewMode === 'table' ? (
+            <div className="rounded-xl border border-slate-200 overflow-hidden">
+              <table className="w-full text-body text-left border-collapse">
+                <thead className="bg-slate-50">
+                  <tr className="border-b border-slate-200 text-slate-600">
+                    <th className="py-2.5 px-3 font-bold">Metric</th>
+                    <th className="py-2.5 px-3 font-bold text-right">Value</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  <tr className="hover:bg-slate-50/70">
+                    <td className="py-2.5 px-3 font-semibold text-slate-700">
+                      <span className="inline-flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-[#2563eb]" />
+                        {OPERATING_EXPENSE_DATA.currentYearLabel}
+                      </span>
+                    </td>
+                    <td className="py-2.5 px-3 text-right font-black text-slate-900 tabular-nums">
+                      {OPERATING_EXPENSE_DATA.currentYearValue}
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-slate-50/70">
+                    <td className="py-2.5 px-3 font-semibold text-slate-700">
+                      <span className="inline-flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-[#10b981]" />
+                        {OPERATING_EXPENSE_DATA.previousYearLabel}
+                      </span>
+                    </td>
+                    <td className="py-2.5 px-3 text-right font-black text-slate-900 tabular-nums">
+                      {OPERATING_EXPENSE_DATA.previousYearValue}
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-rose-50/40">
+                    <td className="py-2.5 px-3 font-bold text-slate-800">
+                      <span className="inline-flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-rose-600" />
+                        {OPERATING_EXPENSE_DATA.changeLabel}
+                      </span>
+                    </td>
+                    <td className="py-2.5 px-3 text-right">
+                      <span className="inline-flex items-center justify-end gap-2">
+                        <span className="px-2 py-0.5 rounded-md text-body-sm font-black bg-rose-100 text-rose-700">
+                          {OPERATING_EXPENSE_DATA.changeTag}
+                        </span>
+                        <span className="font-bold text-rose-600 tabular-nums">
+                          {OPERATING_EXPENSE_DATA.changeValue}
+                        </span>
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
+          ) : (
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 py-4">
+              <div className="relative w-44 h-44 flex items-center justify-center shrink-0">
+                <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="38"
+                    fill="transparent"
+                    stroke="#f1f5f9"
+                    strokeWidth="12"
+                  />
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="38"
+                    fill="transparent"
+                    stroke="#2563eb"
+                    strokeWidth="12"
+                    strokeDasharray={`${(OPERATING_EXPENSE_DATA.currentYearPercent / 100) * 238.76} 238.76`}
+                    strokeLinecap="round"
+                  />
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="28"
+                    fill="transparent"
+                    stroke="#10b981"
+                    strokeWidth="6"
+                    strokeDasharray={`${(OPERATING_EXPENSE_DATA.previousYearPercent / 100) * 175.93 + 1} 175.93`}
+                    strokeLinecap="round"
+                  />
+                </svg>
 
-            {/* Metrics List */}
-            <div className="space-y-3.5 w-full max-w-xs">
-              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/70 space-y-1">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-[#2563eb]" />
-                    <span className="text-xs font-semibold text-slate-600">
-                      {OPERATING_EXPENSE_DATA.currentYearLabel}
-                    </span>
-                  </div>
-                  <span className="text-sm font-black text-slate-900">
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+                  <span className="text-body font-bold text-slate-400">2026</span>
+                  <span className="text-lg font-black text-slate-900">
                     {OPERATING_EXPENSE_DATA.currentYearValue}
                   </span>
+                  <span className="text-label text-slate-400">
+                    2025: {OPERATING_EXPENSE_DATA.previousYearValue}
+                  </span>
                 </div>
               </div>
 
-              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/70 space-y-1">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-[#10b981]" />
-                    <span className="text-xs font-semibold text-slate-600">
-                      {OPERATING_EXPENSE_DATA.previousYearLabel}
+              <div className="space-y-3.5 w-full max-w-xs">
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/70 space-y-1">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#2563eb]" />
+                      <span className="text-body font-semibold text-slate-600">
+                        {OPERATING_EXPENSE_DATA.currentYearLabel}
+                      </span>
+                    </div>
+                    <span className="text-md font-black text-slate-900">
+                      {OPERATING_EXPENSE_DATA.currentYearValue}
                     </span>
                   </div>
-                  <span className="text-sm font-black text-slate-900">
-                    {OPERATING_EXPENSE_DATA.previousYearValue}
-                  </span>
                 </div>
-              </div>
 
-              <div className="p-3 rounded-xl bg-rose-50/50 border border-rose-200/60 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-rose-600" />
-                  <span className="text-xs font-bold text-slate-700">
-                    {OPERATING_EXPENSE_DATA.changeLabel}
-                  </span>
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/70 space-y-1">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#10b981]" />
+                      <span className="text-body font-semibold text-slate-600">
+                        {OPERATING_EXPENSE_DATA.previousYearLabel}
+                      </span>
+                    </div>
+                    <span className="text-md font-black text-slate-900">
+                      {OPERATING_EXPENSE_DATA.previousYearValue}
+                    </span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="px-2 py-0.5 rounded-md text-[11px] font-black bg-rose-100 text-rose-700">
-                    {OPERATING_EXPENSE_DATA.changeTag}
-                  </span>
-                  <span className="text-xs font-bold text-rose-600">
-                    {OPERATING_EXPENSE_DATA.changeValue}
-                  </span>
+
+                <div className="p-3 rounded-xl bg-rose-50/50 border border-rose-200/60 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-rose-600" />
+                    <span className="text-body font-bold text-slate-700">
+                      {OPERATING_EXPENSE_DATA.changeLabel}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded-md text-body-sm font-black bg-rose-100 text-rose-700">
+                      {OPERATING_EXPENSE_DATA.changeTag}
+                    </span>
+                    <span className="text-body font-bold text-rose-600">
+                      {OPERATING_EXPENSE_DATA.changeValue}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
         </section>
       </div>
 
@@ -544,21 +678,7 @@ export const FinanceDashboardScreen: React.FC = () => {
             <h2 className="text-base sm:text-lg font-black text-[#1e293b] tracking-tight">
               Pending Payments
             </h2>
-            <div className="relative inline-flex items-center">
-              <button
-                type="button"
-                onMouseEnter={() => setActiveTooltip('pending-payments-info')}
-                onMouseLeave={() => setActiveTooltip(null)}
-                className="text-slate-400 hover:text-slate-600"
-              >
-                <Info className="w-4 h-4" />
-              </button>
-              {activeTooltip === 'pending-payments-info' && (
-                <div className="absolute left-0 bottom-full mb-1 z-30 px-2 py-1 text-[10px] font-medium text-white bg-slate-900 rounded-md shadow-md whitespace-nowrap">
-                  Outstanding receivables and payment follow-ups
-                </div>
-              )}
-            </div>
+            <DashCriteriaTip criteria={PENDING_PAYMENTS_CRITERIA} accentColor="#d97706" />
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
@@ -566,7 +686,7 @@ export const FinanceDashboardScreen: React.FC = () => {
             <button
               type="button"
               onClick={() => window.print()}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 text-xs font-semibold text-slate-700 rounded-xl shadow-2xs hover:bg-slate-50 transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 text-body font-semibold text-slate-700 rounded-xl shadow-2xs hover:bg-slate-50 transition-colors cursor-pointer"
             >
               <Printer className="w-3.5 h-3.5 text-slate-500" />
               <span>Print</span>
@@ -577,13 +697,13 @@ export const FinanceDashboardScreen: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setIsFilterOpen(!isFilterOpen)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 text-xs font-semibold text-slate-700 rounded-xl shadow-2xs hover:bg-slate-50 transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 text-body font-semibold text-slate-700 rounded-xl shadow-2xs hover:bg-slate-50 transition-colors cursor-pointer"
               >
                 <Filter className="w-3.5 h-3.5 text-slate-500" />
                 <span>Filters</span>
               </button>
               {isFilterOpen && (
-                <div className="absolute right-0 top-full mt-1 w-44 bg-white border border-slate-200 rounded-xl shadow-lg p-2 z-20 text-xs space-y-1">
+                <div className="absolute right-0 top-full mt-1 w-44 bg-white border border-slate-200 rounded-xl shadow-lg p-2 z-20 text-body space-y-1">
                   <div className="font-bold text-slate-800 px-2 py-1">Quick Filters</div>
                   <button
                     type="button"
@@ -603,35 +723,6 @@ export const FinanceDashboardScreen: React.FC = () => {
               )}
             </div>
 
-            {/* Columns */}
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => setIsColumnsOpen(!isColumnsOpen)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 text-xs font-semibold text-slate-700 rounded-xl shadow-2xs hover:bg-slate-50 transition-colors cursor-pointer"
-              >
-                <ColumnsIcon className="w-3.5 h-3.5 text-slate-500" />
-                <span>Columns</span>
-              </button>
-              {isColumnsOpen && (
-                <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-slate-200 rounded-xl shadow-lg p-2 z-20 text-xs space-y-1">
-                  <div className="font-bold text-slate-800 px-2 py-1">Visible Columns</div>
-                  <div className="px-2 py-1 text-slate-600 flex items-center gap-2">
-                    <input type="checkbox" defaultChecked disabled />
-                    <span>Customer Name</span>
-                  </div>
-                  <div className="px-2 py-1 text-slate-600 flex items-center gap-2">
-                    <input type="checkbox" defaultChecked disabled />
-                    <span>Total Invoice Amount</span>
-                  </div>
-                  <div className="px-2 py-1 text-slate-600 flex items-center gap-2">
-                    <input type="checkbox" defaultChecked disabled />
-                    <span>Total Remaining Amount</span>
-                  </div>
-                </div>
-              )}
-            </div>
-
             {/* Search Input */}
             <div className="relative flex items-center w-full sm:w-44">
               <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 pointer-events-none" />
@@ -640,7 +731,7 @@ export const FinanceDashboardScreen: React.FC = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search..."
-                className="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl py-1.5 pl-8 pr-7 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-slate-800 placeholder-slate-400"
+                className="w-full text-body bg-slate-50 border border-slate-200 rounded-xl py-1.5 pl-8 pr-7 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-slate-800 placeholder-slate-400"
               />
               {searchQuery && (
                 <button
@@ -657,7 +748,7 @@ export const FinanceDashboardScreen: React.FC = () => {
 
         {/* Pending Payments Table */}
         <div className="overflow-x-auto -mx-4 sm:mx-0">
-          <table className="w-full text-xs text-left border-collapse min-w-[760px]">
+          <table className="w-full text-body text-left border-collapse min-w-[760px]">
             <thead>
               <tr className="border-b border-slate-200 bg-slate-50/70 text-slate-600">
                 <th className="py-2.5 px-3 w-8 text-center" aria-label="Toggle" />
@@ -718,23 +809,23 @@ export const FinanceDashboardScreen: React.FC = () => {
                       <tr className="bg-slate-50/90 border-y border-slate-200/70">
                         <td className="py-2 px-3" />
                         <td colSpan={6} className="py-2.5 px-3">
-                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] bg-white p-2.5 rounded-lg border border-slate-200/60">
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-body-sm bg-white p-2.5 rounded-lg border border-slate-200/60">
                             <div>
-                              <span className="text-[9.5px] uppercase font-bold text-slate-400 block">Status</span>
+                              <span className="text-caption uppercase font-bold text-slate-400 block">Status</span>
                               <span className={`font-bold ${item.isNegative ? 'text-rose-600' : 'text-emerald-600'}`}>
                                 {item.isNegative ? 'Overpaid / Negative' : 'Pending Clearance'}
                               </span>
                             </div>
                             <div>
-                              <span className="text-[9.5px] uppercase font-bold text-slate-400 block">Currency</span>
+                              <span className="text-caption uppercase font-bold text-slate-400 block">Currency</span>
                               <span className="font-semibold text-slate-700">USD</span>
                             </div>
                             <div>
-                              <span className="text-[9.5px] uppercase font-bold text-slate-400 block">JV Adjustments</span>
+                              <span className="text-caption uppercase font-bold text-slate-400 block">JV Adjustments</span>
                               <span className="font-semibold text-slate-700">{item.totalJvAdjAmount}</span>
                             </div>
                             <div>
-                              <span className="text-[9.5px] uppercase font-bold text-slate-400 block">Net Remaining</span>
+                              <span className="text-caption uppercase font-bold text-slate-400 block">Net Remaining</span>
                               <span className={`font-black ${item.isNegative ? 'text-rose-600' : 'text-slate-900'}`}>
                                 {item.totalRemainingAmount}
                               </span>

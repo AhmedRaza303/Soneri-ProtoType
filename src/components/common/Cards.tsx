@@ -76,11 +76,11 @@ export const UserCard: React.FC<UserCardProps> = ({
               {user.fullName}
             </h4>
 
-            <p className="text-[10px] sm:text-[11px] font-mono text-slate-400 mt-0.5 truncate">
+            <p className="text-label sm:text-body-sm font-mono text-slate-400 mt-0.5 truncate">
               @{user.username}
             </p>
 
-            <div className="flex items-center gap-1.5 text-[11px] text-slate-400 mt-1">
+            <div className="flex items-center gap-1.5 text-body-sm text-slate-400 mt-1">
               <Mail className="w-3 h-3 shrink-0 text-slate-400" />
               <span className="truncate">{user.email}</span>
             </div>
@@ -176,7 +176,7 @@ export const UserCard: React.FC<UserCardProps> = ({
       >
         <div className="flex flex-wrap items-center gap-1.5">
           <div
-            className={`flex items-center gap-1 text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded-lg border ${
+            className={`flex items-center gap-1 text-label sm:text-body-sm font-bold px-2 py-0.5 rounded-lg border ${
               isDark
                 ? 'bg-slate-800/60 text-slate-300 border-slate-750'
                 : 'bg-slate-100/90 text-slate-700 border-slate-200/60'
@@ -188,7 +188,7 @@ export const UserCard: React.FC<UserCardProps> = ({
 
           {user.department && (
             <div
-              className={`flex items-center gap-1 text-[10px] sm:text-[11px] font-medium px-2 py-0.5 rounded-lg border ${
+              className={`flex items-center gap-1 text-label sm:text-body-sm font-medium px-2 py-0.5 rounded-lg border ${
                 isDark
                   ? 'bg-slate-900/60 text-slate-400 border-slate-800'
                   : 'bg-slate-50 text-slate-600 border-slate-200/60'
@@ -248,7 +248,7 @@ export const ValueCard: React.FC<ValueCardProps> = ({
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 mb-1">
             <span
-              className={`text-[9px] sm:text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-md border ${
+              className={`text-caption sm:text-label font-bold tracking-wider uppercase px-2 py-0.5 rounded-md border ${
                 isDark
                   ? 'bg-slate-800/80 text-indigo-300 border-slate-700/60'
                   : 'bg-slate-100 text-slate-600 border-slate-200'
@@ -266,7 +266,7 @@ export const ValueCard: React.FC<ValueCardProps> = ({
             {systemValue.name}
           </h4>
           <p
-            className={`text-[11px] sm:text-xs mt-1 line-clamp-2 leading-relaxed ${
+            className={`text-body-sm sm:text-xs mt-1 line-clamp-2 leading-relaxed ${
               isDark ? 'text-slate-400' : 'text-slate-500'
             }`}
           >
@@ -345,7 +345,7 @@ export const ValueCard: React.FC<ValueCardProps> = ({
           isDark ? 'border-slate-800/80' : 'border-slate-100'
         }`}
       >
-        <span className="text-[10px] text-slate-400 font-mono">
+        <span className="text-label text-slate-400 font-mono">
           {systemValue.updatedAt ? `Updated ${systemValue.updatedAt}` : 'Master Record'}
         </span>
         <StatusBadge status={systemValue.status} size="sm" />

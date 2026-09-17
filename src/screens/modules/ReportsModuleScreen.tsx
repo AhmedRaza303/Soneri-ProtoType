@@ -202,7 +202,7 @@ const Chip: React.FC<{ children: React.ReactNode; tone?: 'ok' | 'no' | 'warn' | 
     info: 'bg-sky-50 text-sky-700',
   };
   return (
-    <span className={`inline-flex text-[10px] font-bold px-2 py-0.5 rounded-full ${map[tone]}`}>
+    <span className={`inline-flex text-label font-bold px-2 py-0.5 rounded-full ${map[tone]}`}>
       {children}
     </span>
   );
@@ -210,8 +210,8 @@ const Chip: React.FC<{ children: React.ReactNode; tone?: 'ok' | 'no' | 'warn' | 
 
 const Field: React.FC<{ label: string; value: React.ReactNode }> = ({ label, value }) => (
   <div className="min-w-0">
-    <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">{label}</p>
-    <p className="text-[11px] font-semibold text-slate-800 break-words">{value}</p>
+    <p className="text-caption font-bold uppercase tracking-wider text-slate-400">{label}</p>
+    <p className="text-body-sm font-semibold text-slate-800 break-words">{value}</p>
   </div>
 );
 
@@ -222,7 +222,7 @@ const SelectField: React.FC<{
   options: string[];
 }> = ({ label, value, onChange, options }) => (
   <label className="block space-y-1">
-    <span className="text-[11px] font-bold text-slate-600">{label}</span>
+    <span className="text-body-sm font-bold text-slate-600">{label}</span>
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
@@ -342,13 +342,13 @@ export const ReportsModuleScreen: React.FC<Props> = ({ reportId, onBack, onShowS
           </button>
           <div className="min-w-0 flex-1">
             <h1 className="text-base font-extrabold text-[#0f2b3c] truncate">{TITLES[reportId]}</h1>
-            <p className="text-[10px] font-semibold text-slate-400">Mobile report view</p>
+            <p className="text-label font-semibold text-slate-400">Mobile report view</p>
           </div>
           {(reportId === 'order_report' || reportId === 'unconfirmed_order') && (
             <button
               type="button"
               onClick={() => setSummaryOpen(true)}
-              className="px-2.5 py-1.5 rounded-xl text-[10px] font-bold bg-slate-100 text-slate-700 cursor-pointer"
+              className="px-2.5 py-1.5 rounded-xl text-label font-bold bg-slate-100 text-slate-700 cursor-pointer"
             >
               Summary
             </button>
@@ -356,7 +356,7 @@ export const ReportsModuleScreen: React.FC<Props> = ({ reportId, onBack, onShowS
           <button
             type="button"
             onClick={() => setDrawerOpen(true)}
-            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-[10px] font-bold bg-[#0f2b3c] text-white cursor-pointer"
+            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-label font-bold bg-[#0f2b3c] text-white cursor-pointer"
           >
             <Filter className="w-3.5 h-3.5" />
             Filters
@@ -373,7 +373,7 @@ export const ReportsModuleScreen: React.FC<Props> = ({ reportId, onBack, onShowS
             </button>
           )}
           {(reportId === 'export_document' || reportId === 'pl_container') && (
-            <button type="button" onClick={() => snack('PDF export started')} className="px-2 py-1.5 rounded-xl border border-slate-200 bg-white text-[10px] font-bold cursor-pointer">
+            <button type="button" onClick={() => snack('PDF export started')} className="px-2 py-1.5 rounded-xl border border-slate-200 bg-white text-label font-bold cursor-pointer">
               PDF
             </button>
           )}
@@ -401,7 +401,7 @@ export const ReportsModuleScreen: React.FC<Props> = ({ reportId, onBack, onShowS
                 <div className="flex items-start justify-between gap-2">
                   <div>
                     <p className="text-xs font-extrabold text-[#0f2b3c]">{row.orderNo}</p>
-                    <p className="text-[11px] text-slate-500 mt-0.5">Bill {row.billNo} · {row.date}</p>
+                    <p className="text-body-sm text-slate-500 mt-0.5">Bill {row.billNo} · {row.date}</p>
                   </div>
                   <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${expanded[row.id] ? 'rotate-180' : ''}`} />
                 </div>
@@ -411,17 +411,17 @@ export const ReportsModuleScreen: React.FC<Props> = ({ reportId, onBack, onShowS
                   <Field label="Port of Loading" value={row.portLoading} />
                   <Field label="Port of Discharge" value={row.portDischarge} />
                 </div>
-                <div className="mt-3 flex justify-between text-[11px] font-bold border-t border-slate-100 pt-2">
+                <div className="mt-3 flex justify-between text-body-sm font-bold border-t border-slate-100 pt-2">
                   <span className="text-slate-500">Total Qty {row.totalQty}</span>
                   <span className="text-emerald-700">{row.totalAmount}</span>
                 </div>
               </button>
               {expanded[row.id] && (
                 <div className="px-3.5 pb-3.5 space-y-2 border-t border-slate-100 bg-slate-50/60">
-                  <p className="text-[10px] font-bold uppercase text-slate-400 pt-3">Products</p>
+                  <p className="text-label font-bold uppercase text-slate-400 pt-3">Products</p>
                   {row.products.map((p, i) => (
                     <div key={i} className="bg-white rounded-xl border border-slate-200 p-2.5">
-                      <p className="text-[11px] font-bold text-slate-800 leading-snug">{p.name}</p>
+                      <p className="text-body-sm font-bold text-slate-800 leading-snug">{p.name}</p>
                       <div className="grid grid-cols-3 gap-2 mt-2">
                         <Field label="Qty" value={p.qty} />
                         <Field label="Rate" value={p.rate} />
@@ -456,7 +456,7 @@ export const ReportsModuleScreen: React.FC<Props> = ({ reportId, onBack, onShowS
               </div>
             ))}
             <div className="bg-[#0f2b3c] text-white rounded-2xl p-3.5">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-teal-200/80">Total</p>
+              <p className="text-label font-bold uppercase tracking-wider text-teal-200/80">Total</p>
               <p className="text-lg font-black mt-1">60 containers · NP $87,999</p>
             </div>
           </>
@@ -510,7 +510,7 @@ export const ReportsModuleScreen: React.FC<Props> = ({ reportId, onBack, onShowS
                             </div>
                             <div className="flex flex-wrap gap-1.5 pt-1">
                               {['View Job', 'Commercial Invoice', 'Packing List', 'CBM', 'Sales'].map((a) => (
-                                <button key={a} type="button" onClick={() => snack(a)} className="text-[9px] font-bold px-2 py-1 rounded-lg bg-[#0f2b3c] text-white cursor-pointer">
+                                <button key={a} type="button" onClick={() => snack(a)} className="text-caption font-bold px-2 py-1 rounded-lg bg-[#0f2b3c] text-white cursor-pointer">
                                   {a}
                                 </button>
                               ))}
@@ -533,11 +533,11 @@ export const ReportsModuleScreen: React.FC<Props> = ({ reportId, onBack, onShowS
                   <button type="button" onClick={() => snack(r.proforma)} className="text-xs font-extrabold text-teal-700 cursor-pointer">
                     {r.proforma}
                   </button>
-                  <p className="text-[11px] text-slate-500 mt-0.5">{r.inquiry}</p>
+                  <p className="text-body-sm text-slate-500 mt-0.5">{r.inquiry}</p>
                 </div>
                 <Chip tone="ok">{r.np}</Chip>
               </div>
-              <p className="text-[11px] font-bold text-slate-800 mt-2">{r.customer}</p>
+              <p className="text-body-sm font-bold text-slate-800 mt-2">{r.customer}</p>
               <div className="grid grid-cols-2 gap-2.5 mt-3">
                 <Field label="Marketing Personal" value={r.marketing} />
                 <Field label="Sale Invoice Amount" value={r.sale} />
@@ -589,7 +589,7 @@ export const ReportsModuleScreen: React.FC<Props> = ({ reportId, onBack, onShowS
                     </div>
                     {o.products.map((p, i) => (
                       <div key={i} className="bg-white rounded-xl border border-slate-200 p-2.5">
-                        <p className="text-[11px] font-bold">{p.name}</p>
+                        <p className="text-body-sm font-bold">{p.name}</p>
                         <div className="grid grid-cols-2 gap-2 mt-2">
                           <Field label="Variation" value={p.variation} />
                           <Field label="Cost Price" value={p.cost} />
@@ -643,7 +643,7 @@ export const ReportsModuleScreen: React.FC<Props> = ({ reportId, onBack, onShowS
                     </div>
                     {g.products.map((p, i) => (
                       <div key={i} className="bg-white rounded-xl border border-slate-200 p-2.5">
-                        <p className="text-[11px] font-bold">{p.name}</p>
+                        <p className="text-body-sm font-bold">{p.name}</p>
                         <div className="grid grid-cols-2 gap-2 mt-2">
                           <Field label="Variation" value={p.variation} />
                           <Field label="Cost Price" value={p.cost} />
@@ -667,7 +667,7 @@ export const ReportsModuleScreen: React.FC<Props> = ({ reportId, onBack, onShowS
         <aside className={`absolute top-0 right-0 h-full w-[min(92vw,340px)] bg-white shadow-2xl flex flex-col transition-transform duration-300 rounded-l-3xl ${drawerOpen ? 'translate-x-0' : 'translate-x-full'}`}>
           <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Filters</p>
+              <p className="text-label font-bold uppercase tracking-wider text-slate-400">Filters</p>
               <p className="text-sm font-extrabold text-[#0f2b3c]">{TITLES[reportId]}</p>
             </div>
             <button type="button" onClick={() => setDrawerOpen(false)} className="p-2 rounded-xl bg-slate-100 cursor-pointer">
@@ -711,7 +711,7 @@ export const ReportsModuleScreen: React.FC<Props> = ({ reportId, onBack, onShowS
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <div className="flex gap-2 text-[11px] font-bold">
+            <div className="flex gap-2 text-body-sm font-bold">
               <span className="px-3 py-1.5 rounded-lg bg-[#0f2b3c] text-white">Overall</span>
               <span className="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600">Marketing</span>
             </div>
@@ -725,7 +725,7 @@ export const ReportsModuleScreen: React.FC<Props> = ({ reportId, onBack, onShowS
                 ['Total', '150'],
               ].map(([k, v]) => (
                 <div key={k} className="rounded-xl bg-slate-50 border border-slate-200 p-2.5">
-                  <p className="text-[10px] text-slate-400 font-bold">{k}</p>
+                  <p className="text-label text-slate-400 font-bold">{k}</p>
                   <p className="text-sm font-black text-[#0f2b3c]">{v}</p>
                 </div>
               ))}

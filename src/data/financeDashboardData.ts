@@ -3,11 +3,20 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+export interface FinanceCriteria {
+  eyebrow?: string;
+  title?: string;
+  items?: string[];
+  description?: string;
+  variant?: 'card' | 'dark';
+  tintClassName?: string;
+}
+
 export interface FinanceTaskItem {
   id: string;
   label: string;
   value: number;
-  infoTooltip?: string;
+  criteria?: FinanceCriteria;
   icon:
     | 'payment_confirmations'
     | 'awaiting_confirmations'
@@ -101,21 +110,33 @@ export const FINANCE_TASKS: FinanceTaskItem[] = [
     id: 'payment_confirmations',
     label: 'PAYMENT CONFIRMATIONS',
     value: 2,
-    infoTooltip: 'Payment confirmations pending review',
+    criteria: {
+      title: 'Disclaimer',
+      items: ['Customer payments awaiting confirmation approval'],
+      tintClassName: 'bg-sky-50',
+    },
     icon: 'payment_confirmations',
   },
   {
     id: 'awaiting_confirmations',
     label: 'AWAITING CONFIRMATIONS',
     value: 0,
-    infoTooltip: 'Transactions awaiting customer confirmation',
+    criteria: {
+      title: 'Disclaimer',
+      items: ['Proformas sent to finance and awaiting confirmation approval'],
+      tintClassName: 'bg-teal-50',
+    },
     icon: 'awaiting_confirmations',
   },
   {
     id: 'awaiting_receipt_vouchers',
     label: 'AWAITING RECEIPT VOUCHERS',
     value: 0,
-    infoTooltip: 'Receipt vouchers pending creation',
+    criteria: {
+      title: 'Disclaimer',
+      items: ['Customer payments for which receipt vouchers have not been created'],
+      tintClassName: 'bg-violet-50',
+    },
     icon: 'receipt_vouchers',
   },
   {
@@ -134,7 +155,12 @@ export const FINANCE_TASKS: FinanceTaskItem[] = [
     id: 'open_ticket',
     label: 'OPEN TICKET',
     value: 37,
-    infoTooltip: 'Open finance tickets awaiting resolution',
+    criteria: {
+      title: 'Statuses included:',
+      items: ['Initiated'],
+      description: 'This count includes all above statuses of tickets.',
+      tintClassName: 'bg-slate-50',
+    },
     icon: 'open_ticket',
   },
   {
@@ -144,6 +170,12 @@ export const FINANCE_TASKS: FinanceTaskItem[] = [
     icon: 'awaiting_documents',
   },
 ];
+
+export const PENDING_PAYMENTS_CRITERIA: FinanceCriteria = {
+  title: 'Disclaimer',
+  items: ['Pending payment as per payment terms'],
+  tintClassName: 'bg-amber-50',
+};
 
 // 2. Balance Summary Items
 export const FINANCE_BALANCE_ITEMS: BalanceSummaryItem[] = [
@@ -217,14 +249,14 @@ export const CONTAINER_WISE_FORECAST_DATA: ContainerForecastMonth[] = [
 // 4. Operating Expense Intelligence
 export const OPERATING_EXPENSE_DATA = {
   currentYearLabel: 'Current year 2026',
-  currentYearValue: '8.88%',
-  currentYearPercent: 8.88,
+  currentYearValue: '8.57%',
+  currentYearPercent: 8.57,
   previousYearLabel: 'Previous year 2025',
   previousYearValue: '0.02%',
   previousYearPercent: 0.02,
   changeLabel: 'Change vs 2025',
   changeTag: '+100.0%',
-  changeValue: '8.86%',
+  changeValue: '8.55%',
 };
 
 const SID = 'CO-001 - Soneri International General Trading LLC (SID)';

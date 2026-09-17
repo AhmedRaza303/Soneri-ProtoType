@@ -127,7 +127,7 @@ export const AddValueScreen: React.FC<AddValueScreenProps> = ({
                   setIsCustomParent(!isCustomParent);
                   setErrors((prev) => ({ ...prev, parentCode: '' }));
                 }}
-                className="text-[11px] text-blue-600 hover:underline font-medium cursor-pointer"
+                className="text-body-sm text-blue-600 hover:underline font-medium cursor-pointer"
               >
                 {isCustomParent ? 'Select from list' : '+ Enter new parent code'}
               </button>
@@ -165,7 +165,7 @@ export const AddValueScreen: React.FC<AddValueScreenProps> = ({
               </div>
             )}
             {errors.parentCode && (
-              <p className="text-[11px] text-rose-500 font-medium mt-1">
+              <p className="text-body-sm text-rose-500 font-medium mt-1">
                 {errors.parentCode}
               </p>
             )}
@@ -190,7 +190,7 @@ export const AddValueScreen: React.FC<AddValueScreenProps> = ({
               }`}
             />
             {errors.valueName && (
-              <p className="text-[11px] text-rose-500 font-medium mt-1">
+              <p className="text-body-sm text-rose-500 font-medium mt-1">
                 {errors.valueName}
               </p>
             )}
@@ -215,7 +215,7 @@ export const AddValueScreen: React.FC<AddValueScreenProps> = ({
               }`}
             />
             {errors.displayOrder && (
-              <p className="text-[11px] text-rose-500 font-medium mt-1">
+              <p className="text-body-sm text-rose-500 font-medium mt-1">
                 {errors.displayOrder}
               </p>
             )}

@@ -58,7 +58,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
           Business Management System
         </p>
 
-        <div className="mt-8 flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900/80 border border-slate-800 text-[11px] text-slate-400">
+        <div className="mt-8 flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900/80 border border-slate-800 text-body-sm text-slate-400">
           <Lock className="w-3 h-3 text-emerald-400" />
           <span>Enterprise Grade Security</span>
         </div>
@@ -74,7 +74,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
             className="w-1/2 h-full bg-slate-200 rounded-full"
           />
         </div>
-        <p className="text-[11px] text-slate-500 font-mono">Initializing System Core...</p>
+        <p className="text-body-sm text-slate-500 font-mono">Initializing System Core...</p>
       </div>
     </div>
   );

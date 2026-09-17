@@ -40,6 +40,7 @@ const ICON_MAP = {
 
 const WORKSTREAM_ROUTE_MAP: Record<string, ScreenId> = {
   fin_po: 'finance_po_approval',
+  fin_awaiting: 'finance_awaiting_confirmations',
   fin_proforma: 'finance_proforma_supplier',
   exp_container: 'export_container_tracking',
   pur_readiness: 'purchase_readiness',
@@ -144,7 +145,7 @@ export const StaticModuleScreen: React.FC<StaticModuleScreenProps> = ({
           <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">
             Available Operations
           </h3>
-          <span className="text-[11px] text-slate-400 font-mono">
+          <span className="text-body-sm text-slate-400 font-mono">
             {filteredItems.length} options
           </span>
         </div>

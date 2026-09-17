@@ -140,7 +140,7 @@ export const ModifyValueScreen: React.FC<ModifyValueScreenProps> = ({
                   setIsCustomParent(!isCustomParent);
                   setErrors((prev) => ({ ...prev, parentCode: '' }));
                 }}
-                className="text-[11px] text-blue-600 hover:underline font-medium cursor-pointer"
+                className="text-body-sm text-blue-600 hover:underline font-medium cursor-pointer"
               >
                 {isCustomParent ? 'Select from list' : '+ Enter new parent code'}
               </button>
@@ -178,7 +178,7 @@ export const ModifyValueScreen: React.FC<ModifyValueScreenProps> = ({
               </div>
             )}
             {errors.parentCode && (
-              <p className="text-[11px] text-rose-500 font-medium mt-1">
+              <p className="text-body-sm text-rose-500 font-medium mt-1">
                 {errors.parentCode}
               </p>
             )}
@@ -203,7 +203,7 @@ export const ModifyValueScreen: React.FC<ModifyValueScreenProps> = ({
               }`}
             />
             {errors.valueName && (
-              <p className="text-[11px] text-rose-500 font-medium mt-1">
+              <p className="text-body-sm text-rose-500 font-medium mt-1">
                 {errors.valueName}
               </p>
             )}
@@ -228,7 +228,7 @@ export const ModifyValueScreen: React.FC<ModifyValueScreenProps> = ({
               }`}
             />
             {errors.displayOrder && (
-              <p className="text-[11px] text-rose-500 font-medium mt-1">
+              <p className="text-body-sm text-rose-500 font-medium mt-1">
                 {errors.displayOrder}
               </p>
             )}

@@ -7,11 +7,9 @@ import React, { useState, useMemo } from 'react';
 import {
   Plus,
   Filter,
-  Settings,
   Search,
   ArrowUpDown,
   MoreVertical,
-  Check,
   X,
   Eye,
   Edit,
@@ -59,7 +57,6 @@ export const UsersScreen: React.FC<UsersScreenProps> = ({
   const [sortField, setSortField] = useState<SortField>('fullName');
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
   const [showFilterModal, setShowFilterModal] = useState(false);
-  const [showColumnsModal, setShowColumnsModal] = useState(false);
   const [viewMode, setViewMode] = useState<'table' | 'card'>('table');
   const [activeMenuUserId, setActiveMenuUserId] = useState<string | null>(null);
   const [viewingUser, setViewingUser] = useState<User | null>(null);
@@ -72,8 +69,8 @@ export const UsersScreen: React.FC<UsersScreenProps> = ({
   const [statusFilter, setStatusFilter] = useState('All');
   const [twoFAFilter, setTwoFAFilter] = useState('All');
 
-  // Column visibility state
-  const [columns, setColumns] = useState<ColumnDef[]>([
+  // Column visibility (fixed defaults — Columns UI removed)
+  const [columns] = useState<ColumnDef[]>([
     { key: 'fullName', label: 'Full Name', sortable: true, visible: true },
     { key: 'email', label: 'Email', sortable: true, visible: true },
     { key: 'role', label: 'Role', visible: true },
@@ -85,14 +82,6 @@ export const UsersScreen: React.FC<UsersScreenProps> = ({
     { key: 'status', label: 'Status', visible: true },
     { key: 'actions', label: 'Actions', visible: true },
   ]);
-
-  const toggleColumnVisibility = (key: string) => {
-    setColumns((prev) =>
-      prev.map((col) =>
-        col.key === key ? { ...col, visible: !col.visible } : col
-      )
-    );
-  };
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -235,17 +224,6 @@ export const UsersScreen: React.FC<UsersScreenProps> = ({
               )}
             </button>
 
-            {/* Columns Button */}
-            <button
-              id="btn-toolbar-columns"
-              type="button"
-              onClick={() => setShowColumnsModal(!showColumnsModal)}
-              className="flex items-center gap-2 px-3.5 py-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-xl text-xs font-semibold transition-all cursor-pointer"
-            >
-              <Settings className="w-3.5 h-3.5 text-slate-500" />
-              <span>Columns</span>
-            </button>
-
             {/* Mobile View Toggle (Card vs Table) */}
             <div className="sm:hidden ml-auto flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
               <button
@@ -310,7 +288,7 @@ export const UsersScreen: React.FC<UsersScreenProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
               {/* Role */}
               <div>
-                <label className="text-[11px] font-semibold text-slate-500 block mb-1">
+                <label className="text-body-sm font-semibold text-slate-500 block mb-1">
                   Role
                 </label>
                 <select
@@ -331,7 +309,7 @@ export const UsersScreen: React.FC<UsersScreenProps> = ({
 
               {/* Department */}
               <div>
-                <label className="text-[11px] font-semibold text-slate-500 block mb-1">
+                <label className="text-body-sm font-semibold text-slate-500 block mb-1">
                   Department
                 </label>
                 <select
@@ -352,7 +330,7 @@ export const UsersScreen: React.FC<UsersScreenProps> = ({
 
               {/* Status */}
               <div>
-                <label className="text-[11px] font-semibold text-slate-500 block mb-1">
+                <label className="text-body-sm font-semibold text-slate-500 block mb-1">
                   Status
                 </label>
                 <select
@@ -371,7 +349,7 @@ export const UsersScreen: React.FC<UsersScreenProps> = ({
 
               {/* 2FA Authentication */}
               <div>
-                <label className="text-[11px] font-semibold text-slate-500 block mb-1">
+                <label className="text-body-sm font-semibold text-slate-500 block mb-1">
                   (2FA) Authentication
                 </label>
                 <select
@@ -387,42 +365,6 @@ export const UsersScreen: React.FC<UsersScreenProps> = ({
                   <option value="No">No</option>
                 </select>
               </div>
-            </div>
-          </div>
-        )}
-
-        {/* Columns Customizer Modal */}
-        {showColumnsModal && (
-          <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-sm space-y-3 animate-in fade-in duration-150">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
-                <Settings className="w-3.5 h-3.5 text-slate-500" />
-                Customize Table Columns
-              </span>
-              <button
-                type="button"
-                onClick={() => setShowColumnsModal(false)}
-                className="text-slate-400 hover:text-slate-700"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-            <div className="flex flex-wrap gap-2 pt-1">
-              {columns.map((col) => (
-                <button
-                  key={col.key}
-                  type="button"
-                  onClick={() => toggleColumnVisibility(col.key)}
-                  className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium border transition-colors cursor-pointer ${
-                    col.visible
-                      ? 'bg-slate-900 text-white border-slate-900'
-                      : 'bg-slate-50 text-slate-400 border-slate-200 hover:bg-slate-100'
-                  }`}
-                >
-                  {col.visible && <Check className="w-3 h-3" />}
-                  <span>{col.label}</span>
-                </button>
-              ))}
             </div>
           </div>
         )}
@@ -504,7 +446,7 @@ export const UsersScreen: React.FC<UsersScreenProps> = ({
                           <td className="py-3.5 px-4 font-semibold text-slate-900">
                             <div className="flex items-center gap-2.5">
                               <div
-                                className={`w-7 h-7 rounded-lg shrink-0 flex items-center justify-center text-white text-[10px] font-bold ${
+                                className={`w-7 h-7 rounded-lg shrink-0 flex items-center justify-center text-white text-label font-bold ${
                                   user.avatarColor || 'bg-[#1e293b]'
                                 }`}
                               >
@@ -737,19 +679,19 @@ export const UsersScreen: React.FC<UsersScreenProps> = ({
 
                 <div className="grid grid-cols-2 gap-2 text-xs border-t border-slate-100 pt-2.5">
                   <div>
-                    <span className="text-slate-400 block text-[10px] uppercase">
+                    <span className="text-slate-400 block text-label uppercase">
                       Role
                     </span>
                     <span className="font-medium text-slate-700">{user.role || '-'}</span>
                   </div>
                   <div>
-                    <span className="text-slate-400 block text-[10px] uppercase">
+                    <span className="text-slate-400 block text-label uppercase">
                       Department
                     </span>
                     <span className="font-medium text-slate-700">{user.department || '-'}</span>
                   </div>
                   <div>
-                    <span className="text-slate-400 block text-[10px] uppercase">
+                    <span className="text-slate-400 block text-label uppercase">
                       2FA Auth
                     </span>
                     <span className="inline-flex items-center gap-1 font-medium text-emerald-700">
@@ -758,7 +700,7 @@ export const UsersScreen: React.FC<UsersScreenProps> = ({
                     </span>
                   </div>
                   <div>
-                    <span className="text-slate-400 block text-[10px] uppercase">
+                    <span className="text-slate-400 block text-label uppercase">
                       Status
                     </span>
                     <span

@@ -71,7 +71,7 @@ export const MobileHeader: React.FC<{
             {status && <StatusPill status={status} />}
           </div>
           {subtitle && (
-            <p className={`text-[11px] sm:text-xs mt-0.5 line-clamp-2 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+            <p className={`text-body-sm sm:text-xs mt-0.5 line-clamp-2 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
               {subtitle}
             </p>
           )}
@@ -91,7 +91,7 @@ export const HeaderIconBtn: React.FC<{
   const { isDark } = useTheme();
   const Icon = icon === 'edit' ? Pencil : Printer;
   const base =
-    'inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl text-[11px] font-bold cursor-pointer transition-all active:scale-[0.98]';
+    'inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl text-body-sm font-bold cursor-pointer transition-all active:scale-[0.98]';
   const styles =
     variant === 'primary'
       ? isDark
@@ -149,7 +149,7 @@ export const SectionBand: React.FC<{
         }`}
       >
         <h3
-          className={`text-[11px] font-extrabold uppercase tracking-[0.14em] ${
+          className={`text-body-sm font-extrabold uppercase tracking-[0.14em] ${
             isDark ? 'text-teal-200' : 'text-[#0f2b3c]'
           }`}
         >
@@ -185,7 +185,7 @@ export const DocPlaceholder: React.FC<{ label?: string }> = ({ label = 'No Docum
       }`}
     >
       <ImageOff className="w-5 h-5 opacity-70" />
-      <span className="text-[10px] font-semibold text-center">{label}</span>
+      <span className="text-label font-semibold text-center">{label}</span>
     </div>
   );
 };
@@ -260,7 +260,7 @@ export const FormInput: React.FC<{
 
   return (
     <label className="block space-y-1.5 min-w-0">
-      <span className={`text-[11px] font-bold ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
+      <span className={`text-body-sm font-bold ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
         {label}
         {required && <span className="text-rose-500 ml-0.5">*</span>}
       </span>

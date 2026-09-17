@@ -100,7 +100,7 @@ export const AppBar: React.FC<AppBarProps> = ({
             </div>
             {subtitle && (
               <span
-                className={`text-[10px] sm:text-[11px] font-medium tracking-wide truncate ${
+                className={`text-label sm:text-body-sm font-medium tracking-wide truncate ${
                   isDark ? 'text-slate-400' : 'text-slate-500'
                 }`}
               >
@@ -145,7 +145,7 @@ export const AppBar: React.FC<AppBarProps> = ({
             >
               <Bell className="w-4.5 h-4.5" />
               {unreadCount > 0 && (
-                <span className="absolute top-1.5 right-1.5 min-w-4 h-4 px-1 rounded-full bg-rose-500 text-[9px] font-black text-white flex items-center justify-center border-2 border-slate-900">
+                <span className="absolute top-1.5 right-1.5 min-w-4 h-4 px-1 rounded-full bg-rose-500 text-caption font-black text-white flex items-center justify-center border-2 border-slate-900">
                   {unreadCount > 9 ? '9+' : unreadCount}
                 </span>
               )}
@@ -161,7 +161,7 @@ export const AppBar: React.FC<AppBarProps> = ({
               aria-label="User Profile"
             >
               <div
-                className={`w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold ring-2 ${
+                className={`w-7 h-7 rounded-full flex items-center justify-center text-body-sm font-bold ring-2 ${
                   isDark
                     ? 'bg-indigo-600/90 text-white ring-indigo-500/30'
                     : 'bg-slate-800 text-white ring-slate-200'

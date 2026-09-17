@@ -3,12 +3,20 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+export interface PurchaseCriteria {
+  title?: string;
+  items?: string[];
+  description?: string;
+  variant?: 'card' | 'dark';
+  tintClassName?: string;
+}
+
 export interface PurchaseTaskItem {
   id: string;
   label: string;
   value: number;
   subtitle: string;
-  infoTooltip?: string;
+  criteria?: PurchaseCriteria;
   icon: 'ticket' | 'artwork' | 'requisition' | 'order' | 'invoice';
 }
 
@@ -22,7 +30,7 @@ export interface ReadinessCard {
   label: string;
   value: number;
   subtitle: string;
-  infoTooltip?: string;
+  criteria?: PurchaseCriteria;
 }
 
 export interface DelayedOrderLineItem {
@@ -50,7 +58,12 @@ export const PURCHASE_TASKS: PurchaseTaskItem[] = [
     label: 'OPEN TICKET',
     value: 37,
     subtitle: 'Tickets still open',
-    infoTooltip: 'Open tickets awaiting resolution',
+    criteria: {
+      title: 'Statuses included:',
+      items: ['Initiated'],
+      description: 'This count includes all above statuses of tickets.',
+      tintClassName: 'bg-emerald-50',
+    },
     icon: 'ticket',
   },
   {
@@ -102,13 +115,20 @@ export const CURRENT_MONTH_PERFORMANCE = {
     label: 'PENDING READINESS',
     value: 93,
     subtitle: 'Shipments pending readiness',
-    infoTooltip: 'Shipments pending readiness',
+    criteria: {
+      items: ['Overall, finance confirmed order & rediness not added'],
+      tintClassName: 'bg-amber-50',
+    },
   },
   pendingSurvey: {
     label: 'PENDING SURVEY',
     value: 43,
     subtitle: 'Surveys still pending',
-    infoTooltip: 'Surveys still pending',
+    criteria: {
+      items: ['CRO Applied', 'Survey Pending'],
+      description: 'Includes orders where CRO is applied and the survey is still pending.',
+      tintClassName: 'bg-pink-50',
+    },
   },
 };
 
@@ -131,13 +151,23 @@ export const NEXT_MONTH_SUMMARY = {
     label: 'PENDING SURVEY',
     value: 27,
     subtitle: 'Surveys still pending',
-    infoTooltip: 'Surveys still pending',
+    criteria: {
+      items: ['CRO Applied', 'Survey Pending'],
+      description: 'Includes orders where CRO is applied and the survey is still pending.',
+      tintClassName: 'bg-pink-50',
+    },
   },
 };
 
 // 4. Delayed Orders
-export const DELAYED_ORDERS_TOOLTIP =
-  'Includes finance-confirmed proformas with no shipment created, where the expected delivery month is more than 15 days overdue.';
+export const DELAYED_ORDERS_CRITERIA: PurchaseCriteria = {
+  variant: 'dark',
+  description:
+    'Includes finance-confirmed proformas with no shipment created, where the expected delivery month is more than 15 days overdue.',
+};
+
+/** @deprecated use DELAYED_ORDERS_CRITERIA.description */
+export const DELAYED_ORDERS_TOOLTIP = DELAYED_ORDERS_CRITERIA.description!;
 
 export const DELAYED_ORDERS: DelayedOrderItem[] = [
   {

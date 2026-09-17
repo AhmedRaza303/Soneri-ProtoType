@@ -301,7 +301,7 @@ export const MarketingModuleScreen: React.FC<MarketingModuleScreenProps> = ({
           >
             <div className="overflow-x-auto -mx-1">
               <table className="w-full text-xs text-left">
-                <thead className="bg-slate-50 text-slate-600 uppercase text-[10.5px] font-semibold border-b border-slate-200">
+                <thead className="bg-slate-50 text-slate-600 uppercase text-body-sm font-semibold border-b border-slate-200">
                   <tr>
                     <th className="py-3 px-4">Description</th>
                     <th className="py-3 px-4">Specifications</th>
@@ -415,7 +415,7 @@ export const MarketingModuleScreen: React.FC<MarketingModuleScreenProps> = ({
                         e.stopPropagation();
                         setSelectedExhibition(ex);
                       }}
-                      className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold cursor-pointer"
+                      className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-body-sm font-semibold cursor-pointer"
                     >
                       <Eye className="w-3.5 h-3.5" /> View
                     </button>
@@ -483,7 +483,7 @@ export const MarketingModuleScreen: React.FC<MarketingModuleScreenProps> = ({
                   <Td>
                     <StatusPill status={lead.status} />
                   </Td>
-                  <Td className="max-w-[160px] truncate text-[11px]">{lead.created}</Td>
+                  <Td className="max-w-[160px] truncate text-body-sm">{lead.created}</Td>
                   <Td className="relative">
                     <button
                       type="button"
@@ -491,7 +491,7 @@ export const MarketingModuleScreen: React.FC<MarketingModuleScreenProps> = ({
                         e.stopPropagation();
                         setOpenActionId(openActionId === lead.id ? null : lead.id);
                       }}
-                      className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold cursor-pointer"
+                      className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-body-sm font-semibold cursor-pointer"
                     >
                       Actions <MoreVertical className="w-3.5 h-3.5" />
                     </button>
@@ -578,7 +578,7 @@ export const MarketingModuleScreen: React.FC<MarketingModuleScreenProps> = ({
                         e.stopPropagation();
                         setSelectedQuote(quote);
                       }}
-                      className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold cursor-pointer"
+                      className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-body-sm font-semibold cursor-pointer"
                     >
                       <Eye className="w-3.5 h-3.5" /> View
                     </button>

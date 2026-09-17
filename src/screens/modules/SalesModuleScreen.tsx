@@ -274,37 +274,37 @@ export const SalesModuleScreen: React.FC<SalesModuleScreenProps> = ({
                   <div className="flex items-start gap-3">
                     <img src={prod.thumbnail} alt={prod.productName} className="w-12 h-12 object-cover rounded-xl border border-slate-200 shrink-0" />
                     <div className="min-w-0 flex-1">
-                      <p className="text-[11px] font-extrabold text-[#0f2b3c] leading-snug">{prod.productName}</p>
+                      <p className="text-body-sm font-extrabold text-[#0f2b3c] leading-snug">{prod.productName}</p>
                       <div className="flex items-center gap-2 mt-1 flex-wrap">
-                        <span className="inline-flex px-2 py-0.5 rounded-lg bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-bold">
+                        <span className="inline-flex px-2 py-0.5 rounded-lg bg-teal-50 text-teal-800 border border-teal-200 text-label font-bold">
                           {prod.variation}
                         </span>
-                        <span className="text-[10px] font-bold text-slate-500">{prod.shelfLifeDuration}</span>
+                        <span className="text-label font-bold text-slate-500">{prod.shelfLifeDuration}</span>
                       </div>
                       <div className="grid grid-cols-2 gap-2 mt-3">
                         <div>
-                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Qty</p>
-                          <p className="text-[11px] font-bold text-slate-900 whitespace-nowrap">{prod.quantity}</p>
+                          <p className="text-caption font-bold uppercase tracking-wider text-slate-400">Qty</p>
+                          <p className="text-body-sm font-bold text-slate-900 whitespace-nowrap">{prod.quantity}</p>
                         </div>
                         <div>
-                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Total</p>
-                          <p className="text-[11px] font-black text-slate-900 font-mono tabular-nums">{prod.total}</p>
+                          <p className="text-caption font-bold uppercase tracking-wider text-slate-400">Total</p>
+                          <p className="text-body-sm font-black text-slate-900 font-mono tabular-nums">{prod.total}</p>
                         </div>
                         <div>
-                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Price</p>
-                          <p className="text-[11px] font-semibold text-slate-900 font-mono">{prod.price}</p>
+                          <p className="text-caption font-bold uppercase tracking-wider text-slate-400">Price</p>
+                          <p className="text-body-sm font-semibold text-slate-900 font-mono">{prod.price}</p>
                         </div>
                         <div>
-                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">CBM</p>
-                          <p className="text-[11px] font-semibold text-slate-700 tabular-nums">{prod.cbm}</p>
+                          <p className="text-caption font-bold uppercase tracking-wider text-slate-400">CBM</p>
+                          <p className="text-body-sm font-semibold text-slate-700 tabular-nums">{prod.cbm}</p>
                         </div>
                         <div>
-                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Weight</p>
-                          <p className="text-[11px] font-semibold text-slate-700 tabular-nums">{prod.weight}</p>
+                          <p className="text-caption font-bold uppercase tracking-wider text-slate-400">Weight</p>
+                          <p className="text-body-sm font-semibold text-slate-700 tabular-nums">{prod.weight}</p>
                         </div>
                         <div>
-                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Notes</p>
-                          <p className="text-[11px] font-medium text-slate-600 break-words">{prod.notes || '-'}</p>
+                          <p className="text-caption font-bold uppercase tracking-wider text-slate-400">Notes</p>
+                          <p className="text-body-sm font-medium text-slate-600 break-words">{prod.notes || '-'}</p>
                         </div>
                       </div>
                     </div>
@@ -313,8 +313,8 @@ export const SalesModuleScreen: React.FC<SalesModuleScreenProps> = ({
               ))}
 
               <div className="rounded-2xl bg-[#0f2b3c] text-white p-3.5 flex items-center justify-between shadow-sm">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-white/70">Products Total</span>
-                <span className="text-[12px] font-black font-mono tabular-nums">{sum.productsTotal}</span>
+                <span className="text-label font-bold uppercase tracking-wider text-white/70">Products Total</span>
+                <span className="text-body font-black font-mono tabular-nums">{sum.productsTotal}</span>
               </div>
             </div>
           </div>
@@ -493,36 +493,36 @@ export const SalesModuleScreen: React.FC<SalesModuleScreenProps> = ({
                   <div className="flex items-start gap-3">
                     <img src={prod.thumbnail} alt={prod.productName} className="w-12 h-12 object-cover rounded-xl border border-slate-200 shrink-0" />
                     <div className="min-w-0 flex-1">
-                      <p className="text-[11px] font-extrabold text-[#0f2b3c] leading-snug">{prod.productName}</p>
+                      <p className="text-body-sm font-extrabold text-[#0f2b3c] leading-snug">{prod.productName}</p>
                       <div className="flex items-center gap-2 mt-1 flex-wrap">
-                        <span className="inline-flex px-2 py-0.5 rounded-lg bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-bold">
+                        <span className="inline-flex px-2 py-0.5 rounded-lg bg-teal-50 text-teal-800 border border-teal-200 text-label font-bold">
                           {prod.variation}
                         </span>
                       </div>
                       <div className="grid grid-cols-2 gap-2 mt-3">
                         <div>
-                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Qty</p>
-                          <p className="text-[11px] font-bold text-slate-900 whitespace-nowrap">{prod.quantity}</p>
+                          <p className="text-caption font-bold uppercase tracking-wider text-slate-400">Qty</p>
+                          <p className="text-body-sm font-bold text-slate-900 whitespace-nowrap">{prod.quantity}</p>
                         </div>
                         <div>
-                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Total</p>
-                          <p className="text-[11px] font-black text-slate-900 font-mono tabular-nums">{prod.total}</p>
+                          <p className="text-caption font-bold uppercase tracking-wider text-slate-400">Total</p>
+                          <p className="text-body-sm font-black text-slate-900 font-mono tabular-nums">{prod.total}</p>
                         </div>
                         <div>
-                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Price</p>
-                          <p className="text-[11px] font-semibold text-slate-900 font-mono">{prod.price}</p>
+                          <p className="text-caption font-bold uppercase tracking-wider text-slate-400">Price</p>
+                          <p className="text-body-sm font-semibold text-slate-900 font-mono">{prod.price}</p>
                         </div>
                         <div>
-                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">CBM</p>
-                          <p className="text-[11px] font-semibold text-slate-700 tabular-nums">{prod.cbm}</p>
+                          <p className="text-caption font-bold uppercase tracking-wider text-slate-400">CBM</p>
+                          <p className="text-body-sm font-semibold text-slate-700 tabular-nums">{prod.cbm}</p>
                         </div>
                         <div>
-                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Weight</p>
-                          <p className="text-[11px] font-semibold text-slate-700 tabular-nums">{prod.weight}</p>
+                          <p className="text-caption font-bold uppercase tracking-wider text-slate-400">Weight</p>
+                          <p className="text-body-sm font-semibold text-slate-700 tabular-nums">{prod.weight}</p>
                         </div>
                         <div>
-                          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Notes</p>
-                          <p className="text-[11px] font-medium text-slate-600 break-words">{prod.notes || '-'}</p>
+                          <p className="text-caption font-bold uppercase tracking-wider text-slate-400">Notes</p>
+                          <p className="text-body-sm font-medium text-slate-600 break-words">{prod.notes || '-'}</p>
                         </div>
                       </div>
                     </div>
@@ -531,8 +531,8 @@ export const SalesModuleScreen: React.FC<SalesModuleScreenProps> = ({
               ))}
 
               <div className="rounded-2xl bg-[#0f2b3c] text-white p-3.5 flex items-center justify-between shadow-sm">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-white/70">Products Total</span>
-                <span className="text-[12px] font-black font-mono tabular-nums">{sum.productsTotal}</span>
+                <span className="text-label font-bold uppercase tracking-wider text-white/70">Products Total</span>
+                <span className="text-body font-black font-mono tabular-nums">{sum.productsTotal}</span>
               </div>
             </div>
           </div>
@@ -656,50 +656,50 @@ export const SalesModuleScreen: React.FC<SalesModuleScreenProps> = ({
                 <div className="space-y-2">
                   <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs">
                     <div className="flex items-center justify-between gap-3">
-                      <p className="text-[11px] font-extrabold text-[#0f2b3c]">Invoice Breakdown</p>
-                      <p className="text-[11px] font-black text-rose-700 font-mono">{pd.remainingBalance}</p>
+                      <p className="text-body-sm font-extrabold text-[#0f2b3c]">Invoice Breakdown</p>
+                      <p className="text-body-sm font-black text-rose-700 font-mono">{pd.remainingBalance}</p>
                     </div>
 
                     <div className="grid grid-cols-2 gap-2 mt-3">
                       <div>
-                        <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Proforma</p>
-                        <p className="text-[11px] font-semibold text-slate-800 font-mono">{pd.proformaAmount}</p>
+                        <p className="text-caption font-bold uppercase tracking-wider text-slate-400">Proforma</p>
+                        <p className="text-body-sm font-semibold text-slate-800 font-mono">{pd.proformaAmount}</p>
                       </div>
                       <div>
-                        <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">SI Amount</p>
-                        <p className="text-[11px] font-semibold text-slate-800 font-mono">{pd.invoiceAmount.siAmount}</p>
+                        <p className="text-caption font-bold uppercase tracking-wider text-slate-400">SI Amount</p>
+                        <p className="text-body-sm font-semibold text-slate-800 font-mono">{pd.invoiceAmount.siAmount}</p>
                       </div>
                       <div>
-                        <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">JV Adj</p>
-                        <p className="text-[11px] font-semibold text-slate-800 font-mono">{pd.invoiceAmount.jvAdj}</p>
+                        <p className="text-caption font-bold uppercase tracking-wider text-slate-400">JV Adj</p>
+                        <p className="text-body-sm font-semibold text-slate-800 font-mono">{pd.invoiceAmount.jvAdj}</p>
                       </div>
                       <div>
-                        <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Net Sale Invoice</p>
-                        <p className="text-[11px] font-semibold text-slate-800 font-mono">{pd.invoiceAmount.netSaleInvoice}</p>
+                        <p className="text-caption font-bold uppercase tracking-wider text-slate-400">Net Sale Invoice</p>
+                        <p className="text-body-sm font-semibold text-slate-800 font-mono">{pd.invoiceAmount.netSaleInvoice}</p>
                       </div>
                       <div>
-                        <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Sale Return</p>
-                        <p className="text-[11px] font-semibold text-slate-800 font-mono">{pd.invoiceAmount.saleReturn}</p>
+                        <p className="text-caption font-bold uppercase tracking-wider text-slate-400">Sale Return</p>
+                        <p className="text-body-sm font-semibold text-slate-800 font-mono">{pd.invoiceAmount.saleReturn}</p>
                       </div>
                       <div>
-                        <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Net Customer R/P</p>
-                        <p className="text-[11px] font-semibold text-slate-800 font-mono">{pd.invoiceAmount.netCustomerRP}</p>
+                        <p className="text-caption font-bold uppercase tracking-wider text-slate-400">Net Customer R/P</p>
+                        <p className="text-body-sm font-semibold text-slate-800 font-mono">{pd.invoiceAmount.netCustomerRP}</p>
                       </div>
                       <div>
-                        <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Previously Paid</p>
-                        <p className="text-[11px] font-semibold text-slate-800 font-mono">{pd.previouslyPaid}</p>
+                        <p className="text-caption font-bold uppercase tracking-wider text-slate-400">Previously Paid</p>
+                        <p className="text-body-sm font-semibold text-slate-800 font-mono">{pd.previouslyPaid}</p>
                       </div>
                       <div>
-                        <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Current Amount</p>
-                        <p className="text-[11px] font-semibold text-slate-900 font-mono">{pd.currentAmount}</p>
+                        <p className="text-caption font-bold uppercase tracking-wider text-slate-400">Current Amount</p>
+                        <p className="text-body-sm font-semibold text-slate-900 font-mono">{pd.currentAmount}</p>
                       </div>
                       <div>
-                        <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Exchanged Amount</p>
-                        <p className="text-[11px] font-semibold text-slate-900 font-mono">{pd.exchangedAmount}</p>
+                        <p className="text-caption font-bold uppercase tracking-wider text-slate-400">Exchanged Amount</p>
+                        <p className="text-body-sm font-semibold text-slate-900 font-mono">{pd.exchangedAmount}</p>
                       </div>
                       <div>
-                        <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Advance</p>
-                        <p className={`text-[11px] font-bold ${pd.advance ? 'text-emerald-700' : 'text-slate-600'}`}>
+                        <p className="text-caption font-bold uppercase tracking-wider text-slate-400">Advance</p>
+                        <p className={`text-body-sm font-bold ${pd.advance ? 'text-emerald-700' : 'text-slate-600'}`}>
                           {pd.advance ? 'Yes' : 'No'}
                         </p>
                       </div>
@@ -830,7 +830,7 @@ export const SalesModuleScreen: React.FC<SalesModuleScreenProps> = ({
                         e.stopPropagation();
                         setOpenActionId(openActionId === item.id ? null : item.id);
                       }}
-                      className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold cursor-pointer"
+                      className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-body-sm font-semibold cursor-pointer"
                     >
                       Actions <MoreVertical className="w-3.5 h-3.5" />
                     </button>
@@ -931,7 +931,7 @@ export const SalesModuleScreen: React.FC<SalesModuleScreenProps> = ({
                         e.stopPropagation();
                         setOpenActionId(openActionId === item.id ? null : item.id);
                       }}
-                      className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold cursor-pointer"
+                      className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-body-sm font-semibold cursor-pointer"
                     >
                       Actions <MoreVertical className="w-3.5 h-3.5" />
                     </button>
@@ -1030,7 +1030,7 @@ export const SalesModuleScreen: React.FC<SalesModuleScreenProps> = ({
                         e.stopPropagation();
                         setOpenActionId(openActionId === item.id ? null : item.id);
                       }}
-                      className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold cursor-pointer"
+                      className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-body-sm font-semibold cursor-pointer"
                     >
                       Actions <MoreVertical className="w-3.5 h-3.5" />
                     </button>

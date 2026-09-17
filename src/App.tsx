@@ -26,6 +26,7 @@ import { ConfirmationDialog } from './components/common/ConfirmationDialog';
 import { SnackBar } from './components/common/SnackBar';
 import { DeviceFrameToggle, MobileStatusBar, DeviceMode } from './components/common/DeviceFrame';
 import { useTheme } from './context/ThemeContext';
+import { Menu } from 'lucide-react';
 
 // Screen Components
 import { SplashScreen } from './screens/SplashScreen';
@@ -46,6 +47,7 @@ import { ProfileScreen } from './screens/ProfileScreen';
 
 // Workstream Screens
 import { FinanceModuleScreen } from './screens/modules/FinanceModuleScreen';
+import { AwaitingConfirmationsScreen } from './screens/modules/AwaitingConfirmationsScreen';
 import { ExportModuleScreen } from './screens/modules/ExportModuleScreen';
 import { PurchaseModuleScreen } from './screens/modules/PurchaseModuleScreen';
 import { SupplierTrackingScreen } from './screens/modules/SupplierTrackingScreen';
@@ -308,6 +310,21 @@ export default function App() {
     currentScreen !== 'admin_add_value' &&
     currentScreen !== 'admin_modify_value';
 
+  const screensWithBuiltInMenu: ScreenId[] = [
+    'dashboard',
+    'dashboard_export',
+    'dashboard_purchase',
+    'dashboard_marketing',
+    'dashboard_finance',
+    'modules',
+    'notifications',
+    'profile',
+  ];
+  const showGlobalPageMenu =
+    currentScreen !== 'splash' &&
+    currentScreen !== 'login' &&
+    !screensWithBuiltInMenu.includes(currentScreen);
+
   // Render Current Screen
   const renderScreen = () => {
     switch (currentScreen) {
@@ -548,6 +565,14 @@ export default function App() {
         return (
           <FinanceModuleScreen
             workstream="po_approval"
+            onBack={() => navigateBack('module_finance')}
+            onShowSnackBar={showSnackBar}
+          />
+        );
+
+      case 'finance_awaiting_confirmations':
+        return (
+          <AwaitingConfirmationsScreen
             onBack={() => navigateBack('module_finance')}
             onShowSnackBar={showSnackBar}
           />
@@ -994,6 +1019,37 @@ export default function App() {
 
         {/* Dynamic Screen View */}
         <main className="flex-1 flex flex-col relative overflow-x-hidden">
+          {showGlobalPageMenu && (
+            <div
+              className={`sticky top-0 z-40 flex shrink-0 items-center border-b px-3 py-2 ${
+                isDark
+                  ? 'border-slate-800 bg-[#0b101e]/95'
+                  : 'border-slate-200 bg-white/95 shadow-2xs'
+              } backdrop-blur-md`}
+            >
+              <button
+                id="global-page-menu-button"
+                type="button"
+                onClick={() => setIsDrawerOpen(true)}
+                className={`flex h-9 w-9 items-center justify-center rounded-xl transition-all active:scale-95 cursor-pointer ${
+                  isDark
+                    ? 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                    : 'text-slate-700 hover:bg-slate-100 hover:text-slate-950'
+                }`}
+                aria-label="Open Navigation Drawer"
+                aria-expanded={isDrawerOpen}
+              >
+                <Menu className="h-5 w-5" />
+              </button>
+              <span
+                className={`ml-1 text-label font-bold uppercase tracking-wider ${
+                  isDark ? 'text-slate-500' : 'text-slate-400'
+                }`}
+              >
+                Menu
+              </span>
+            </div>
+          )}
           {renderScreen()}
         </main>
 

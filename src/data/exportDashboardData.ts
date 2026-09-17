@@ -11,12 +11,18 @@ export interface ExportFollowUpItem {
   icon: 'enquiry' | 'freight';
 }
 
+export interface ExportTaskCriteria {
+  items: string[];
+  description: string;
+}
+
 export interface ExportTaskItem {
   id: string;
   title: string;
   subtitle: string;
   value: number;
-  infoTooltip?: string;
+  /** Structured Criteria disclaimer shown on the info (i) icon */
+  criteria?: ExportTaskCriteria;
   icon:
     | 'booking'
     | 'loading'
@@ -51,7 +57,10 @@ export const EXPORT_TASKS: ExportTaskItem[] = [
     title: 'Booking Issuance',
     subtitle: 'Pending booking · marketer approved',
     value: 7,
-    infoTooltip: 'Pending booking · marketer approved',
+    criteria: {
+      items: ['Pending Booking', 'Marketer Approved'],
+      description: 'Count of pending bookings that are marketer approved.',
+    },
     icon: 'booking',
   },
   {
@@ -80,7 +89,10 @@ export const EXPORT_TASKS: ExportTaskItem[] = [
     title: 'Pending Switch BL',
     subtitle: 'Switch Shipment Count',
     value: 3,
-    infoTooltip: 'Switch Shipment Count',
+    criteria: {
+      items: ['Shipment Created', 'Switch BL not checked'],
+      description: 'Includes shipments created where Switch BL is still unchecked.',
+    },
     icon: 'switch_bl',
   },
   {
@@ -88,7 +100,10 @@ export const EXPORT_TASKS: ExportTaskItem[] = [
     title: 'Pending Purchase Invoice',
     subtitle: 'Booking created · purchase invoice missing',
     value: 4,
-    infoTooltip: 'Booking created · purchase invoice missing',
+    criteria: {
+      items: ['Booking Created', 'Purchase Invoice Not Created'],
+      description: 'Includes bookings where the purchase invoice is still not created.',
+    },
     icon: 'purchase_invoice',
   },
   {
@@ -103,7 +118,10 @@ export const EXPORT_TASKS: ExportTaskItem[] = [
     title: 'Uncouriered Shipments',
     subtitle: 'Shipment Count',
     value: 8,
-    infoTooltip: 'Shipment Count',
+    criteria: {
+      items: ['Shipment Created', 'Doc Couriered not checked'],
+      description: 'Includes created shipments that are still unchecked and not couriered.',
+    },
     icon: 'uncouriered',
   },
 ];
